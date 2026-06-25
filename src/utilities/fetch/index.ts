@@ -152,6 +152,17 @@ export const editUser = async (updatedUser: string, username: string) => {
     return response.json();
 };
 
+export const forgotPassword = async (identifier: string) => {
+    const response = await fetch(`${HOST_URL}/api/auth/forgot-password`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ identifier }),
+    });
+    return response.json();
+};
+
 export const updateTweetLikes = async (tweetId: string, tweetAuthor: string, tokenOwnerId: string, isLiked: boolean) => {
     const route = isLiked ? "unlike" : "like";
     const response = await fetch(`${HOST_URL}/api/tweets/${tweetAuthor}/${tweetId}/${route}`, {

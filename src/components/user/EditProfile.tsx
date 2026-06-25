@@ -50,6 +50,8 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
 
     const validationSchema = yup.object({
         name: yup.string().max(50, "Name should be of maximum 50 characters length."),
+        email: yup.string().email("Email is invalid").required("Email is required."),
+        phone: yup.string().required("Phone is required."),
         description: yup.string().max(160, "Description should be of maximum 160 characters length."),
         location: yup.string().max(30, "Location should be of maximum 30 characters length."),
         website: yup.string().max(30, "Website should be of maximum 30 characters length."),
@@ -61,6 +63,8 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
     const formik = useFormik({
         initialValues: {
             name: profile.name ?? "",
+            email: profile.email ?? "",
+            phone: profile.phone ?? "",
             description: profile.description ?? "",
             location: profile.location ?? "",
             website: profile.website ?? "",
@@ -227,6 +231,28 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                             onChange={formik.handleChange}
                             error={formik.touched.website && Boolean(formik.errors.website)}
                             helperText={formik.touched.website && formik.errors.website}
+                        />
+                    </div>
+                    <div className="input">
+                        <TextField
+                            fullWidth
+                            name="email"
+                            label="Email"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                        />
+                    </div>
+                    <div className="input">
+                        <TextField
+                            fullWidth
+                            name="phone"
+                            label="Phone"
+                            value={formik.values.phone}
+                            onChange={formik.handleChange}
+                            error={formik.touched.phone && Boolean(formik.errors.phone)}
+                            helperText={formik.touched.phone && formik.errors.phone}
                         />
                     </div>
                     <div className="input">

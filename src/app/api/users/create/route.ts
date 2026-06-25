@@ -4,10 +4,21 @@ import { SignJWT } from "jose";
 import { prisma } from "@/prisma/client";
 import { hashPassword } from "@/utilities/bcrypt";
 import { getJwtSecretKey } from "@/utilities/auth";
-import { createNotification } from "@/utilities/fetch";
 
 export async function POST(request: NextRequest) {
     const userData = await request.json();
+    const username = userData.username?.trim();
+    const email = userData.email?.trim();
+    const phone = userData.phone?.trim();
+    const name = userData.name?.trim() || null;
+
+    if (!username || !userData.password || !email || !phone) {
+        return NextResponse.json({
+            success: false,
+            message: "Username, password, email and phone are required.",
+        });
+    }
+
     const hashedPassword = await hashPassword(userData.password);
     const secret = process.env.CREATION_SECRET_KEY;
 
@@ -19,32 +30,53 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const userExists = await prisma.user.findUnique({
+        const userExists = await prisma.user.findFirst({
             where: {
-                username: userData.username,
+                OR: [
+                    { username },
+                    { email },
+                    { phone },
+                ],
             },
         });
 
         if (userExists) {
+            const duplicateField =
+                userExists.username === username
+                    ? "Username"
+                    : userExists.email === email
+                    ? "Email"
+                    : "Phone";
             return NextResponse.json({
                 success: false,
-                message: "Username already exists.",
+                message: `${duplicateField} already exists.`,
             });
         }
 
         const newUser = await prisma.user.create({
             data: {
-                ...userData,
+                username,
+                email,
+                phone,
+                name,
                 password: hashedPassword,
                 browserNotificationsEnabled: userData.browserNotificationsEnabled ?? false,
             },
         });
 
-        await createNotification(newUser.username, "welcome", secret);
+        await prisma.notification.create({
+            data: {
+                userId: newUser.id,
+                type: "welcome",
+                content: JSON.stringify(null),
+            },
+        });
 
         const token = await new SignJWT({
             id: newUser.id,
             username: newUser.username,
+            email: newUser.email,
+            phone: newUser.phone,
             name: newUser.name,
             description: newUser.description,
             location: newUser.location,
@@ -73,6 +105,7 @@ export async function POST(request: NextRequest) {
 
         return response;
     } catch (error: unknown) {
-        return NextResponse.json({ success: false, error });
+        const message = error instanceof Error ? error.message : "Something went wrong.";
+        return NextResponse.json({ success: false, message });
     }
 }

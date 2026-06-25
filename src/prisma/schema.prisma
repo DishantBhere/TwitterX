@@ -18,9 +18,12 @@ model User {
     photoUrl         String?
     headerUrl        String?
     username         String         @unique @db.VarChar(20)
+    email            String?
+    phone            String?
     password         String
     isPremium        Boolean        @default(false)
     browserNotificationsEnabled Boolean @default(false)
+    lastPasswordResetAt DateTime?
     createdAt        DateTime       @default(now())
     updatedAt        DateTime       @default(now()) @updatedAt
     createdTweets    Tweet[]        @relation("userTweets")

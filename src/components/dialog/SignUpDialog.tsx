@@ -35,6 +35,8 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
             .min(8, "Password should be of minimum 8 characters length.")
             .max(100, "Password should be of maximum 100 characters length.")
             .required("Password is required."),
+        email: yup.string().email("Email is invalid").required("Email is required."),
+        phone: yup.string().required("Phone is required."),
         name: yup.string().max(50, "Name should be of maximum 50 characters length."),
     });
 
@@ -42,6 +44,8 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
         initialValues: {
             username: "",
             password: "",
+            email: "",
+            phone: "",
             name: "",
         },
         validationSchema: validationSchema,
@@ -96,6 +100,30 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
                                 onChange={formik.handleChange}
                                 error={Boolean(formik.errors.password)}
                                 helperText={formik.errors.password}
+                            />
+                        </div>
+                        <div className="input">
+                            <TextField
+                                required
+                                fullWidth
+                                name="email"
+                                label="Email"
+                                value={formik.values.email}
+                                onChange={formik.handleChange}
+                                error={Boolean(formik.errors.email)}
+                                helperText={formik.errors.email}
+                            />
+                        </div>
+                        <div className="input">
+                            <TextField
+                                required
+                                fullWidth
+                                name="phone"
+                                label="Phone"
+                                value={formik.values.phone}
+                                onChange={formik.handleChange}
+                                error={Boolean(formik.errors.phone)}
+                                helperText={formik.errors.phone}
                             />
                         </div>
                         <div className="input">

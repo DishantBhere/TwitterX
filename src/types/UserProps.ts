@@ -6,7 +6,7 @@ export type UserProps = {
     location: string;
     website: string;
     isPremium: boolean;
-    browserNotificationsEnabled: boolean;
+    browserNotificationsEnabled?: boolean;
     createdAt: Date;
     updatedAt: Date;
     photoUrl: string;

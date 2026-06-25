@@ -229,7 +229,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                             helperText={formik.touched.website && formik.errors.website}
                         />
                     </div>
-                    <div className="input notification-toggle">
+                    <div className="input">
                         <FormControlLabel
                             control={
                                 <Switch
@@ -237,34 +237,13 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                                     onChange={async (event) => {
                                         const enabled = event.target.checked;
                                         if (enabled && typeof window !== "undefined" && "Notification" in window) {
-                                            if (Notification.permission === "default") {
-                                                const permission = await Notification.requestPermission();
-                                                if (permission !== "granted") {
-                                                    setSnackbar({
-                                                        message: "Notification permission denied. Notifications will remain disabled.",
-                                                        severity: "error",
-                                                        open: true,
-                                                    });
-                                                    formik.setFieldValue("browserNotificationsEnabled", false);
-                                                    return;
-                                                }
-                                            }
-                                            if (Notification.permission !== "granted") {
-                                                setSnackbar({
-                                                    message: "Notification permission is not granted. Please enable it in browser settings.",
-                                                    severity: "error",
-                                                    open: true,
-                                                });
+                                            const permission = await Notification.requestPermission();
+                                            if (permission !== "granted") {
                                                 formik.setFieldValue("browserNotificationsEnabled", false);
                                                 return;
                                             }
                                         }
                                         if (enabled && typeof window !== "undefined" && !("Notification" in window)) {
-                                            setSnackbar({
-                                                message: "Browser notifications are not supported in this browser.",
-                                                severity: "error",
-                                                open: true,
-                                            });
                                             formik.setFieldValue("browserNotificationsEnabled", false);
                                             return;
                                         }

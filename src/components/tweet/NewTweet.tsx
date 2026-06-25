@@ -30,16 +30,15 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         if (Notification.permission !== "granted") return;
         if (!/cricket|science/i.test(text)) return;
 
-        new Notification("New Tweet Alert", {
+        new Notification("Keyword Tweet", {
             body: text,
         });
     };
 
-    const mutation = useMutation({
+    const mutation = useMutation<string, unknown, string>({
         mutationFn: createTweet,
-        onSuccess: (_data, variables) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tweets"] });
-            displayBrowserNotification(variables.text);
         },
         onError: (error) => console.log(error),
     });
@@ -63,13 +62,18 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         },
         validationSchema: validationSchema,
         onSubmit: async (values, { resetForm }) => {
+            const currentText = values.text;
             if (photoFile) {
                 const path: string | void = await uploadFile(photoFile);
                 if (!path) throw new Error("Error uploading image.");
                 values.photoUrl = path;
                 setPhotoFile(null);
             }
-            mutation.mutate(JSON.stringify(values));
+            mutation.mutate(JSON.stringify(values), {
+                onSuccess: () => {
+                    displayBrowserNotification(currentText);
+                },
+            });
             resetForm();
             setCount(0);
             setShowDropzone(false);

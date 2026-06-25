@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useFormik } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
-import { Avatar, TextField } from "@mui/material";
+import { Avatar, TextField, Switch, FormControlLabel } from "@mui/material";
 import { MdOutlineAddAPhoto } from "react-icons/md";
 import { FaTwitter } from "react-icons/fa";
 import * as yup from "yup";
@@ -55,6 +55,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
         website: yup.string().max(30, "Website should be of maximum 30 characters length."),
         photoUrl: yup.string(),
         headerUrl: yup.string(),
+        browserNotificationsEnabled: yup.boolean(),
     });
 
     const formik = useFormik({
@@ -65,6 +66,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
             website: profile.website ?? "",
             headerUrl: profile.headerUrl ?? "",
             photoUrl: profile.photoUrl ?? "",
+            browserNotificationsEnabled: profile.browserNotificationsEnabled ?? false,
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
@@ -225,6 +227,53 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                             onChange={formik.handleChange}
                             error={formik.touched.website && Boolean(formik.errors.website)}
                             helperText={formik.touched.website && formik.errors.website}
+                        />
+                    </div>
+                    <div className="input notification-toggle">
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={formik.values.browserNotificationsEnabled}
+                                    onChange={async (event) => {
+                                        const enabled = event.target.checked;
+                                        if (enabled && typeof window !== "undefined" && "Notification" in window) {
+                                            if (Notification.permission === "default") {
+                                                const permission = await Notification.requestPermission();
+                                                if (permission !== "granted") {
+                                                    setSnackbar({
+                                                        message: "Notification permission denied. Notifications will remain disabled.",
+                                                        severity: "error",
+                                                        open: true,
+                                                    });
+                                                    formik.setFieldValue("browserNotificationsEnabled", false);
+                                                    return;
+                                                }
+                                            }
+                                            if (Notification.permission !== "granted") {
+                                                setSnackbar({
+                                                    message: "Notification permission is not granted. Please enable it in browser settings.",
+                                                    severity: "error",
+                                                    open: true,
+                                                });
+                                                formik.setFieldValue("browserNotificationsEnabled", false);
+                                                return;
+                                            }
+                                        }
+                                        if (enabled && typeof window !== "undefined" && !("Notification" in window)) {
+                                            setSnackbar({
+                                                message: "Browser notifications are not supported in this browser.",
+                                                severity: "error",
+                                                open: true,
+                                            });
+                                            formik.setFieldValue("browserNotificationsEnabled", false);
+                                            return;
+                                        }
+                                        formik.setFieldValue("browserNotificationsEnabled", enabled);
+                                    }}
+                                    name="browserNotificationsEnabled"
+                                />
+                            }
+                            label="Enable Browser Notifications"
                         />
                     </div>
                     {formik.isSubmitting ? (

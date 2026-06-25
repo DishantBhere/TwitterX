@@ -18,6 +18,7 @@ export async function GET(request: NextRequest, { params: { username } }: { para
                 location: true,
                 website: true,
                 isPremium: true,
+                browserNotificationsEnabled: true,
                 photoUrl: true,
                 headerUrl: true,
                 followers: {

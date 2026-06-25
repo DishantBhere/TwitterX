@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
             location: user.location,
             website: user.website,
             isPremium: user.isPremium,
+            browserNotificationsEnabled: user.browserNotificationsEnabled,
             createdAt: user.createdAt,
             photoUrl: user.photoUrl,
             headerUrl: user.headerUrl,

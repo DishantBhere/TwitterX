@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
             data: {
                 ...userData,
                 password: hashedPassword,
+                browserNotificationsEnabled: userData.browserNotificationsEnabled ?? false,
             },
         });
 
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
             location: newUser.location,
             website: newUser.website,
             isPremium: newUser.isPremium,
+            browserNotificationsEnabled: newUser.browserNotificationsEnabled,
             createdAt: newUser.createdAt,
             photoUrl: newUser.photoUrl,
             headerUrl: newUser.headerUrl,

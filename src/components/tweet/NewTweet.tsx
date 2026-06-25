@@ -23,10 +23,23 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
 
     const queryClient = useQueryClient();
 
+    const displayBrowserNotification = (text: string) => {
+        if (!token.browserNotificationsEnabled) return;
+        if (typeof window === "undefined") return;
+        if (!("Notification" in window)) return;
+        if (Notification.permission !== "granted") return;
+        if (!/cricket|science/i.test(text)) return;
+
+        new Notification("New Tweet Alert", {
+            body: text,
+        });
+    };
+
     const mutation = useMutation({
         mutationFn: createTweet,
-        onSuccess: () => {
+        onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: ["tweets"] });
+            displayBrowserNotification(variables.text);
         },
         onError: (error) => console.log(error),
     });

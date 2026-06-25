@@ -1,0 +1,73 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+    provider          = "postgresql"
+    url               = env("DATABASE_URL")
+    directUrl         = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+    id               String         @id @default(uuid())
+    name             String?        @db.VarChar(50)
+    description      String?        @db.VarChar(160)
+    location         String?        @db.VarChar(30)
+    website          String?        @db.VarChar(30)
+    photoUrl         String?
+    headerUrl        String?
+    username         String         @unique @db.VarChar(20)
+    password         String
+    isPremium        Boolean        @default(false)
+    createdAt        DateTime       @default(now())
+    updatedAt        DateTime       @default(now()) @updatedAt
+    createdTweets    Tweet[]        @relation("userTweets")
+    retweets         Tweet[]        @relation("userRetweets")
+    likedTweets      Tweet[]        @relation("userLikes")
+    following        User[]         @relation("userFollows")
+    followers        User[]         @relation("userFollows")
+    sentMessages     Message[]      @relation("userMessagesSent")
+    receivedMessages Message[]      @relation("userMessagesRecieved")
+    notifications    Notification[]
+}
+
+model Tweet {
+    id          String   @id @default(uuid())
+    text        String   @db.VarChar(280)
+    createdAt   DateTime @default(now())
+    author      User     @relation("userTweets", fields: [authorId], references: [id])
+    authorId    String
+    photoUrl    String?
+    likedBy     User[]   @relation("userLikes")
+    retweetedBy User[]   @relation("userRetweets")
+    replies     Tweet[]  @relation("tweetReplies")
+    retweets    Tweet[]  @relation("retweetOf")
+    isRetweet   Boolean  @default(false)
+    retweetOf   Tweet?   @relation("retweetOf", fields: [retweetOfId], references: [id], onDelete: Cascade)
+    retweetOfId String?
+    isReply     Boolean  @default(false)
+    repliedTo   Tweet?   @relation("tweetReplies", fields: [repliedToId], references: [id], onDelete: Cascade)
+    repliedToId String?
+}
+
+model Message {
+    id          String   @id @default(uuid())
+    text        String   @db.VarChar(280)
+    createdAt   DateTime @default(now())
+    sender      User     @relation("userMessagesSent", fields: [senderId], references: [id])
+    senderId    String
+    recipient   User     @relation("userMessagesRecieved", fields: [recipientId], references: [id])
+    recipientId String
+    photoUrl    String?
+}
+
+model Notification {
+    id        String   @id @default(uuid())
+    type      String   @db.VarChar(20)
+    content   String
+    createdAt DateTime @default(now())
+    isRead    Boolean  @default(false)
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+}

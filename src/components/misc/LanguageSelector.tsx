@@ -1,0 +1,139 @@
+"use client";
+
+import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+
+import i18n from "@/i18n";
+import { requestLanguageOtp, verifyLanguageOtp } from "@/utilities/fetch";
+import { languageLabels, SupportedLanguage, supportedLanguages } from "@/utilities/language";
+import CircularLoading from "./CircularLoading";
+import CustomSnackbar from "./CustomSnackbar";
+import { SnackbarProps } from "@/types/SnackbarProps";
+
+type PendingOtp = {
+    language: SupportedLanguage;
+    deliveryMethod: "email" | "phone";
+    destination: string;
+    simulatedOtp: string;
+};
+
+export default function LanguageSelector({
+    currentLanguage,
+    refreshToken,
+}: {
+    currentLanguage: string;
+    refreshToken: () => void | Promise<void>;
+}) {
+    const { t } = useTranslation();
+    const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage as SupportedLanguage);
+    const [pendingOtp, setPendingOtp] = useState<PendingOtp | null>(null);
+    const [otp, setOtp] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
+
+    const handleLanguageChange = async (language: SupportedLanguage) => {
+        setSelectedLanguage(language);
+        setOtp("");
+        if (language === currentLanguage) {
+            setPendingOtp(null);
+            return setSnackbar({ message: t("settings.alreadySelected"), severity: "info", open: true });
+        }
+
+        setIsLoading(true);
+        const response = await requestLanguageOtp(language);
+        setIsLoading(false);
+
+        if (!response.success) {
+            setSelectedLanguage(currentLanguage as SupportedLanguage);
+            return setSnackbar({
+                message: response.message ?? t("settings.requestFailed"),
+                severity: "error",
+                open: true,
+            });
+        }
+
+        setPendingOtp({
+            language,
+            deliveryMethod: response.deliveryMethod,
+            destination: response.destination,
+            simulatedOtp: response.simulatedOtp,
+        });
+    };
+
+    const handleVerify = async () => {
+        console.log("STEP 1 - Verify clicked");
+        if (!pendingOtp) return;
+
+        setIsLoading(true);
+        const response = await verifyLanguageOtp(pendingOtp.language, otp);
+       console.log("STEP 2 - API Response", response);
+        setIsLoading(false);
+
+        if (!response.success) {
+            return setSnackbar({ message: response.message ?? t("settings.verifyFailed"), severity: "error", open: true });
+        }
+
+        await i18n.changeLanguage(response.preferredLanguage);
+        localStorage.setItem("preferredLanguage", response.preferredLanguage);
+        await refreshToken();
+        console.log("STEP 3 - Refresh finished");
+        setPendingOtp(null);
+        setOtp("");
+        setSnackbar({ message: t("settings.changed"), severity: "success", open: true });
+    };
+
+    return (
+        <div className="language-selector">
+            <FormControl fullWidth>
+                <InputLabel id="language-select-label">{t("settings.preferredLanguage")}</InputLabel>
+                <Select
+                    labelId="language-select-label"
+                    label={t("settings.preferredLanguage")}
+                    value={selectedLanguage}
+                    onChange={(event) => handleLanguageChange(event.target.value as SupportedLanguage)}
+                >
+                    {supportedLanguages.map((language) => (
+                        <MenuItem key={language} value={language}>
+                            {languageLabels[language]}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            {pendingOtp && (
+                <div className="language-otp">
+                    <h2>{t("settings.otpTitle")}</h2>
+                    <p>
+                        {t("settings.otpSent", {
+                            method: pendingOtp.deliveryMethod,
+                            destination: pendingOtp.destination,
+                        })}
+                    </p>
+                    <p className="simulated-otp">{t("settings.simulatedOtp", { otp: pendingOtp.simulatedOtp })}</p>
+                    <TextField
+                        fullWidth
+                        name="otp"
+                        label={t("settings.otpPlaceholder")}
+                        value={otp}
+                        onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                    />
+                    {isLoading ? (
+                        <CircularLoading />
+                    ) : (
+                        <button
+    type="button"
+    className={`btn btn-dark ${otp.length === 6 ? "" : "disabled"}`}
+    disabled={otp.length !== 6}
+    onClick={handleVerify}
+>
+                            {t("actions.verify")}
+                        </button>
+                    )}
+                </div>
+            )}
+            {snackbar.open && (
+                <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />
+            )}
+        </div>
+    );
+}

@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AuthContext } from "../layout";
 import { getNotifications, markNotificationsRead } from "@/utilities/fetch";
@@ -12,6 +13,7 @@ import Notification from "@/components/misc/Notification";
 
 export default function NotificationsPage() {
     const { token, isPending } = useContext(AuthContext);
+    const { t } = useTranslation();
 
     const queryClient = useQueryClient();
 
@@ -48,7 +50,7 @@ export default function NotificationsPage() {
 
     return (
         <main>
-            <h1 className="page-name">Notifications</h1>
+            <h1 className="page-name">{t("notifications.title")}</h1>
             {isFetched && data.notifications.length === 0 ? (
                 <NothingToShow />
             ) : (

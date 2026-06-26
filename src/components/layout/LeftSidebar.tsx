@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Avatar, Menu, MenuItem } from "@mui/material";
 import { FaHome, FaBell, FaEnvelope, FaUser, FaCog, FaHashtag, FaEllipsisH, FaTwitter } from "react-icons/fa";
 import { AiFillTwitterCircle } from "react-icons/ai";
+import { useTranslation } from "react-i18next";
 
 import NewTweetDialog from "../dialog/NewTweetDialog";
 import LogOutDialog from "../dialog/LogOutDialog";
@@ -21,6 +22,7 @@ export default function LeftSidebar() {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const { token } = useContext(AuthContext);
+    const { t } = useTranslation();
 
     const router = useRouter();
     const pathname = usePathname();
@@ -64,7 +66,7 @@ export default function LeftSidebar() {
                                 <li>
                                     <Link href="/home">
                                         <div className={`nav-link ${pathname.startsWith("/home") ? "active" : ""}`}>
-                                            <FaHome /> <span className="nav-title">Home</span>
+                                            <FaHome /> <span className="nav-title">{t("nav.home")}</span>
                                         </div>
                                     </Link>
                                 </li>
@@ -72,7 +74,7 @@ export default function LeftSidebar() {
                             <li>
                                 <Link href="/explore">
                                     <div className={`nav-link ${pathname.startsWith("/explore") ? "active" : ""}`}>
-                                        <FaHashtag /> <span className="nav-title">Explore</span>
+                                        <FaHashtag /> <span className="nav-title">{t("nav.explore")}</span>
                                     </div>
                                 </Link>
                             </li>
@@ -88,14 +90,14 @@ export default function LeftSidebar() {
                                                 <div className="badge-wrapper">
                                                     <FaBell /> <UnreadNotificationsBadge />
                                                 </div>
-                                                <span className="nav-title">Notifications</span>
+                                                <span className="nav-title">{t("nav.notifications")}</span>
                                             </div>
                                         </Link>
                                     </li>
                                     <li>
                                         <Link href="/messages">
                                             <div className={`nav-link ${pathname.startsWith("/messages") ? "active" : ""}`}>
-                                                <FaEnvelope /> <span className="nav-title">Messages</span>
+                                                <FaEnvelope /> <span className="nav-title">{t("nav.messages")}</span>
                                             </div>
                                         </Link>
                                     </li>
@@ -106,7 +108,7 @@ export default function LeftSidebar() {
                                                     pathname.startsWith(`/${token.username}`) ? "active" : ""
                                                 }`}
                                             >
-                                                <FaUser /> <span className="nav-title">Profile</span>
+                                                <FaUser /> <span className="nav-title">{t("nav.profile")}</span>
                                             </div>
                                         </Link>
                                     </li>
@@ -115,7 +117,7 @@ export default function LeftSidebar() {
                             <li>
                                 <Link href="/settings">
                                     <div className={`nav-link ${pathname.startsWith("/settings") ? "active" : ""}`}>
-                                        <FaCog /> <span className="nav-title">Settings</span>
+                                        <FaCog /> <span className="nav-title">{t("nav.settings")}</span>
                                     </div>
                                 </Link>
                             </li>
@@ -124,7 +126,7 @@ export default function LeftSidebar() {
                     {token && (
                         <>
                             <button onClick={handleNewTweetClick} className="btn btn-tweet">
-                                Tweet
+                                {t("actions.tweet")}
                             </button>
                             <button onClick={handleAnchorClick} className="side-profile">
                                 <div>
@@ -163,15 +165,15 @@ export default function LeftSidebar() {
                                 }}
                             >
                                 <MenuItem onClick={handleAnchorClose}>
-                                    <Link href={`/${token.username}`}>Profile</Link>
+                                    <Link href={`/${token.username}`}>{t("nav.profile")}</Link>
                                 </MenuItem>
                                 <MenuItem onClick={handleAnchorClose}>
-                                    <Link href={`/${token.username}/edit`}>Edit Profile</Link>
+                                    <Link href={`/${token.username}/edit`}>{t("nav.editProfile")}</Link>
                                 </MenuItem>
                                 <MenuItem onClick={handleAnchorClose}>
-                                    <Link href="/settings">Settings</Link>
+                                    <Link href="/settings">{t("nav.settings")}</Link>
                                 </MenuItem>
-                                <MenuItem onClick={handleLogOutClick}>Log Out</MenuItem>
+                                <MenuItem onClick={handleLogOutClick}>{t("nav.logout")}</MenuItem>
                             </Menu>
                         </>
                     )}

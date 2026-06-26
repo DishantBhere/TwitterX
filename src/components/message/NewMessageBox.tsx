@@ -6,6 +6,7 @@ import { FaPaperPlane, FaRegImage, FaRegSmile } from "react-icons/fa";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import * as yup from "yup";
+import { useTranslation } from "react-i18next";
 
 import CircularLoading from "../misc/CircularLoading";
 import Uploader from "../misc/Uploader";
@@ -17,6 +18,7 @@ export default function NewMessageBox({ messagedUsername, token, setFreshMessage
     const [showPicker, setShowPicker] = useState(false);
     const [showDropzone, setShowDropzone] = useState(false);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
+    const { t } = useTranslation();
 
     const queryClient = useQueryClient();
 
@@ -51,8 +53,8 @@ export default function NewMessageBox({ messagedUsername, token, setFreshMessage
     const validationSchema = yup.object({
         text: yup
             .string()
-            .max(280, "Message text should be of maximum 280 characters length.")
-            .required("Message text can't be empty."),
+            .max(280, t("messages.messageMax"))
+            .required(t("messages.messageRequired")),
     });
 
     const formik = useFormik({
@@ -80,7 +82,7 @@ export default function NewMessageBox({ messagedUsername, token, setFreshMessage
             <form className="new-message-form" onSubmit={formik.handleSubmit}>
                 <div className="input">
                     <TextField
-                        placeholder="Start a new message"
+                        placeholder={t("messages.messagePlaceholder")}
                         hiddenLabel
                         variant="outlined"
                         name="text"

@@ -152,6 +152,28 @@ export const editUser = async (updatedUser: string, username: string) => {
     return response.json();
 };
 
+export const requestLanguageOtp = async (language: string) => {
+    const response = await fetch(`${HOST_URL}/api/language/request-otp`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ language }),
+    });
+    return response.json();
+};
+
+export const verifyLanguageOtp = async (language: string, otp: string) => {
+    const response = await fetch(`${HOST_URL}/api/language/verify-otp`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ language, otp }),
+    });
+    return response.json();
+};
+
 export const forgotPassword = async (identifier: string) => {
     const response = await fetch(`${HOST_URL}/api/auth/forgot-password`, {
         method: "POST",

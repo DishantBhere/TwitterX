@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import { Dialog, DialogContent, DialogTitle, InputAdornment, TextField } from "@mui/material";
 import * as yup from "yup";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 import { SignUpDialogProps } from "@/types/DialogProps";
 import { checkUserExists, createUser } from "@/utilities/fetch";
@@ -13,6 +14,7 @@ import { SnackbarProps } from "@/types/SnackbarProps";
 
 export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogProps) {
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
+    const { t } = useTranslation();
 
     const router = useRouter();
 
@@ -53,7 +55,7 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
             const response = await createUser(JSON.stringify(values));
             if (!response.success) {
                 return setSnackbar({
-                    message: "Something went wrong. Please try again.",
+                    message: t("auth.genericFailed"),
                     severity: "error",
                     open: true,
                 });
@@ -67,17 +69,17 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
     return (
         <Dialog className="dialog" open={open} onClose={handleSignUpClose}>
             <Image className="dialog-icon" src="/assets/favicon.png" alt="" width={40} height={40} />
-            <DialogTitle className="title">Create your account</DialogTitle>
+            <DialogTitle className="title">{t("auth.signupTitle")}</DialogTitle>
             <form className="dialog-form" onSubmit={formik.handleSubmit}>
                 <DialogContent>
                     <div className="input-group">
                         <div className="input">
-                            <div className="info">Your login information</div>
+                            <div className="info">{t("auth.loginInfo")}</div>
                             <TextField
                                 required
                                 fullWidth
                                 name="username"
-                                label="Username"
+                                label={t("auth.username")}
                                 placeholder="username"
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start">@</InputAdornment>,
@@ -94,7 +96,7 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
                                 required
                                 fullWidth
                                 name="password"
-                                label="Password"
+                                label={t("auth.password")}
                                 type="password"
                                 value={formik.values.password}
                                 onChange={formik.handleChange}
@@ -107,7 +109,7 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
                                 required
                                 fullWidth
                                 name="email"
-                                label="Email"
+                                label={t("auth.email")}
                                 value={formik.values.email}
                                 onChange={formik.handleChange}
                                 error={Boolean(formik.errors.email)}
@@ -119,7 +121,7 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
                                 required
                                 fullWidth
                                 name="phone"
-                                label="Phone"
+                                label={t("auth.phone")}
                                 value={formik.values.phone}
                                 onChange={formik.handleChange}
                                 error={Boolean(formik.errors.phone)}
@@ -127,11 +129,11 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
                             />
                         </div>
                         <div className="input">
-                            <div className="info">Your public name</div>
+                            <div className="info">{t("auth.publicName")}</div>
                             <TextField
                                 fullWidth
                                 name="name"
-                                label="Name"
+                                label={t("auth.name")}
                                 value={formik.values.name}
                                 onChange={formik.handleChange}
                                 error={formik.touched.name && Boolean(formik.errors.name)}
@@ -148,7 +150,7 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
                         type="submit"
                         disabled={!formik.isValid}
                     >
-                        Create
+                        {t("actions.create")}
                     </button>
                 )}
             </form>

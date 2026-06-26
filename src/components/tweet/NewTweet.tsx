@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FaRegImage, FaRegSmile } from "react-icons/fa";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { useTranslation } from "react-i18next";
 
 import CircularLoading from "../misc/CircularLoading";
 import { createTweet } from "@/utilities/fetch";
@@ -20,6 +21,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [showDropzone, setShowDropzone] = useState(false);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [count, setCount] = useState(0);
+    const { t } = useTranslation();
 
     const queryClient = useQueryClient();
 
@@ -50,8 +52,8 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const validationSchema = yup.object({
         text: yup
             .string()
-            .max(280, "Tweet text should be of maximum 280 characters length.")
-            .required("Tweet text can't be empty."),
+            .max(280, t("home.tweetMax"))
+            .required(t("home.tweetRequired")),
     });
 
     const formik = useFormik({
@@ -101,7 +103,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             <form onSubmit={formik.handleSubmit}>
                 <div className="input">
                     <TextField
-                        placeholder="What's happening?"
+                        placeholder={t("home.whatsHappening")}
                         multiline
                         hiddenLabel
                         minRows={3}
@@ -135,7 +137,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     </button>
                     <ProgressCircle maxChars={280} count={count} />
                     <button className={`btn ${formik.isValid ? "" : "disabled"}`} disabled={!formik.isValid} type="submit">
-                        Tweet
+                        {t("actions.tweet")}
                     </button>
                 </div>
                 {showPicker && (

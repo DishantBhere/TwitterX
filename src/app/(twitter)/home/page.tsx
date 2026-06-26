@@ -9,9 +9,11 @@ import CircularLoading from "@/components/misc/CircularLoading";
 import NothingToShow from "@/components/misc/NothingToShow";
 import NewTweet from "@/components/tweet/NewTweet";
 import { AuthContext } from "../layout";
+import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
     const { token, isPending } = useContext(AuthContext);
+    const { t } = useTranslation();
 
     const { isLoading, data } = useQuery({
         queryKey: ["tweets", "home"],
@@ -22,7 +24,7 @@ export default function HomePage() {
 
     return (
         <main>
-            <h1 className="page-name">Home</h1>
+            <h1 className="page-name">{t("home.title")}</h1>
             {token && <NewTweet token={token} />}
             {data && data.tweets.length === 0 && <NothingToShow />}
             <Tweets tweets={data.tweets} />

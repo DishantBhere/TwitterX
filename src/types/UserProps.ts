@@ -9,6 +9,7 @@ export type UserProps = {
     website: string;
     isPremium: boolean;
     browserNotificationsEnabled?: boolean;
+    preferredLanguage: string;
     createdAt: Date;
     updatedAt: Date;
     photoUrl: string;

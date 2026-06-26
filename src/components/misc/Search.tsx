@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 import { BsSearch } from "react-icons/bs";
 
 export default function Search() {
     const [searchQuery, setSearchQuery] = useState("");
+    const { t } = useTranslation();
 
     const router = useRouter();
 
@@ -20,7 +22,7 @@ export default function Search() {
                 className="search-input"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search Twitter"
+                placeholder={t("search.placeholder")}
                 required
             />
             <BsSearch />

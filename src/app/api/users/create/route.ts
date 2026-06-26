@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SignJWT } from "jose";
 
 import { prisma } from "@/prisma/client";
 import { hashPassword } from "@/utilities/bcrypt";
-import { getJwtSecretKey } from "@/utilities/auth";
+import { createUserToken } from "@/utilities/auth/jwt";
 
 export async function POST(request: NextRequest) {
     const userData = await request.json();
@@ -72,27 +71,7 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        const token = await new SignJWT({
-            id: newUser.id,
-            username: newUser.username,
-            email: newUser.email,
-            phone: newUser.phone,
-            name: newUser.name,
-            description: newUser.description,
-            location: newUser.location,
-            website: newUser.website,
-            isPremium: newUser.isPremium,
-            browserNotificationsEnabled: newUser.browserNotificationsEnabled,
-            createdAt: newUser.createdAt,
-            photoUrl: newUser.photoUrl,
-            headerUrl: newUser.headerUrl,
-        })
-            .setProtectedHeader({
-                alg: "HS256",
-            })
-            .setIssuedAt()
-            .setExpirationTime("1d")
-            .sign(getJwtSecretKey());
+        const token = await createUserToken(newUser);
 
         const response = NextResponse.json({
             success: true,

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogTitle, TextField, InputAdornment } from "@mui/material";
 import Image from "next/image";
 import * as yup from "yup";
+import { useTranslation } from "react-i18next";
 
 import { LogInDialogProps } from "@/types/DialogProps";
 import { logIn } from "@/utilities/fetch";
@@ -13,6 +14,7 @@ import CustomSnackbar from "../misc/CustomSnackbar";
 
 export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps) {
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
+    const { t } = useTranslation();
 
     const router = useRouter();
 
@@ -51,7 +53,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
     return (
         <Dialog className="dialog" open={open} onClose={handleLogInClose}>
             <Image className="dialog-icon" src="/assets/favicon.png" alt="" width={40} height={40} />
-            <DialogTitle className="title">Sign in to Twitter</DialogTitle>
+            <DialogTitle className="title">{t("auth.loginTitle")}</DialogTitle>
             <form className="dialog-form" onSubmit={formik.handleSubmit}>
                 <DialogContent>
                     <div className="input-group">
@@ -59,7 +61,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                             <TextField
                                 fullWidth
                                 name="username"
-                                label="Username"
+                                label={t("auth.username")}
                                 placeholder="username"
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start">@</InputAdornment>,
@@ -75,7 +77,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                             <TextField
                                 fullWidth
                                 name="password"
-                                label="Password"
+                                label={t("auth.password")}
                                 type="password"
                                 value={formik.values.password}
                                 onChange={formik.handleChange}
@@ -89,7 +91,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                     <CircularLoading />
                 ) : (
                     <button className="btn btn-dark" type="submit">
-                        Log In
+                        {t("actions.login")}
                     </button>
                 )}
             </form>

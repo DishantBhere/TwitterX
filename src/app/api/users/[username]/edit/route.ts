@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { SignJWT } from "jose";
 
 import { prisma } from "@/prisma/client";
-import { getJwtSecretKey, verifyJwtToken } from "@/utilities/auth";
+import { verifyJwtToken } from "@/utilities/auth";
+import { createUserToken } from "@/utilities/auth/jwt";
 import { UserProps } from "@/types/UserProps";
 
 export async function POST(request: NextRequest, { params: { username } }: { params: { username: string } }) {
@@ -19,35 +19,17 @@ export async function POST(request: NextRequest, { params: { username } }: { par
     if (verifiedToken.username !== username)
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
 
+    const { preferredLanguage: _preferredLanguage, ...safeData } = data;
+
     try {
         const user = await prisma.user.update({
             where: {
                 username: username,
             },
-            data: data,
+            data: safeData,
         });
 
-        const newToken = await new SignJWT({
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            phone: user.phone,
-            name: user.name,
-            description: user.description,
-            location: user.location,
-            website: user.website,
-            isPremium: user.isPremium,
-            browserNotificationsEnabled: user.browserNotificationsEnabled,
-            createdAt: user.createdAt,
-            photoUrl: user.photoUrl,
-            headerUrl: user.headerUrl,
-        })
-            .setProtectedHeader({
-                alg: "HS256",
-            })
-            .setIssuedAt()
-            .setExpirationTime("1d")
-            .sign(getJwtSecretKey());
+        const newToken = await createUserToken(user);
 
         const response = NextResponse.json({
             success: true,

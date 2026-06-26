@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useFormik } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
 import { Avatar, TextField, Switch, FormControlLabel } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { MdOutlineAddAPhoto } from "react-icons/md";
 import { FaTwitter } from "react-icons/fa";
 import * as yup from "yup";
@@ -15,6 +16,7 @@ import { getFullURL } from "@/utilities/misc/getFullURL";
 import CustomSnackbar from "../misc/CustomSnackbar";
 import { SnackbarProps } from "@/types/SnackbarProps";
 import { checkBlueFromServer } from "@/utilities/misc/checkBlue";
+import LanguageSelector from "../misc/LanguageSelector";
 
 export default function EditProfile({ profile, refreshToken }: { profile: UserProps; refreshToken: () => void }) {
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -25,6 +27,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
     const [isBlueOpen, setIsBlueOpen] = useState(false);
     const [blueInput, setBlueInput] = useState("");
     const [isBlueLoading, setIsBlueLoading] = useState(false);
+    const { t } = useTranslation();
 
     const headerUploadInputRef = useRef<HTMLInputElement>(null);
     const photoUploadInputRef = useRef<HTMLInputElement>(null);
@@ -88,13 +91,13 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
             const response = await editUser(jsonValues, profile.username);
             if (!response.success) {
                 return setSnackbar({
-                    message: "Something went wrong while updating profile. Please try again.",
+                    message: t("profile.updateFailed"),
                     severity: "error",
                     open: true,
                 });
             }
             setSnackbar({
-                message: "Your profile has been updated successfully.",
+                message: t("profile.updated"),
                 severity: "success",
                 open: true,
             });
@@ -110,19 +113,19 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
         const checkResponse = await checkBlueFromServer(blueInput);
         if (!checkResponse) {
             setIsBlueLoading(false);
-            return setSnackbar({ message: "Invalid blue code. Please try again.", severity: "error", open: true });
+            return setSnackbar({ message: t("profile.invalidBlue"), severity: "error", open: true });
         }
         const response = await editUser(JSON.stringify({ isPremium: true }), profile.username);
         if (!response.success) {
             setIsBlueLoading(false);
             return setSnackbar({
-                message: "Something went wrong while getting your blue. Please try again.",
+                message: t("profile.blueFailed"),
                 severity: "error",
                 open: true,
             });
         }
         setSnackbar({
-            message: "You got your blue successfully. Congrats!",
+            message: t("profile.blueSuccess"),
             severity: "success",
             open: true,
         });
@@ -137,7 +140,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
             <div className="profile-header">
                 <div className="get-blue">
                     <button onClick={() => setIsBlueOpen(true)}>
-                        Twitter Blue? <FaTwitter />
+                        {t("profile.twitterBlue")} <FaTwitter />
                     </button>
                 </div>
                 <Image
@@ -186,12 +189,12 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
             </div>
             <form onSubmit={formik.handleSubmit}>
                 <div className="input-group">
-                    <h1>Edit profile</h1>
+                    <h1>{t("profile.editProfile")}</h1>
                     <div className="input">
                         <TextField
                             fullWidth
                             name="name"
-                            label="Name"
+                            label={t("profile.name")}
                             value={formik.values.name}
                             onChange={formik.handleChange}
                             error={formik.touched.name && Boolean(formik.errors.name)}
@@ -202,7 +205,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                         <TextField
                             fullWidth
                             name="description"
-                            label="Description"
+                            label={t("profile.description")}
                             multiline
                             minRows={3}
                             value={formik.values.description}
@@ -215,7 +218,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                         <TextField
                             fullWidth
                             name="location"
-                            label="Location"
+                            label={t("profile.location")}
                             value={formik.values.location}
                             onChange={formik.handleChange}
                             error={formik.touched.location && Boolean(formik.errors.location)}
@@ -226,7 +229,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                         <TextField
                             fullWidth
                             name="website"
-                            label="Website"
+                            label={t("profile.website")}
                             value={formik.values.website}
                             onChange={formik.handleChange}
                             error={formik.touched.website && Boolean(formik.errors.website)}
@@ -237,7 +240,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                         <TextField
                             fullWidth
                             name="email"
-                            label="Email"
+                            label={t("profile.email")}
                             value={formik.values.email}
                             onChange={formik.handleChange}
                             error={formik.touched.email && Boolean(formik.errors.email)}
@@ -248,7 +251,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                         <TextField
                             fullWidth
                             name="phone"
-                            label="Phone"
+                            label={t("profile.phone")}
                             value={formik.values.phone}
                             onChange={formik.handleChange}
                             error={formik.touched.phone && Boolean(formik.errors.phone)}
@@ -278,8 +281,11 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                                     name="browserNotificationsEnabled"
                                 />
                             }
-                            label="Enable Browser Notifications"
+                            label={t("profile.enableBrowserNotifications")}
                         />
+                    </div>
+                    <div className="input">
+                        <LanguageSelector currentLanguage={profile.preferredLanguage ?? "en"} refreshToken={refreshToken} />
                     </div>
                     {formik.isSubmitting ? (
                         <CircularLoading />
@@ -289,7 +295,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                             disabled={!formik.isValid}
                             type="submit"
                         >
-                            Save
+                            {t("actions.save")}
                         </button>
                     )}
                 </div>
@@ -303,8 +309,8 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                         {profile.isPremium ? (
                             <div className="blue-user">
                                 <Image src="/assets/favicon.png" alt="" width={75} height={75} />
-                                <h1>You have already got Blue status.</h1>
-                                <p>Thank you for participating.</p>
+                                <h1>{t("profile.alreadyBlue")}</h1>
+                                <p>{t("profile.thanks")}</p>
                                 <button
                                     className="btn btn-white"
                                     onClick={(e) => {
@@ -312,23 +318,20 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                                         setIsBlueOpen(false);
                                     }}
                                 >
-                                    Close
+                                    {t("actions.close")}
                                 </button>
                             </div>
                         ) : (
                             <>
                                 <h1>
-                                    Want Twitter Blue? <FaTwitter />
+                                    {t("profile.wantBlue")} <FaTwitter />
                                 </h1>
+                                <p>{t("profile.blueDescription")}</p>
                                 <p>
-                                    With Twitter Blue, you will have a little twitter bird next you your name, thats it! Dive
-                                    right in!
-                                </p>
-                                <p>
-                                    You can get the code from
+                                    {t("profile.blueCodeInfo")}
                                     <a href="https://github.com/fatiharapoglu/twitter" target="_blank">
                                         {" "}
-                                        here{" "}
+                                        {t("profile.here")}{" "}
                                     </a>
                                     if you want.
                                 </p>
@@ -341,11 +344,11 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                                             className="blue-input"
                                             onChange={(e) => setBlueInput(e.target.value)}
                                             value={blueInput}
-                                            placeholder="Enter your code"
+                                            placeholder={t("profile.enterCode")}
                                             autoFocus
                                         />
                                         <button className="btn btn-dark" type="submit">
-                                            Submit
+                                            {t("actions.submit")}
                                         </button>
                                         <button
                                             className="btn btn-white"
@@ -354,7 +357,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                                                 setIsBlueOpen(false);
                                             }}
                                         >
-                                            Close
+                                            {t("actions.close")}
                                         </button>
                                     </form>
                                 )}

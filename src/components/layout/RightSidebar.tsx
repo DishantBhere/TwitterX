@@ -2,6 +2,7 @@
 
 import { useContext } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 import { AuthContext } from "@/app/(twitter)/layout";
 import Search from "../misc/Search";
@@ -11,6 +12,7 @@ import Legal from "../misc/Legal";
 
 export default function RightSidebar() {
     const { token, isPending } = useContext(AuthContext);
+    const { t } = useTranslation();
 
     return (
         <aside className="right-sidebar">
@@ -20,14 +22,14 @@ export default function RightSidebar() {
                 {token && <CompleteProfileReminder token={token} />}
                 {!isPending && !token && (
                     <div className="reminder">
-                        <h1>Don’t miss what’s happening</h1>
-                        <p>People on Twitter are the first to know.</p>
+                        <h1>{t("sidebar.dontMiss")}</h1>
+                        <p>{t("sidebar.firstToKnow")}</p>
                         <div className="reminder-buttons">
                             <Link href="/" className="btn btn-white">
-                                Log In
+                                {t("actions.login")}
                             </Link>
                             <Link href="/" className="btn btn-dark">
-                                Sign Up
+                                {t("actions.signup")}
                             </Link>
                         </div>
                     </div>

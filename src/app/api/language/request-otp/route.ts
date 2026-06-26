@@ -1,0 +1,58 @@
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+
+import { prisma } from "@/prisma/client";
+import { verifyJwtToken } from "@/utilities/auth";
+import { isSupportedLanguage, languageLabels } from "@/utilities/language";
+import { saveLanguageOtp } from "@/utilities/language/otp";
+import { UserProps } from "@/types/UserProps";
+
+export async function POST(request: NextRequest) {
+    const { language } = await request.json();
+
+    if (!language || !isSupportedLanguage(language)) {
+        return NextResponse.json({ success: false, message: "Unsupported language." });
+    }
+
+    const token = cookies().get("token")?.value;
+    const verifiedToken: UserProps = token && (await verifyJwtToken(token));
+
+    if (!verifiedToken) {
+        return NextResponse.json({ success: false, message: "You must be logged in to change language." });
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id: verifiedToken.id },
+        select: { id: true, email: true, phone: true, preferredLanguage: true },
+    });
+
+    if (!user) return NextResponse.json({ success: false, message: "User not found." });
+    if (user.preferredLanguage === language) {
+        return NextResponse.json({ success: false, message: "This language is already selected." });
+    }
+
+    const sendToEmail = language === "fr";
+    const destination = sendToEmail ? user.email : user.phone;
+
+    if (!destination) {
+        return NextResponse.json({
+            success: false,
+            message: `No registered ${sendToEmail ? "email" : "phone number"} was found for this account.`,
+        });
+    }
+
+    const { otp, expiresAt } = saveLanguageOtp(user.id, language);
+
+    console.info(
+        `Simulated language OTP for ${languageLabels[language]} sent to ${sendToEmail ? "email" : "phone"} ${destination}: ${otp}`
+    );
+
+    return NextResponse.json({
+        success: true,
+        deliveryMethod: sendToEmail ? "email" : "phone",
+        destination,
+        expiresAt,
+        // This is intentionally returned because this app has no real email/SMS provider.
+        simulatedOtp: otp,
+    });
+}

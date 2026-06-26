@@ -23,6 +23,7 @@ model User {
     password         String
     isPremium        Boolean        @default(false)
     browserNotificationsEnabled Boolean @default(false)
+    preferredLanguage String        @default("en") @db.VarChar(10)
     lastPasswordResetAt DateTime?
     createdAt        DateTime       @default(now())
     updatedAt        DateTime       @default(now()) @updatedAt

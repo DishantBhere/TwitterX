@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext } from "react";
+import { createContext, useEffect } from "react";
+import i18n from "@/i18n";
 
 import Footer from "@/components/layout/Footer";
 import LeftSidebar from "@/components/layout/LeftSidebar";
@@ -12,6 +13,11 @@ const AuthContext = createContext<AuthProps>({ token: null, isPending: true, ref
 
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
     const auth = useAuth();
+
+    useEffect(() => {
+        const preferredLanguage = auth.token?.preferredLanguage ?? localStorage.getItem("preferredLanguage") ?? "en";
+        i18n.changeLanguage(preferredLanguage);
+    }, [auth.token?.preferredLanguage]);
 
     return (
         <AuthContext.Provider value={auth}>

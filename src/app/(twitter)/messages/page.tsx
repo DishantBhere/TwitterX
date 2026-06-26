@@ -3,6 +3,7 @@
 import { useContext, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { BsEnvelopePlus } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 
 import NothingToShow from "@/components/misc/NothingToShow";
 import NewMessageDialog from "@/components/dialog/NewMessageDialog";
@@ -22,6 +23,7 @@ export default function MessagesPage() {
     });
 
     const { token, isPending } = useContext(AuthContext);
+    const { t } = useTranslation();
 
     const { isLoading, data, isFetched } = useQuery({
         queryKey: ["messages", token && token.username],
@@ -53,7 +55,7 @@ export default function MessagesPage() {
             ) : (
                 <>
                     <h1 className="page-name">
-                        Messages
+                        {t("messages.title")}
                         <button
                             onClick={() => setIsNewMessageOpen(true)}
                             className="btn btn-white icon-hoverable new-message"

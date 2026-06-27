@@ -19,6 +19,7 @@ import ProgressCircle from "../misc/ProgressCircle";
 
 const MAX_AUDIO_SIZE_BYTES = 100 * 1024 * 1024;
 const MAX_AUDIO_DURATION_SECONDS = 300;
+const AUDIO_TIME_RESTRICTION_MESSAGE = "Audio tweets can only be posted between 2:00 PM and 7:00 PM IST.";
 
 export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [showPicker, setShowPicker] = useState(false);
@@ -110,6 +111,20 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         }
 
         return "";
+    };
+
+    const isWithinAudioUploadWindow = () => {
+        const timeParts = new Intl.DateTimeFormat("en-US", {
+            timeZone: "Asia/Kolkata",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        }).formatToParts(new Date());
+        const hour = Number(timeParts.find((part) => part.type === "hour")?.value);
+        const minute = Number(timeParts.find((part) => part.type === "minute")?.value);
+        const minutesSinceMidnight = hour * 60 + minute;
+
+        return minutesSinceMidnight >= 14 * 60 && minutesSinceMidnight < 19 * 60;
     };
 
     const requestOtpForAudioFile = async (file: File) => {
@@ -255,6 +270,10 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             const currentText = values.text;
             if (audioFile && !audioOtpVerified) {
                 setAudioOtpError("Verify the audio upload OTP before tweeting.");
+                return;
+            }
+            if (audioFile && !isWithinAudioUploadWindow()) {
+                setAudioOtpError(AUDIO_TIME_RESTRICTION_MESSAGE);
                 return;
             }
             if (photoFile) {

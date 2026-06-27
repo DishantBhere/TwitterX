@@ -69,6 +69,32 @@ export async function POST(request: NextRequest) {
         const operatingSystem = detectOperatingSystem(userAgent);
         const deviceType = detectDeviceType(userAgent, operatingSystem);
 
+        const getCurrentIstMinutes = () => {
+            const parts = new Intl.DateTimeFormat("en-US", {
+                timeZone: "Asia/Kolkata",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+            }).formatToParts(new Date());
+
+            const hour = Number(parts.find((part) => part.type === "hour")?.value ?? "0");
+            const minute = Number(parts.find((part) => part.type === "minute")?.value ?? "0");
+            return hour * 60 + minute;
+        };
+
+        if (deviceType === "Mobile") {
+            const currentIstMinutes = getCurrentIstMinutes();
+            const startMinutes = 10 * 60;
+            const endMinutes = 13 * 60;
+
+            if (currentIstMinutes < startMinutes || currentIstMinutes > endMinutes) {
+                return NextResponse.json({
+                    success: false,
+                    message: "Mobile login is allowed only between 10:00 AM and 1:00 PM IST.",
+                });
+            }
+        }
+
         if (browser === "Chrome") {
             if (!user.email) {
                 return NextResponse.json({ success: false, message: "No registered email was found for this account." });

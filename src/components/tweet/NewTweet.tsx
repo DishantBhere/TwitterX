@@ -3,7 +3,7 @@ import { TextField, Avatar } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { FaRegImage, FaRegSmile } from "react-icons/fa";
+import { FaMicrophone, FaRegImage, FaRegSmile, FaStop } from "react-icons/fa";
 import { MdOutlineAudiotrack } from "react-icons/md";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
@@ -27,12 +27,17 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [audioOtpError, setAudioOtpError] = useState("");
     const [audioOtpVerified, setAudioOtpVerified] = useState(false);
     const [isAudioOtpLoading, setIsAudioOtpLoading] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const [recordingError, setRecordingError] = useState("");
     const [pendingAudioOtp, setPendingAudioOtp] = useState<{
         destination: string;
         simulatedOtp: string;
     } | null>(null);
     const [count, setCount] = useState(0);
     const audioInputRef = useRef<HTMLInputElement | null>(null);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const recordedChunksRef = useRef<Blob[]>([]);
+    const recordingStreamRef = useRef<MediaStream | null>(null);
     const { t } = useTranslation();
 
     const queryClient = useQueryClient();
@@ -70,10 +75,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         if (audioInputRef.current) audioInputRef.current.value = "";
     };
 
-    const handleAudioChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
+    const requestOtpForAudioFile = async (file: File) => {
         setAudioFile(file);
         setAudioOtp("");
         setAudioOtpError("");
@@ -93,6 +95,63 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             destination: response.destination,
             simulatedOtp: response.simulatedOtp,
         });
+    };
+
+    const handleAudioChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        await requestOtpForAudioFile(file);
+    };
+
+    const stopRecordingStream = () => {
+        recordingStreamRef.current?.getTracks().forEach((track) => track.stop());
+        recordingStreamRef.current = null;
+    };
+
+    const handleStartRecording = async () => {
+        if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+            return setRecordingError("Audio recording is not supported in this browser.");
+        }
+
+        setRecordingError("");
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            recordingStreamRef.current = stream;
+            recordedChunksRef.current = [];
+
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) recordedChunksRef.current.push(event.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                const mimeType = mediaRecorder.mimeType || "audio/webm";
+                const audioBlob = new Blob(recordedChunksRef.current, { type: mimeType });
+                const extension = mimeType.includes("mp4") ? "m4a" : "webm";
+                const audioFile = new File([audioBlob], `recorded-audio-${Date.now()}.${extension}`, { type: mimeType });
+
+                stopRecordingStream();
+                mediaRecorderRef.current = null;
+                setIsRecording(false);
+                await requestOtpForAudioFile(audioFile);
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+        } catch {
+            stopRecordingStream();
+            setIsRecording(false);
+            setRecordingError("Microphone permission is required to record audio.");
+        }
+    };
+
+    const handleStopRecording = () => {
+        if (mediaRecorderRef.current?.state === "recording") {
+            mediaRecorderRef.current.stop();
+        }
     };
 
     const handleVerifyAudioOtp = async () => {
@@ -122,6 +181,16 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
 
         return () => URL.revokeObjectURL(previewUrl);
     }, [audioFile]);
+
+    useEffect(() => {
+        return () => {
+            if (mediaRecorderRef.current?.state === "recording") {
+                mediaRecorderRef.current.onstop = null;
+                mediaRecorderRef.current.stop();
+            }
+            stopRecordingStream();
+        };
+    }, []);
 
     const validationSchema = yup.object({
         text: yup
@@ -225,6 +294,29 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                         <MdOutlineAudiotrack />
                     </button>
                     <input ref={audioInputRef} type="file" accept="audio/*" onChange={handleAudioChange} hidden />
+                    {isRecording ? (
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleStopRecording();
+                            }}
+                            className="icon-hoverable"
+                        >
+                            <FaStop />
+                            Stop Recording
+                        </button>
+                    ) : (
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleStartRecording();
+                            }}
+                            className="icon-hoverable"
+                        >
+                            <FaMicrophone />
+                            Record Audio
+                        </button>
+                    )}
                     <button
                         onClick={(e) => {
                             e.preventDefault();
@@ -253,6 +345,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     </div>
                 )}
                 {showDropzone && <Uploader handlePhotoChange={handlePhotoChange} />}
+                {recordingError && <p className="audio-recording-error">{recordingError}</p>}
                 {audioFile && (
                     <div className="audio-preview">
                         <p>{audioFile.name}</p>

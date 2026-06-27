@@ -17,6 +17,9 @@ import { getFullURL } from "@/utilities/misc/getFullURL";
 import { uploadFile } from "@/utilities/storage";
 import ProgressCircle from "../misc/ProgressCircle";
 
+const MAX_AUDIO_SIZE_BYTES = 100 * 1024 * 1024;
+const MAX_AUDIO_DURATION_SECONDS = 300;
+
 export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [showPicker, setShowPicker] = useState(false);
     const [showDropzone, setShowDropzone] = useState(false);
@@ -75,7 +78,48 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         if (audioInputRef.current) audioInputRef.current.value = "";
     };
 
+    const getAudioDuration = (file: File) => {
+        return new Promise<number>((resolve, reject) => {
+            const audio = document.createElement("audio");
+            const objectUrl = URL.createObjectURL(file);
+
+            audio.preload = "metadata";
+            audio.onloadedmetadata = () => {
+                URL.revokeObjectURL(objectUrl);
+                resolve(audio.duration);
+            };
+            audio.onerror = () => {
+                URL.revokeObjectURL(objectUrl);
+                reject(new Error("Unable to read audio metadata."));
+            };
+            audio.src = objectUrl;
+        });
+    };
+
+    const validateAudioFile = async (file: File) => {
+        if (file.size > MAX_AUDIO_SIZE_BYTES) {
+            return "Audio files must be 100 MB or smaller.";
+        }
+
+        try {
+            const duration = await getAudioDuration(file);
+            if (!Number.isFinite(duration)) return "Unable to read audio duration.";
+            if (duration > MAX_AUDIO_DURATION_SECONDS) return "Audio must be 5 minutes or shorter.";
+        } catch {
+            return "Unable to read audio metadata.";
+        }
+
+        return "";
+    };
+
     const requestOtpForAudioFile = async (file: File) => {
+        const validationMessage = await validateAudioFile(file);
+        if (validationMessage) {
+            clearAudioSelection();
+            setAudioOtpError(validationMessage);
+            return;
+        }
+
         setAudioFile(file);
         setAudioOtp("");
         setAudioOtpError("");

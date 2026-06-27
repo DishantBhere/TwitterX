@@ -35,6 +35,7 @@ model User {
     sentMessages     Message[]      @relation("userMessagesSent")
     receivedMessages Message[]      @relation("userMessagesRecieved")
     notifications    Notification[]
+    loginHistories   LoginHistory[]
 }
 
 model Tweet {
@@ -76,4 +77,15 @@ model Notification {
     isRead    Boolean  @default(false)
     user      User     @relation(fields: [userId], references: [id])
     userId    String
+}
+
+model LoginHistory {
+    id               String   @id @default(uuid())
+    browser          String   @db.VarChar(100)
+    operatingSystem  String   @db.VarChar(100)
+    deviceType       String   @db.VarChar(50)
+    ipAddress        String   @db.VarChar(45)
+    loginTime        DateTime @default(now())
+    user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId           String
 }

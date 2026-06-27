@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TextField, Avatar } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FaRegImage, FaRegSmile } from "react-icons/fa";
+import { MdOutlineAudiotrack } from "react-icons/md";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useTranslation } from "react-i18next";
 
 import CircularLoading from "../misc/CircularLoading";
-import { createTweet } from "@/utilities/fetch";
+import { createTweet, requestAudioOtp, verifyAudioOtp } from "@/utilities/fetch";
 import { NewTweetProps } from "@/types/TweetProps";
 import Uploader from "../misc/Uploader";
 import { getFullURL } from "@/utilities/misc/getFullURL";
@@ -20,7 +21,18 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [showPicker, setShowPicker] = useState(false);
     const [showDropzone, setShowDropzone] = useState(false);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
+    const [audioFile, setAudioFile] = useState<File | null>(null);
+    const [audioPreviewUrl, setAudioPreviewUrl] = useState("");
+    const [audioOtp, setAudioOtp] = useState("");
+    const [audioOtpError, setAudioOtpError] = useState("");
+    const [audioOtpVerified, setAudioOtpVerified] = useState(false);
+    const [isAudioOtpLoading, setIsAudioOtpLoading] = useState(false);
+    const [pendingAudioOtp, setPendingAudioOtp] = useState<{
+        destination: string;
+        simulatedOtp: string;
+    } | null>(null);
     const [count, setCount] = useState(0);
+    const audioInputRef = useRef<HTMLInputElement | null>(null);
     const { t } = useTranslation();
 
     const queryClient = useQueryClient();
@@ -49,11 +61,73 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         setPhotoFile(file);
     };
 
+    const clearAudioSelection = () => {
+        setAudioFile(null);
+        setAudioOtp("");
+        setAudioOtpError("");
+        setAudioOtpVerified(false);
+        setPendingAudioOtp(null);
+        if (audioInputRef.current) audioInputRef.current.value = "";
+    };
+
+    const handleAudioChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setAudioFile(file);
+        setAudioOtp("");
+        setAudioOtpError("");
+        setAudioOtpVerified(false);
+        setPendingAudioOtp(null);
+        setIsAudioOtpLoading(true);
+
+        const response = await requestAudioOtp();
+        setIsAudioOtpLoading(false);
+
+        if (!response.success) {
+            clearAudioSelection();
+            return setAudioOtpError(response.message ?? "Audio verification failed.");
+        }
+
+        setPendingAudioOtp({
+            destination: response.destination,
+            simulatedOtp: response.simulatedOtp,
+        });
+    };
+
+    const handleVerifyAudioOtp = async () => {
+        setIsAudioOtpLoading(true);
+        const response = await verifyAudioOtp(audioOtp);
+        setIsAudioOtpLoading(false);
+
+        if (!response.success) {
+            setAudioOtpVerified(false);
+            return setAudioOtpError(response.message ?? "Audio verification failed.");
+        }
+
+        setAudioOtpError("");
+        setAudioOtpVerified(true);
+        setPendingAudioOtp(null);
+        setAudioOtp("");
+    };
+
+    useEffect(() => {
+        if (!audioFile) {
+            setAudioPreviewUrl("");
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(audioFile);
+        setAudioPreviewUrl(previewUrl);
+
+        return () => URL.revokeObjectURL(previewUrl);
+    }, [audioFile]);
+
     const validationSchema = yup.object({
         text: yup
             .string()
             .max(280, t("home.tweetMax"))
-            .required(t("home.tweetRequired")),
+            .test("has-tweet-content", t("home.tweetRequired"), (value) => Boolean(value?.trim() || photoFile || audioFile)),
     });
 
     const formik = useFormik({
@@ -61,15 +135,26 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             text: "",
             authorId: token.id,
             photoUrl: "",
+            audioUrl: "",
         },
         validationSchema: validationSchema,
         onSubmit: async (values, { resetForm }) => {
             const currentText = values.text;
+            if (audioFile && !audioOtpVerified) {
+                setAudioOtpError("Verify the audio upload OTP before tweeting.");
+                return;
+            }
             if (photoFile) {
                 const path: string | void = await uploadFile(photoFile);
                 if (!path) throw new Error("Error uploading image.");
                 values.photoUrl = path;
                 setPhotoFile(null);
+            }
+            if (audioFile) {
+                const path: string | void = await uploadFile(audioFile);
+                if (!path) throw new Error("Error uploading audio.");
+                values.audioUrl = path;
+                clearAudioSelection();
             }
             mutation.mutate(JSON.stringify(values), {
                 onSuccess: () => {
@@ -79,6 +164,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             resetForm();
             setCount(0);
             setShowDropzone(false);
+            clearAudioSelection();
             if (handleSubmit) handleSubmit();
         },
     });
@@ -87,6 +173,9 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         setCount(e.target.value.length);
         formik.handleChange(e);
     };
+
+    const hasTweetContent = Boolean(formik.values.text.trim() || photoFile || audioFile);
+    const isTweetSubmittable = hasTweetContent && !Boolean(formik.errors.text);
 
     if (formik.isSubmitting) {
         return <CircularLoading />;
@@ -129,6 +218,16 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     <button
                         onClick={(e) => {
                             e.preventDefault();
+                            audioInputRef.current?.click();
+                        }}
+                        className="icon-hoverable"
+                    >
+                        <MdOutlineAudiotrack />
+                    </button>
+                    <input ref={audioInputRef} type="file" accept="audio/*" onChange={handleAudioChange} hidden />
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
                             setShowPicker(!showPicker);
                         }}
                         className="icon-hoverable"
@@ -136,7 +235,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                         <FaRegSmile />
                     </button>
                     <ProgressCircle maxChars={280} count={count} />
-                    <button className={`btn ${formik.isValid ? "" : "disabled"}`} disabled={!formik.isValid} type="submit">
+                    <button className={`btn ${isTweetSubmittable ? "" : "disabled"}`} disabled={!isTweetSubmittable} type="submit">
                         {t("actions.tweet")}
                     </button>
                 </div>
@@ -154,6 +253,40 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     </div>
                 )}
                 {showDropzone && <Uploader handlePhotoChange={handlePhotoChange} />}
+                {audioFile && (
+                    <div className="audio-preview">
+                        <p>{audioFile.name}</p>
+                        {audioPreviewUrl && <audio controls src={audioPreviewUrl} />}
+                    </div>
+                )}
+                {isAudioOtpLoading && <CircularLoading />}
+                {pendingAudioOtp && (
+                    <div className="audio-otp">
+                        <p>OTP sent to {pendingAudioOtp.destination}</p>
+                        <p className="simulated-otp">Testing OTP: {pendingAudioOtp.simulatedOtp}</p>
+                        <TextField
+                            fullWidth
+                            name="audioOtp"
+                            label="Enter OTP"
+                            value={audioOtp}
+                            onChange={(event) => setAudioOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                            error={Boolean(audioOtpError)}
+                            helperText={audioOtpError}
+                        />
+                        <button
+                            type="button"
+                            className={`btn btn-dark ${audioOtp.length === 6 ? "" : "disabled"}`}
+                            disabled={audioOtp.length !== 6}
+                            onClick={handleVerifyAudioOtp}
+                        >
+                            Verify
+                        </button>
+                        <button type="button" className="btn" onClick={clearAudioSelection}>
+                            Cancel
+                        </button>
+                    </div>
+                )}
+                {audioOtpError && !pendingAudioOtp && <p className="audio-otp-error">{audioOtpError}</p>}
             </form>
         </div>
     );

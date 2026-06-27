@@ -6,7 +6,7 @@ import { verifyJwtToken } from "@/utilities/auth";
 import { UserProps } from "@/types/UserProps";
 
 export async function POST(request: NextRequest) {
-    const { authorId, text, photoUrl } = await request.json();
+    const { authorId, text, photoUrl, audioUrl } = await request.json();
 
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
@@ -18,11 +18,15 @@ export async function POST(request: NextRequest) {
     if (verifiedToken.id !== authorId)
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
 
+    if (!text?.trim() && !photoUrl && !audioUrl)
+        return NextResponse.json({ success: false, message: "Tweet text can't be empty" });
+
     try {
         await prisma.tweet.create({
             data: {
                 text,
                 photoUrl,
+                audioUrl,
                 author: {
                     connect: {
                         id: authorId,

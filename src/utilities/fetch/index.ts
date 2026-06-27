@@ -174,6 +174,27 @@ export const verifyLanguageOtp = async (language: string, otp: string) => {
     return response.json();
 };
 
+export const requestAudioOtp = async () => {
+    const response = await fetch(`${HOST_URL}/api/tweets/audio/request-otp`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    return response.json();
+};
+
+export const verifyAudioOtp = async (otp: string) => {
+    const response = await fetch(`${HOST_URL}/api/tweets/audio/verify-otp`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ otp }),
+    });
+    return response.json();
+};
+
 export const forgotPassword = async (identifier: string) => {
     const response = await fetch(`${HOST_URL}/api/auth/forgot-password`, {
         method: "POST",

@@ -151,6 +151,11 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                         />
                     </div>
                 )}
+                {displayedTweet.audioUrl && (
+                    <div onClick={handlePropagation} className="tweet-audio">
+                        <audio controls src={getFullURL(displayedTweet.audioUrl)} />
+                    </div>
+                )}
                 <div onClick={handlePropagation} className="tweet-bottom">
                     <Reply tweet={displayedTweet} />
                     <Retweet tweetId={displayedTweet.id} tweetAuthor={displayedTweet.author.username} />

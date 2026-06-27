@@ -104,6 +104,7 @@ export async function GET(request: NextRequest) {
                             },
                         },
                         photoUrl: true,
+                        audioUrl: true,
                         text: true,
                         isReply: true,
                         repliedTo: {

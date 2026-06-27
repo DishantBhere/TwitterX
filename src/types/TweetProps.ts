@@ -7,6 +7,7 @@ export type TweetProps = {
     author: UserProps;
     authorId: string;
     photoUrl: string;
+    audioUrl: string;
     likedBy: UserProps[];
     retweets: TweetProps[];
     replies: TweetProps[];

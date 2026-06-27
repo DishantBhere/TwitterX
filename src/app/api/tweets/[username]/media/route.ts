@@ -83,6 +83,7 @@ export async function GET(request: NextRequest, { params: { username } }: { para
                             },
                         },
                         photoUrl: true,
+                        audioUrl: true,
                         text: true,
                         isReply: true,
                         repliedTo: {

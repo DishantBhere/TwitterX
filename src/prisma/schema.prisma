@@ -44,6 +44,7 @@ model Tweet {
     author      User     @relation("userTweets", fields: [authorId], references: [id])
     authorId    String
     photoUrl    String?
+    audioUrl    String?
     likedBy     User[]   @relation("userLikes")
     retweetedBy User[]   @relation("userRetweets")
     replies     Tweet[]  @relation("tweetReplies")

@@ -7,13 +7,20 @@ import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 
 import { LogInDialogProps } from "@/types/DialogProps";
-import { logIn } from "@/utilities/fetch";
+import { logIn, verifyLoginOtp } from "@/utilities/fetch";
 import CircularLoading from "../misc/CircularLoading";
 import { SnackbarProps } from "@/types/SnackbarProps";
 import CustomSnackbar from "../misc/CustomSnackbar";
 
 export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps) {
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
+    const [pendingOtp, setPendingOtp] = useState<{
+        username: string;
+        deliveryMethod: string;
+        destination: string;
+        simulatedOtp: string;
+    } | null>(null);
+    const [otp, setOtp] = useState("");
     const { t } = useTranslation();
 
     const router = useRouter();
@@ -44,11 +51,39 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                 setSnackbar({ message: response.message, severity: "error", open: true });
                 return;
             }
+            if (response.requiresOtp) {
+                setPendingOtp({
+                    username: response.username ?? values.username,
+                    deliveryMethod: response.deliveryMethod,
+                    destination: response.destination,
+                    simulatedOtp: response.simulatedOtp,
+                });
+                setOtp("");
+                return;
+            }
             resetForm();
             handleLogInClose();
             router.push("/explore");
         },
     });
+
+    const handleVerifyOtp = async () => {
+        if (!pendingOtp) return;
+
+        formik.setSubmitting(true);
+        const response = await verifyLoginOtp(pendingOtp.username, otp);
+        formik.setSubmitting(false);
+
+        if (!response.success) {
+            return setSnackbar({ message: response.message, severity: "error", open: true });
+        }
+
+        setPendingOtp(null);
+        setOtp("");
+        formik.resetForm();
+        handleLogInClose();
+        router.push("/explore");
+    };
 
     return (
         <Dialog className="dialog" open={open} onClose={handleLogInClose}>
@@ -86,9 +121,29 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                             />
                         </div>
                     </div>
+                    {pendingOtp && (
+                        <div className="language-otp">
+                            <h2>Verify your login</h2>
+                            <p>
+                                A 6-digit OTP was sent to your registered {pendingOtp.deliveryMethod}: {pendingOtp.destination}.
+                            </p>
+                            <p className="simulated-otp">Simulated OTP: {pendingOtp.simulatedOtp}</p>
+                            <TextField
+                                fullWidth
+                                name="otp"
+                                label="Enter OTP"
+                                value={otp}
+                                onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                            />
+                        </div>
+                    )}
                 </DialogContent>
                 {formik.isSubmitting ? (
                     <CircularLoading />
+                ) : pendingOtp ? (
+                    <button className="btn btn-dark" type="button" onClick={handleVerifyOtp} disabled={otp.length !== 6}>
+                        {t("actions.verify")}
+                    </button>
                 ) : (
                     <button className="btn btn-dark" type="submit">
                         {t("actions.login")}

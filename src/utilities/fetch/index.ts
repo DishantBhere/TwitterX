@@ -103,6 +103,17 @@ export const logIn = async (candidate: string) => {
     return response.json();
 };
 
+export const verifyLoginOtp = async (username: string, otp: string) => {
+    const response = await fetch(`${HOST_URL}/api/auth/login/verify-otp`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, otp }),
+    });
+    return response.json();
+};
+
 export const logInAsTest = async () => {
     const testAccount = {
         username: "test",

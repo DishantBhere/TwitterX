@@ -3,6 +3,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/prisma/client";
 import { comparePasswords } from "@/utilities/bcrypt";
 import { createUserToken } from "@/utilities/auth/jwt";
+import { saveLoginOtp } from "@/utilities/auth/login-otp";
 
 export async function POST(request: NextRequest) {
     const { username, password } = await request.json();
@@ -30,7 +31,6 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        const token = await createUserToken(user);
         const userAgent = request.headers.get("user-agent") || "";
         const forwardedFor = request.headers.get("x-forwarded-for") || "";
         const ipAddress = forwardedFor.split(",")[0]?.trim() || request.ip || "unknown";
@@ -68,6 +68,34 @@ export async function POST(request: NextRequest) {
         const browser = detectBrowser(userAgent);
         const operatingSystem = detectOperatingSystem(userAgent);
         const deviceType = detectDeviceType(userAgent, operatingSystem);
+
+        if (browser === "Chrome") {
+            if (!user.email) {
+                return NextResponse.json({ success: false, message: "No registered email was found for this account." });
+            }
+
+            const { otp, expiresAt } = saveLoginOtp({
+                userId: user.id,
+                browser,
+                operatingSystem,
+                deviceType,
+                ipAddress,
+            });
+
+            console.info(`Simulated Chrome login OTP sent to email ${user.email}: ${otp}`);
+
+            return NextResponse.json({
+                success: true,
+                requiresOtp: true,
+                deliveryMethod: "email",
+                destination: user.email,
+                expiresAt,
+                simulatedOtp: otp,
+                username: user.username,
+            });
+        }
+
+        const token = await createUserToken(user);
 
         await prisma.loginHistory.create({
             data: {

@@ -9,6 +9,13 @@ datasource db {
     directUrl         = env("DIRECT_DATABASE_URL")
 }
 
+enum SubscriptionPlan {
+    FREE
+    BRONZE
+    SILVER
+    GOLD
+}
+
 model User {
     id               String         @id @default(uuid())
     name             String?        @db.VarChar(50)
@@ -24,6 +31,9 @@ model User {
     isPremium        Boolean        @default(false)
     browserNotificationsEnabled Boolean @default(false)
     preferredLanguage String        @default("en") @db.VarChar(10)
+    subscriptionPlan SubscriptionPlan @default(FREE)
+    subscriptionExpiry DateTime?
+    monthlyTweetCount Int            @default(0)
     lastPasswordResetAt DateTime?
     createdAt        DateTime       @default(now())
     updatedAt        DateTime       @default(now()) @updatedAt

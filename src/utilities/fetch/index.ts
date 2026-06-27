@@ -141,6 +141,17 @@ export const getUser = async (username: string) => {
     return json;
 };
 
+export const getLoginHistory = async () => {
+    const response = await fetch(`${HOST_URL}/api/login-history`, {
+        next: {
+            revalidate: 0,
+        },
+    });
+    const json = await response.json();
+    if (!json.success) throw new Error(json.message ? json.message : "Something went wrong.");
+    return json;
+};
+
 export const editUser = async (updatedUser: string, username: string) => {
     const response = await fetch(`${HOST_URL}/api/users/${username}/edit`, {
         method: "POST",

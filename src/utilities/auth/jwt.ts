@@ -17,6 +17,9 @@ type JwtUser = {
     createdAt: Date;
     photoUrl: string | null;
     headerUrl: string | null;
+    subscriptionPlan: "FREE" | "BRONZE" | "SILVER" | "GOLD";
+    subscriptionExpiry: Date | null;
+    monthlyTweetCount: number;
 };
 
 export const createUserToken = async (user: JwtUser) => {
@@ -35,6 +38,9 @@ export const createUserToken = async (user: JwtUser) => {
         createdAt: user.createdAt,
         photoUrl: user.photoUrl,
         headerUrl: user.headerUrl,
+        subscriptionPlan: user.subscriptionPlan,
+        subscriptionExpiry: user.subscriptionExpiry,
+        monthlyTweetCount: user.monthlyTweetCount,
     })
         .setProtectedHeader({
             alg: "HS256",

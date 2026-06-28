@@ -20,6 +20,9 @@ export async function GET(request: NextRequest, { params: { username } }: { para
                 isPremium: true,
                 browserNotificationsEnabled: true,
                 preferredLanguage: true,
+                subscriptionPlan: true,
+                subscriptionExpiry: true,
+                monthlyTweetCount: true,
                 photoUrl: true,
                 headerUrl: true,
                 followers: {

@@ -1,3 +1,5 @@
+export type SubscriptionPlan = "FREE" | "BRONZE" | "SILVER" | "GOLD";
+
 export type UserProps = {
     id: string;
     name: string;
@@ -10,6 +12,9 @@ export type UserProps = {
     isPremium: boolean;
     browserNotificationsEnabled?: boolean;
     preferredLanguage: string;
+    subscriptionPlan: SubscriptionPlan;
+    subscriptionExpiry: Date | null;
+    monthlyTweetCount: number;
     createdAt: Date;
     updatedAt: Date;
     photoUrl: string;

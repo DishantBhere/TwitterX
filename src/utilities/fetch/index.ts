@@ -176,6 +176,27 @@ export const createSubscriptionOrder = async (plan: "BRONZE" | "SILVER" | "GOLD"
     return json;
 };
 
+export const activateSubscription = async (
+    plan: "BRONZE" | "SILVER" | "GOLD",
+    payment: { razorpayPaymentId: string; razorpayOrderId: string; razorpaySignature: string }
+) => {
+    const response = await fetch(`${HOST_URL}/api/subscription/activate`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            plan,
+            razorpayPaymentId: payment.razorpayPaymentId,
+            razorpayOrderId: payment.razorpayOrderId,
+            razorpaySignature: payment.razorpaySignature,
+        }),
+    });
+    const json = await response.json();
+    if (!json.success) throw new Error(json.message ? json.message : "Something went wrong.");
+    return json;
+};
+
 export const editUser = async (updatedUser: string, username: string) => {
     const response = await fetch(`${HOST_URL}/api/users/${username}/edit`, {
         method: "POST",

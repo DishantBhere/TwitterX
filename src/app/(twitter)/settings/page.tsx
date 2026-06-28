@@ -23,7 +23,7 @@ import { AuthContext } from "@/context/AuthContext";
 import LanguageSelector from "@/components/misc/LanguageSelector";
 import CircularLoading from "@/components/misc/CircularLoading";
 import { formatDateExtended } from "@/utilities/date";
-import { createSubscriptionOrder, getLoginHistory } from "@/utilities/fetch";
+import { activateSubscription, createSubscriptionOrder, getLoginHistory } from "@/utilities/fetch";
 import { LoginHistoryProps } from "@/types/LoginHistoryProps";
 import { SubscriptionPlan } from "@/types/UserProps";
 
@@ -111,14 +111,26 @@ export default function SettingsPage() {
                 description: `${planName} subscription`,
                 order_id: response.order.id,
                 handler: (razorpayResponse: Record<string, string>) => {
-                    setSelectedPlan(plan);
-                    setPaymentResult({
-                        plan,
-                        razorpay_order_id: razorpayResponse.razorpay_order_id ?? response.order.id,
-                        razorpay_payment_id: razorpayResponse.razorpay_payment_id ?? "",
-                        razorpay_signature: razorpayResponse.razorpay_signature ?? "",
+                    void (async () => {
+                        const activation = await activateSubscription(plan, {
+                            razorpayPaymentId: razorpayResponse.razorpay_payment_id ?? "",
+                            razorpayOrderId: razorpayResponse.razorpay_order_id ?? response.order.id,
+                            razorpaySignature: razorpayResponse.razorpay_signature ?? "",
+                        });
+
+                        await refreshToken();
+                        setSelectedPlan(plan);
+                        setPaymentResult({
+                            plan,
+                            razorpay_order_id: activation.payment.razorpayOrderId,
+                            razorpay_payment_id: activation.payment.razorpayPaymentId,
+                            razorpay_signature: activation.payment.razorpaySignature,
+                        });
+                        setPaymentMessage(`Subscription activated successfully for ${planName} plan.`);
+                    })().catch((error: unknown) => {
+                        setPaymentResult(null);
+                        setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
                     });
-                    setPaymentMessage(`Payment successful for ${planName} plan.`);
                 },
                 prefill: {
                     name: token.name ?? token.username,
@@ -250,6 +262,7 @@ export default function SettingsPage() {
                     {paymentResult && (
                         <div style={{ marginTop: 16 }}>
                             <Typography variant="subtitle2">Payment Details</Typography>
+                            <Typography variant="body2">Plan: {paymentResult.plan}</Typography>
                             <Typography variant="body2">Payment ID: {paymentResult.razorpay_payment_id}</Typography>
                             <Typography variant="body2">Order ID: {paymentResult.razorpay_order_id}</Typography>
                             <Typography variant="body2">Signature: {paymentResult.razorpay_signature}</Typography>

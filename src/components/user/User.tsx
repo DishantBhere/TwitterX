@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AiFillTwitterCircle } from "react-icons/ai";
 
 import { UserProps } from "@/types/UserProps";
-import { AuthContext } from "@/app/(twitter)/layout";
+import { AuthContext } from "@/context/AuthContext";
 import Follow from "./Follow";
 import { getFullURL } from "@/utilities/misc/getFullURL";
 

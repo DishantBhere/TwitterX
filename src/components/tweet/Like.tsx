@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 import { TweetOptionsProps, TweetResponse } from "@/types/TweetProps";
 import { getUserTweet, updateTweetLikes } from "@/utilities/fetch";
-import { AuthContext } from "@/app/(twitter)/layout";
+import { AuthContext } from "@/context/AuthContext";
 import { SnackbarProps } from "@/types/SnackbarProps";
 import CustomSnackbar from "../misc/CustomSnackbar";
 import { UserProps } from "@/types/UserProps";

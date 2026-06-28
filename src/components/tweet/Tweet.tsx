@@ -15,7 +15,7 @@ import Like from "./Like";
 import Share from "./Share";
 import PreviewDialog from "../dialog/PreviewDialog";
 import { getFullURL } from "@/utilities/misc/getFullURL";
-import { AuthContext } from "@/app/(twitter)/layout";
+import { AuthContext } from "@/context/AuthContext";
 import RetweetIcon from "../misc/RetweetIcon";
 import ProfileCard from "../user/ProfileCard";
 

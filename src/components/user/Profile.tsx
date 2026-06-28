@@ -11,7 +11,7 @@ import { GoLocation } from "react-icons/go";
 import { AiFillTwitterCircle, AiOutlineLink } from "react-icons/ai";
 
 import { formatDateForProfile } from "@/utilities/date";
-import { AuthContext } from "@/app/(twitter)/layout";
+import { AuthContext } from "@/context/AuthContext";
 import { UserProps } from "@/types/UserProps";
 import TweetArrayLength from "../tweet/TweetArrayLength";
 import Follow from "./Follow";

@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import NewTweetDialog from "../dialog/NewTweetDialog";
 import LogOutDialog from "../dialog/LogOutDialog";
 import { logout } from "@/utilities/fetch";
-import { AuthContext } from "@/app/(twitter)/layout";
+import { AuthContext } from "@/context/AuthContext";
 import { getFullURL } from "@/utilities/misc/getFullURL";
 import UnreadNotificationsBadge from "../misc/UnreadNotificationsBadge";
 

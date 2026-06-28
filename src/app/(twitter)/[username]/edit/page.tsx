@@ -2,7 +2,7 @@
 
 import { useContext } from "react";
 
-import { AuthContext } from "../../layout";
+import { AuthContext } from "@/context/AuthContext";
 import CircularLoading from "@/components/misc/CircularLoading";
 import EditProfile from "@/components/user/EditProfile";
 import BackToArrow from "@/components/misc/BackToArrow";

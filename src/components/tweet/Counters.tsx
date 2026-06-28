@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 import { TweetProps } from "@/types/TweetProps";
 import User from "../user/User";
-import { AuthContext } from "@/app/(twitter)/layout";
+import { AuthContext } from "@/context/AuthContext";
 import { scrollToBottom } from "@/utilities/misc/scrollToBottom";
 import CustomSnackbar from "../misc/CustomSnackbar";
 import { SnackbarProps } from "@/types/SnackbarProps";

@@ -1,15 +1,13 @@
 "use client";
 
-import { createContext, useEffect } from "react";
+import { useEffect } from "react";
 import i18n from "@/i18n";
 
 import Footer from "@/components/layout/Footer";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import RightSidebar from "@/components/layout/RightSidebar";
-import { AuthProps } from "@/types/TokenProps";
 import useAuth from "@/hooks/useAuth";
-
-const AuthContext = createContext<AuthProps>({ token: null, isPending: true, refreshToken: () => Promise.resolve() });
+import { AuthContext } from "@/context/AuthContext";
 
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
     const auth = useAuth();
@@ -30,5 +28,3 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
         </AuthContext.Provider>
     );
 }
-
-export { AuthContext };

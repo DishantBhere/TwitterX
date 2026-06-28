@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserTweet } from "@/utilities/fetch";
 import SingleTweet from "@/components/tweet/SingleTweet";
 import CircularLoading from "@/components/misc/CircularLoading";
-import { AuthContext } from "@/app/(twitter)/layout";
+import { AuthContext } from "@/context/AuthContext";
 import NotFound from "@/app/not-found";
 import BackToArrow from "@/components/misc/BackToArrow";
 

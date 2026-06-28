@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 
 import { TweetOptionsProps } from "@/types/TweetProps";
-import { AuthContext } from "@/app/(twitter)/layout";
+import { AuthContext } from "@/context/AuthContext";
 import { getUserTweet, updateRetweets } from "@/utilities/fetch";
 import RetweetIcon from "../misc/RetweetIcon";
 import { SnackbarProps } from "@/types/SnackbarProps";

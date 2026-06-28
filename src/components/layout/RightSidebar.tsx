@@ -4,7 +4,7 @@ import { useContext } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
-import { AuthContext } from "@/app/(twitter)/layout";
+import { AuthContext } from "@/context/AuthContext";
 import Search from "../misc/Search";
 import WhoToFollow from "../misc/WhoToFollow";
 import CompleteProfileReminder from "../misc/CompleteProfileReminder";

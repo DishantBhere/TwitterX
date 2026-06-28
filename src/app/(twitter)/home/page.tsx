@@ -8,7 +8,7 @@ import { getRelatedTweets } from "@/utilities/fetch";
 import CircularLoading from "@/components/misc/CircularLoading";
 import NothingToShow from "@/components/misc/NothingToShow";
 import NewTweet from "@/components/tweet/NewTweet";
-import { AuthContext } from "../layout";
+import { AuthContext } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 
 export default function HomePage() {

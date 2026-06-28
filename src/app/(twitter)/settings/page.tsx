@@ -19,19 +19,30 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { ThemeContext } from "@/app/providers";
-import { AuthContext } from "../layout";
+import { AuthContext } from "@/context/AuthContext";
 import LanguageSelector from "@/components/misc/LanguageSelector";
 import CircularLoading from "@/components/misc/CircularLoading";
 import { formatDateExtended } from "@/utilities/date";
-import { getLoginHistory } from "@/utilities/fetch";
+import { createSubscriptionOrder, getLoginHistory } from "@/utilities/fetch";
 import { LoginHistoryProps } from "@/types/LoginHistoryProps";
 import { SubscriptionPlan } from "@/types/UserProps";
+
+declare global {
+    interface Window {
+        Razorpay?: new (options: Record<string, unknown>) => {
+            open: () => void;
+        };
+    }
+}
 
 export default function SettingsPage() {
     const { theme, toggleTheme } = useContext(ThemeContext);
     const { token, refreshToken } = useContext(AuthContext);
     const { t } = useTranslation();
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+    const [paymentMessage, setPaymentMessage] = useState("");
+    const [paymentResult, setPaymentResult] = useState<Record<string, string> | null>(null);
+    const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
     const { isLoading, data } = useQuery({
         queryKey: ["login-history"],
         queryFn: getLoginHistory,
@@ -49,6 +60,95 @@ export default function SettingsPage() {
         []
     );
     const selectedPlanLabel = subscriptionPlans.find((plan) => plan.key === selectedPlan)?.name ?? "";
+
+    const loadRazorpayScript = () => {
+        return new Promise<boolean>((resolve) => {
+            if (window.Razorpay) return resolve(true);
+
+            const existingScript = document.querySelector<HTMLScriptElement>("script[src='https://checkout.razorpay.com/v1/checkout.js']");
+            if (existingScript) {
+                existingScript.addEventListener("load", () => resolve(true));
+                existingScript.addEventListener("error", () => resolve(false));
+                return;
+            }
+
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.async = true;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
+    const handleChoosePlan = async (plan: SubscriptionPlan) => {
+        if (!token) return;
+
+        if (plan === "FREE") {
+            setPaymentMessage("Free plan does not require payment.");
+            setPaymentResult(null);
+            setSelectedPlan("FREE");
+            return;
+        }
+
+        setIsCheckoutLoading(true);
+        try {
+            const scriptLoaded = await loadRazorpayScript();
+            if (!scriptLoaded) {
+                setPaymentMessage("Unable to load Razorpay checkout.");
+                setPaymentResult(null);
+                setSelectedPlan(plan);
+                return;
+            }
+
+            const response = await createSubscriptionOrder(plan);
+            const planName = subscriptionPlans.find((item) => item.key === plan)?.name ?? plan;
+            const options = {
+                key: response.keyId,
+                amount: response.order.amount,
+                currency: response.order.currency,
+                name: "Twitter Subscription",
+                description: `${planName} subscription`,
+                order_id: response.order.id,
+                handler: (razorpayResponse: Record<string, string>) => {
+                    setSelectedPlan(plan);
+                    setPaymentResult({
+                        plan,
+                        razorpay_order_id: razorpayResponse.razorpay_order_id ?? response.order.id,
+                        razorpay_payment_id: razorpayResponse.razorpay_payment_id ?? "",
+                        razorpay_signature: razorpayResponse.razorpay_signature ?? "",
+                    });
+                    setPaymentMessage(`Payment successful for ${planName} plan.`);
+                },
+                prefill: {
+                    name: token.name ?? token.username,
+                    email: token.email ?? "",
+                    contact: token.phone ?? "",
+                },
+                notes: {
+                    username: token.username,
+                    plan,
+                },
+                theme: {
+                    color: "#1d9bf0",
+                },
+            };
+
+            setSelectedPlan(plan);
+            const Razorpay = window.Razorpay;
+            if (!Razorpay) {
+                throw new Error("Razorpay checkout is unavailable.");
+            }
+            const razorpay = new Razorpay(options);
+            razorpay.open();
+        } catch (error) {
+            setSelectedPlan(plan);
+            setPaymentResult(null);
+            setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
+        } finally {
+            setIsCheckoutLoading(false);
+        }
+    };
 
     return (
         <main>
@@ -98,7 +198,8 @@ export default function SettingsPage() {
                                             <Button
                                                 variant={isCurrentPlan ? "outlined" : "contained"}
                                                 fullWidth
-                                                onClick={() => setSelectedPlan(plan.key)}
+                                                onClick={() => handleChoosePlan(plan.key)}
+                                                disabled={isCheckoutLoading && selectedPlan === plan.key}
                                             >
                                                 Choose Plan
                                             </Button>
@@ -143,11 +244,17 @@ export default function SettingsPage() {
                 </div>
             )}
             <Dialog open={!!selectedPlan} onClose={() => setSelectedPlan(null)} fullWidth maxWidth="xs">
-                <DialogTitle>Subscription Placeholder</DialogTitle>
+                <DialogTitle>Razorpay Test Mode</DialogTitle>
                 <DialogContent>
-                    <Typography variant="body1">
-                        You selected {selectedPlanLabel} plan. Payment is not implemented yet.
-                    </Typography>
+                    <Typography variant="body1">{paymentMessage || `Checkout prepared for ${selectedPlanLabel} plan.`}</Typography>
+                    {paymentResult && (
+                        <div style={{ marginTop: 16 }}>
+                            <Typography variant="subtitle2">Payment Details</Typography>
+                            <Typography variant="body2">Payment ID: {paymentResult.razorpay_payment_id}</Typography>
+                            <Typography variant="body2">Order ID: {paymentResult.razorpay_order_id}</Typography>
+                            <Typography variant="body2">Signature: {paymentResult.razorpay_signature}</Typography>
+                        </div>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setSelectedPlan(null)}>Close</Button>

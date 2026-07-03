@@ -61,6 +61,20 @@ export default function SettingsPage() {
     );
     const selectedPlanLabel = subscriptionPlans.find((plan) => plan.key === selectedPlan)?.name ?? "";
 
+    const isWithinPaymentWindow = () => {
+        const timeParts = new Intl.DateTimeFormat("en-US", {
+            timeZone: "Asia/Kolkata",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        }).formatToParts(new Date());
+        const hour = Number(timeParts.find((part) => part.type === "hour")?.value);
+        const minute = Number(timeParts.find((part) => part.type === "minute")?.value);
+        const minutesSinceMidnight = hour * 60 + minute;
+
+        return minutesSinceMidnight >= 10 * 60 && minutesSinceMidnight <= 11 * 60;
+    };
+
     const loadRazorpayScript = () => {
         return new Promise<boolean>((resolve) => {
             if (window.Razorpay) return resolve(true);
@@ -88,6 +102,13 @@ export default function SettingsPage() {
             setPaymentMessage("Free plan does not require payment.");
             setPaymentResult(null);
             setSelectedPlan("FREE");
+            return;
+        }
+
+        if (!isWithinPaymentWindow()) {
+            setPaymentMessage("Payments are allowed only between 10:00 AM and 11:00 AM IST.");
+            setPaymentResult(null);
+            setSelectedPlan(plan);
             return;
         }
 

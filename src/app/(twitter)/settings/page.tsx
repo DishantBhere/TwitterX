@@ -13,6 +13,7 @@ import {
     DialogContent,
     DialogTitle,
     Grid,
+    Stack,
     Switch,
     Typography,
 } from "@mui/material";
@@ -41,7 +42,10 @@ export default function SettingsPage() {
     const { t } = useTranslation();
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
     const [paymentMessage, setPaymentMessage] = useState("");
-    const [paymentResult, setPaymentResult] = useState<Record<string, string> | null>(null);
+    const [activatedSubscription, setActivatedSubscription] = useState<{
+        plan: SubscriptionPlan;
+        email: string;
+    } | null>(null);
     const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
     const { isLoading, data } = useQuery({
         queryKey: ["login-history"],
@@ -59,22 +63,6 @@ export default function SettingsPage() {
         ],
         []
     );
-    const selectedPlanLabel = subscriptionPlans.find((plan) => plan.key === selectedPlan)?.name ?? "";
-
-    const isWithinPaymentWindow = () => {
-        const timeParts = new Intl.DateTimeFormat("en-US", {
-            timeZone: "Asia/Kolkata",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-        }).formatToParts(new Date());
-        const hour = Number(timeParts.find((part) => part.type === "hour")?.value);
-        const minute = Number(timeParts.find((part) => part.type === "minute")?.value);
-        const minutesSinceMidnight = hour * 60 + minute;
-
-        return minutesSinceMidnight >= 10 * 60 && minutesSinceMidnight <= 11 * 60;
-    };
-
     const loadRazorpayScript = () => {
         return new Promise<boolean>((resolve) => {
             if (window.Razorpay) return resolve(true);
@@ -100,14 +88,12 @@ export default function SettingsPage() {
 
         if (plan === "FREE") {
             setPaymentMessage("Free plan does not require payment.");
-            setPaymentResult(null);
             setSelectedPlan("FREE");
             return;
         }
 
-        if (!isWithinPaymentWindow()) {
-            setPaymentMessage("Payments are allowed only between 10:00 AM and 11:00 AM IST.");
-            setPaymentResult(null);
+        if (token.subscriptionPlan === plan) {
+            setPaymentMessage(`You are already on the ${plan} plan.`);
             setSelectedPlan(plan);
             return;
         }
@@ -117,7 +103,6 @@ export default function SettingsPage() {
             const scriptLoaded = await loadRazorpayScript();
             if (!scriptLoaded) {
                 setPaymentMessage("Unable to load Razorpay checkout.");
-                setPaymentResult(null);
                 setSelectedPlan(plan);
                 return;
             }
@@ -141,15 +126,13 @@ export default function SettingsPage() {
 
                         await refreshToken();
                         setSelectedPlan(plan);
-                        setPaymentResult({
+                        setActivatedSubscription({
                             plan,
-                            razorpay_order_id: activation.payment.razorpayOrderId,
-                            razorpay_payment_id: activation.payment.razorpayPaymentId,
-                            razorpay_signature: activation.payment.razorpaySignature,
+                            email: token.email ?? "",
                         });
                         setPaymentMessage(`Subscription activated successfully for ${planName} plan.`);
                     })().catch((error: unknown) => {
-                        setPaymentResult(null);
+                        setActivatedSubscription(null);
                         setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
                     });
                 },
@@ -176,7 +159,7 @@ export default function SettingsPage() {
             razorpay.open();
         } catch (error) {
             setSelectedPlan(plan);
-            setPaymentResult(null);
+            setActivatedSubscription(null);
             setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
         } finally {
             setIsCheckoutLoading(false);
@@ -276,22 +259,30 @@ export default function SettingsPage() {
                     )}
                 </div>
             )}
-            <Dialog open={!!selectedPlan} onClose={() => setSelectedPlan(null)} fullWidth maxWidth="xs">
-                <DialogTitle>Razorpay Test Mode</DialogTitle>
+            <Dialog open={!!activatedSubscription} onClose={() => setActivatedSubscription(null)} fullWidth maxWidth="xs">
+                <DialogTitle sx={{ pb: 1 }}>
+                    <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>
+                        Subscription Activated
+                    </Typography>
+                </DialogTitle>
                 <DialogContent>
-                    <Typography variant="body1">{paymentMessage || `Checkout prepared for ${selectedPlanLabel} plan.`}</Typography>
-                    {paymentResult && (
-                        <div style={{ marginTop: 16 }}>
-                            <Typography variant="subtitle2">Payment Details</Typography>
-                            <Typography variant="body2">Plan: {paymentResult.plan}</Typography>
-                            <Typography variant="body2">Payment ID: {paymentResult.razorpay_payment_id}</Typography>
-                            <Typography variant="body2">Order ID: {paymentResult.razorpay_order_id}</Typography>
-                            <Typography variant="body2">Signature: {paymentResult.razorpay_signature}</Typography>
-                        </div>
-                    )}
+                    <Stack spacing={1.25} sx={{ pt: 1 }}>
+                        <Typography variant="body1">
+                            Your {activatedSubscription?.plan} subscription has been activated successfully.
+                        </Typography>
+                        <Typography variant="body1">
+                            Your invoice has been emailed to:
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                            {activatedSubscription?.email || token?.email || ""}
+                        </Typography>
+                        <Typography variant="body1">Enjoy TwitterX Premium!</Typography>
+                    </Stack>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setSelectedPlan(null)}>Close</Button>
+                <DialogActions sx={{ px: 3, pb: 3 }}>
+                    <Button variant="contained" onClick={() => setActivatedSubscription(null)}>
+                        Close
+                    </Button>
                 </DialogActions>
             </Dialog>
         </main>

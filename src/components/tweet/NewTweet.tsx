@@ -39,10 +39,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [isAudioOtpLoading, setIsAudioOtpLoading] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
     const [recordingError, setRecordingError] = useState("");
-    const [pendingAudioOtp, setPendingAudioOtp] = useState<{
-        destination: string;
-        simulatedOtp: string;
-    } | null>(null);
+    const [pendingAudioOtp, setPendingAudioOtp] = useState(false);
     const [isTweetLimitDialogOpen, setIsTweetLimitDialogOpen] = useState(false);
     const [count, setCount] = useState(0);
     const audioInputRef = useRef<HTMLInputElement | null>(null);
@@ -91,7 +88,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         setAudioOtp("");
         setAudioOtpError("");
         setAudioOtpVerified(false);
-        setPendingAudioOtp(null);
+        setPendingAudioOtp(false);
         if (audioInputRef.current) audioInputRef.current.value = "";
     };
 
@@ -155,7 +152,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         setAudioOtp("");
         setAudioOtpError("");
         setAudioOtpVerified(false);
-        setPendingAudioOtp(null);
+        setPendingAudioOtp(false);
         setIsAudioOtpLoading(true);
 
         const response = await requestAudioOtp();
@@ -166,10 +163,10 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             return setAudioOtpError(response.message ?? "Audio verification failed.");
         }
 
-        setPendingAudioOtp({
-            destination: response.destination,
-            simulatedOtp: response.simulatedOtp,
-        });
+        setPendingAudioOtp(true);
+        if (response.message) {
+            setAudioOtpError("");
+        }
     };
 
     const handleAudioChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -241,7 +238,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
 
         setAudioOtpError("");
         setAudioOtpVerified(true);
-        setPendingAudioOtp(null);
+        setPendingAudioOtp(false);
         setAudioOtp("");
     };
 
@@ -434,8 +431,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 {isAudioOtpLoading && <CircularLoading />}
                 {pendingAudioOtp && (
                     <div className="audio-otp">
-                        <p>OTP sent to {pendingAudioOtp.destination}</p>
-                        <p className="simulated-otp">Testing OTP: {pendingAudioOtp.simulatedOtp}</p>
+                        <p>An audio verification code has been sent to your registered email.</p>
                         <TextField
                             fullWidth
                             name="audioOtp"

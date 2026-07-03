@@ -5,6 +5,7 @@ import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
 import { saveAudioOtp } from "@/utilities/audio/otp";
 import { UserProps } from "@/types/UserProps";
+import { sendEmail } from "@/utilities/email/sendEmail";
 
 export async function POST() {
     const token = cookies().get("token")?.value;
@@ -26,14 +27,22 @@ export async function POST() {
 
     const { otp, expiresAt } = saveAudioOtp(user.id);
 
-    console.info(`Simulated audio upload OTP sent to email ${user.email}: ${otp}`);
+    await sendEmail({
+        to: user.email,
+        subject: "Twitter Clone - Audio Upload Verification",
+        html: `
+            <h2>Twitter Clone</h2>
+            <h3>Audio Upload Verification</h3>
+            <p>Your 6-digit OTP is:</p>
+            <h1>${otp}</h1>
+            <p>This OTP is required before posting a tweet containing audio.</p>
+            <p>This OTP expires according to the existing verification flow.</p>
+        `,
+    });
 
     return NextResponse.json({
         success: true,
-        deliveryMethod: "email",
-        destination: user.email,
+        message: "An audio verification code has been sent to your registered email.",
         expiresAt,
-        // This is intentionally returned because this app has no real email provider.
-        simulatedOtp: otp,
     });
 }

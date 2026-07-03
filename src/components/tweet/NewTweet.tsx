@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { TextField, Avatar } from "@mui/material";
+import { Avatar, Dialog, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { MdOutlineAudiotrack } from "react-icons/md";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/navigation";
 
 import CircularLoading from "../misc/CircularLoading";
 import { createTweet, requestAudioOtp, verifyAudioOtp } from "@/utilities/fetch";
@@ -20,6 +21,11 @@ import ProgressCircle from "../misc/ProgressCircle";
 const MAX_AUDIO_SIZE_BYTES = 100 * 1024 * 1024;
 const MAX_AUDIO_DURATION_SECONDS = 300;
 const AUDIO_TIME_RESTRICTION_MESSAGE = "Audio tweets can only be posted between 2:00 PM and 7:00 PM IST.";
+const SUBSCRIPTION_LIMIT_MESSAGES = [
+    "Free plan allows only 1 tweet.",
+    "Bronze plan allows only 3 tweets per month.",
+    "Silver plan allows only 5 tweets per month.",
+];
 
 export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [showPicker, setShowPicker] = useState(false);
@@ -37,12 +43,14 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         destination: string;
         simulatedOtp: string;
     } | null>(null);
+    const [isTweetLimitDialogOpen, setIsTweetLimitDialogOpen] = useState(false);
     const [count, setCount] = useState(0);
     const audioInputRef = useRef<HTMLInputElement | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const recordedChunksRef = useRef<Blob[]>([]);
     const recordingStreamRef = useRef<MediaStream | null>(null);
     const { t } = useTranslation();
+    const router = useRouter();
 
     const queryClient = useQueryClient();
 
@@ -63,7 +71,15 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tweets"] });
         },
-        onError: (error) => console.log(error),
+        onError: (error) => {
+            const message = error instanceof Error ? error.message : "";
+            if (SUBSCRIPTION_LIMIT_MESSAGES.includes(message)) {
+                setIsTweetLimitDialogOpen(true);
+                return;
+            }
+
+            console.log(error);
+        },
     });
 
     const handlePhotoChange = (file: File) => {
@@ -444,6 +460,30 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 )}
                 {audioOtpError && !pendingAudioOtp && <p className="audio-otp-error">{audioOtpError}</p>}
             </form>
+            <Dialog className="dialog" open={isTweetLimitDialogOpen} onClose={() => setIsTweetLimitDialogOpen(false)} fullWidth maxWidth="xs">
+                <DialogTitle className="title">Tweet Limit Reached</DialogTitle>
+                <DialogContent>
+                    <DialogContentText className="text-muted">
+                        You have reached the maximum tweets allowed for your current subscription plan. Upgrade your subscription to continue
+                        tweeting.
+                    </DialogContentText>
+                </DialogContent>
+                <div className="button-group" style={{ padding: "0 24px 24px" }}>
+                    <button
+                        className="btn btn-dark"
+                        onClick={() => {
+                            setIsTweetLimitDialogOpen(false);
+                            router.push("/settings");
+                        }}
+                        autoFocus
+                    >
+                        Upgrade Plan
+                    </button>
+                    <button className="btn btn-white" onClick={() => setIsTweetLimitDialogOpen(false)}>
+                        Cancel
+                    </button>
+                </div>
+            </Dialog>
         </div>
     );
 }

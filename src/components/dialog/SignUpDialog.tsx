@@ -14,6 +14,14 @@ import { SnackbarProps } from "@/types/SnackbarProps";
 
 export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogProps) {
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
+    const [pendingSignup, setPendingSignup] = useState<{
+        username: string;
+        password: string;
+        email: string;
+        phone: string;
+        name: string;
+    } | null>(null);
+    const [otp, setOtp] = useState("");
     const { t } = useTranslation();
 
     const router = useRouter();
@@ -55,16 +63,49 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
             const response = await createUser(JSON.stringify(values));
             if (!response.success) {
                 return setSnackbar({
-                    message: t("auth.genericFailed"),
+                    message: response.message ?? t("auth.genericFailed"),
                     severity: "error",
                     open: true,
                 });
             }
+            if (response.requiresOtp) {
+                setPendingSignup(values);
+                setOtp("");
+                return setSnackbar({
+                    message: response.message ?? "A verification code has been sent to your email.",
+                    severity: "success",
+                    open: true,
+                });
+            }
             resetForm();
+            setPendingSignup(null);
+            setOtp("");
             handleSignUpClose();
             router.push("/explore");
         },
     });
+
+    const handleVerifySignupOtp = async () => {
+        if (!pendingSignup) return;
+
+        formik.setSubmitting(true);
+        const response = await createUser(JSON.stringify({ ...pendingSignup, otp }));
+        formik.setSubmitting(false);
+
+        if (!response.success) {
+            return setSnackbar({
+                message: response.message ?? t("auth.genericFailed"),
+                severity: "error",
+                open: true,
+            });
+        }
+
+        formik.resetForm();
+        setPendingSignup(null);
+        setOtp("");
+        handleSignUpClose();
+        router.push("/explore");
+    };
 
     return (
         <Dialog className="dialog" open={open} onClose={handleSignUpClose}>
@@ -72,77 +113,106 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
             <DialogTitle className="title">{t("auth.signupTitle")}</DialogTitle>
             <form className="dialog-form" onSubmit={formik.handleSubmit}>
                 <DialogContent>
-                    <div className="input-group">
-                        <div className="input">
-                            <div className="info">{t("auth.loginInfo")}</div>
-                            <TextField
-                                required
-                                fullWidth
-                                name="username"
-                                label={t("auth.username")}
-                                placeholder="username"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">@</InputAdornment>,
-                                }}
-                                value={formik.values.username}
-                                onChange={formik.handleChange}
-                                error={Boolean(formik.errors.username)}
-                                helperText={formik.errors.username}
-                                autoFocus
-                            />
+                    {pendingSignup ? (
+                        <div className="input-group">
+                            <div className="input">
+                                <div className="info">A verification code has been sent to your email.</div>
+                                <TextField
+                                    fullWidth
+                                    name="otp"
+                                    label="Enter OTP"
+                                    value={otp}
+                                    onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                                    autoFocus
+                                />
+                            </div>
                         </div>
-                        <div className="input">
-                            <TextField
-                                required
-                                fullWidth
-                                name="password"
-                                label={t("auth.password")}
-                                type="password"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                error={Boolean(formik.errors.password)}
-                                helperText={formik.errors.password}
-                            />
+                    ) : (
+                        <div className="input-group">
+                            <div className="input">
+                                <div className="info">{t("auth.loginInfo")}</div>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="username"
+                                    label={t("auth.username")}
+                                    placeholder="username"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">@</InputAdornment>,
+                                    }}
+                                    value={formik.values.username}
+                                    onChange={formik.handleChange}
+                                    error={Boolean(formik.errors.username)}
+                                    helperText={formik.errors.username}
+                                    autoFocus
+                                />
+                            </div>
+                            <div className="input">
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="password"
+                                    label={t("auth.password")}
+                                    type="password"
+                                    value={formik.values.password}
+                                    onChange={formik.handleChange}
+                                    error={Boolean(formik.errors.password)}
+                                    helperText={formik.errors.password}
+                                />
+                            </div>
+                            <div className="input">
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="email"
+                                    label={t("auth.email")}
+                                    value={formik.values.email}
+                                    onChange={formik.handleChange}
+                                    error={Boolean(formik.errors.email)}
+                                    helperText={formik.errors.email}
+                                />
+                            </div>
+                            <div className="input">
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="phone"
+                                    label={t("auth.phone")}
+                                    value={formik.values.phone}
+                                    onChange={formik.handleChange}
+                                    error={Boolean(formik.errors.phone)}
+                                    helperText={formik.errors.phone}
+                                />
+                            </div>
+                            <div className="input">
+                                <div className="info">{t("auth.publicName")}</div>
+                                <TextField
+                                    fullWidth
+                                    name="name"
+                                    label={t("auth.name")}
+                                    value={formik.values.name}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.name && Boolean(formik.errors.name)}
+                                    helperText={formik.touched.name && formik.errors.name}
+                                />
+                            </div>
                         </div>
-                        <div className="input">
-                            <TextField
-                                required
-                                fullWidth
-                                name="email"
-                                label={t("auth.email")}
-                                value={formik.values.email}
-                                onChange={formik.handleChange}
-                                error={Boolean(formik.errors.email)}
-                                helperText={formik.errors.email}
-                            />
-                        </div>
-                        <div className="input">
-                            <TextField
-                                required
-                                fullWidth
-                                name="phone"
-                                label={t("auth.phone")}
-                                value={formik.values.phone}
-                                onChange={formik.handleChange}
-                                error={Boolean(formik.errors.phone)}
-                                helperText={formik.errors.phone}
-                            />
-                        </div>
-                        <div className="input">
-                            <div className="info">{t("auth.publicName")}</div>
-                            <TextField
-                                fullWidth
-                                name="name"
-                                label={t("auth.name")}
-                                value={formik.values.name}
-                                onChange={formik.handleChange}
-                                error={formik.touched.name && Boolean(formik.errors.name)}
-                                helperText={formik.touched.name && formik.errors.name}
-                            />
-                        </div>
-                    </div>
+                    )}
                 </DialogContent>
-                {formik.isSubmitting ? (
+                {pendingSignup ? (
+                    formik.isSubmitting ? (
+                        <CircularLoading />
+                    ) : (
+                        <button
+                            className={`btn btn-dark ${otp.length === 6 ? "" : "disabled"}`}
+                            type="button"
+                            onClick={handleVerifySignupOtp}
+                            disabled={otp.length !== 6}
+                        >
+                            {t("actions.verify")}
+                        </button>
+                    )
+                ) : formik.isSubmitting ? (
                     <CircularLoading />
                 ) : (
                     <button

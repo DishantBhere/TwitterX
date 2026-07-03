@@ -16,9 +16,6 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
     const [pendingOtp, setPendingOtp] = useState<{
         username: string;
-        deliveryMethod: string;
-        destination: string;
-        simulatedOtp: string;
     } | null>(null);
     const [otp, setOtp] = useState("");
     const { t } = useTranslation();
@@ -54,11 +51,13 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
             if (response.requiresOtp) {
                 setPendingOtp({
                     username: response.username ?? values.username,
-                    deliveryMethod: response.deliveryMethod,
-                    destination: response.destination,
-                    simulatedOtp: response.simulatedOtp,
                 });
                 setOtp("");
+                setSnackbar({
+                    message: response.message ?? "A verification code has been sent to your registered email.",
+                    severity: "success",
+                    open: true,
+                });
                 return;
             }
             resetForm();
@@ -124,10 +123,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                     {pendingOtp && (
                         <div className="language-otp">
                             <h2>Verify your login</h2>
-                            <p>
-                                A 6-digit OTP was sent to your registered {pendingOtp.deliveryMethod}: {pendingOtp.destination}.
-                            </p>
-                            <p className="simulated-otp">Simulated OTP: {pendingOtp.simulatedOtp}</p>
+                            <p>A verification code has been sent to your registered email.</p>
                             <TextField
                                 fullWidth
                                 name="otp"

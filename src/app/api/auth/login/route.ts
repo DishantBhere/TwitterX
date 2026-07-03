@@ -4,6 +4,7 @@ import { prisma } from "@/prisma/client";
 import { comparePasswords } from "@/utilities/bcrypt";
 import { createUserToken } from "@/utilities/auth/jwt";
 import { saveLoginOtp } from "@/utilities/auth/login-otp";
+import { sendEmail } from "@/utilities/email/sendEmail";
 
 export async function POST(request: NextRequest) {
     const { username, password } = await request.json();
@@ -108,15 +109,23 @@ export async function POST(request: NextRequest) {
                 ipAddress,
             });
 
-            console.info(`Simulated Chrome login OTP sent to email ${user.email}: ${otp}`);
+            await sendEmail({
+                to: user.email,
+                subject: "Twitter Clone - Login Verification",
+                html: `
+                    <h2>Twitter Clone</h2>
+                    <h3>Login Verification</h3>
+                    <p>Your 6-digit OTP is:</p>
+                    <h1>${otp}</h1>
+                    <p>This OTP expires according to the existing login OTP flow.</p>
+                `,
+            });
 
             return NextResponse.json({
                 success: true,
                 requiresOtp: true,
-                deliveryMethod: "email",
-                destination: user.email,
+                message: "A verification code has been sent to your registered email.",
                 expiresAt,
-                simulatedOtp: otp,
                 username: user.username,
             });
         }

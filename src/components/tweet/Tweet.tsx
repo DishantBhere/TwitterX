@@ -68,7 +68,7 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
     return (
         <motion.div
             onClick={handleTweetClick}
-            className={`tweet div-link ${tweet.isRetweet && "retweet"} ${displayedTweet.isReply && "reply"}`}
+            className={`tweet x-tweet div-link ${tweet.isRetweet && "retweet"} ${displayedTweet.isReply && "reply"}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -81,14 +81,14 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                 onMouseLeave={handlePopoverClose}
             >
                 <Avatar
-                    className="avatar"
-                    sx={{ width: 50, height: 50 }}
+                    className="avatar x-tweet-avatar"
+                    sx={{ width: 48, height: 48 }}
                     alt=""
                     src={displayedTweet.author.photoUrl ? getFullURL(displayedTweet.author.photoUrl) : "/assets/egg.jpg"}
                 />
             </Link>
-            <div className="tweet-main">
-                <section className="tweet-author-section">
+            <div className="tweet-main x-tweet-main">
+                <section className="tweet-author-section x-tweet-author-section">
                     <Link
                         onClick={handlePropagation}
                         className="tweet-author-link"
@@ -96,7 +96,7 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                         onMouseEnter={handlePopoverOpen}
                         onMouseLeave={handlePopoverClose}
                     >
-                        <span className="tweet-author">
+                        <span className="tweet-author x-tweet-author">
                             {displayedTweet.author.name !== "" ? displayedTweet.author.name : displayedTweet.author.username}
                             {displayedTweet.author.isPremium && (
                                 <span className="blue-tick" data-blue="Verified Blue">
@@ -104,16 +104,16 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                                 </span>
                             )}
                         </span>
-                        <span className="text-muted">@{displayedTweet.author.username}</span>
+                        <span className="text-muted x-tweet-handle">@{displayedTweet.author.username}</span>
                     </Link>
                     <Tooltip title={formatDateExtended(displayedTweet.createdAt)} placement="top">
-                        <span className="text-muted date">
+                        <span className="text-muted date x-tweet-date">
                             <span className="middle-dot">·</span>
                             {formatDate(displayedTweet.createdAt)}
                         </span>
                     </Tooltip>
                 </section>
-                <div className="tweet-text">
+                <div className="tweet-text x-tweet-text">
                     {displayedTweet.isReply && (
                         <Link
                             onClick={handlePropagation}
@@ -133,7 +133,7 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                 </div>
                 {displayedTweet.photoUrl && (
                     <div onClick={handlePropagation}>
-                        <div className="tweet-image">
+                        <div className="tweet-image x-tweet-image">
                             <Image
                                 onClick={handleImageClick}
                                 src={getFullURL(displayedTweet.photoUrl)}
@@ -152,11 +152,11 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                     </div>
                 )}
                 {displayedTweet.audioUrl && (
-                    <div onClick={handlePropagation} className="tweet-audio">
+                    <div onClick={handlePropagation} className="tweet-audio x-tweet-audio">
                         <audio controls src={getFullURL(displayedTweet.audioUrl)} />
                     </div>
                 )}
-                <div onClick={handlePropagation} className="tweet-bottom">
+                <div onClick={handlePropagation} className="tweet-bottom x-tweet-bottom">
                     <Reply tweet={displayedTweet} />
                     <Retweet tweetId={displayedTweet.id} tweetAuthor={displayedTweet.author.username} />
                     <Like tweetId={displayedTweet.id} tweetAuthor={displayedTweet.author.username} />
@@ -200,6 +200,63 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
             >
                 <ProfileCard username={hoveredProfile} token={token} />
             </Popover>
+            <style jsx>{`
+                .x-tweet {
+                    display: flex;
+                    gap: 12px;
+                    padding: 12px 16px;
+                    border-bottom: 1px solid rgba(239, 243, 244, 0.15);
+                    cursor: pointer;
+                    transition: background-color 0.15s ease;
+                }
+                .x-tweet:hover {
+                    background-color: rgba(231, 233, 234, 0.06);
+                }
+                .x-tweet-avatar {
+                    flex-shrink: 0;
+                }
+                .x-tweet-main {
+                    flex: 1;
+                    min-width: 0;
+                }
+                .x-tweet-author-section {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    flex-wrap: wrap;
+                }
+                .x-tweet-author {
+                    font-weight: 700;
+                }
+                .x-tweet-handle,
+                .x-tweet-date {
+                    font-weight: 400;
+                }
+                .x-tweet-text {
+                    margin-top: 2px;
+                    font-size: 15px;
+                    line-height: 20px;
+                    white-space: pre-wrap;
+                    word-wrap: break-word;
+                }
+                .x-tweet-image {
+                    margin-top: 10px;
+                    border-radius: 16px;
+                    overflow: hidden;
+                    border: 1px solid rgba(239, 243, 244, 0.15);
+                }
+                .x-tweet-audio {
+                    margin-top: 10px;
+                    padding: 8px 0;
+                }
+                .x-tweet-bottom {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    max-width: 425px;
+                    margin-top: 8px;
+                }
+            `}</style>
         </motion.div>
     );
 }

@@ -327,15 +327,15 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     }
 
     return (
-        <div className="new-tweet-form">
+        <div className="new-tweet-form x-composer">
             <Avatar
-                className="avatar div-link"
-                sx={{ width: 50, height: 50 }}
+                className="avatar div-link x-composer-avatar"
+                sx={{ width: 48, height: 48 }}
                 alt=""
                 src={token.photoUrl ? getFullURL(token.photoUrl) : "/assets/egg.jpg"}
             />
-            <form onSubmit={formik.handleSubmit}>
-                <div className="input">
+            <form onSubmit={formik.handleSubmit} className="x-composer-form">
+                <div className="input x-composer-input">
                     <TextField
                         placeholder={t("home.whatsHappening")}
                         multiline
@@ -350,7 +350,9 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                         helperText={formik.touched.text && formik.errors.text}
                     />
                 </div>
-                <div className="input-additions">
+                <div className="x-composer-divider" />
+                <div className="input-additions x-composer-toolbar">
+                    <div className="x-composer-icons">
                     <button
                         onClick={(e) => {
                             e.preventDefault();
@@ -376,10 +378,9 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                                 e.preventDefault();
                                 handleStopRecording();
                             }}
-                            className="icon-hoverable"
+                            className="icon-hoverable x-mic-btn"
                         >
                             <FaStop />
-                            Stop Recording
                         </button>
                     ) : (
                         <button
@@ -387,10 +388,9 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                                 e.preventDefault();
                                 handleStartRecording();
                             }}
-                            className="icon-hoverable"
+                            className="icon-hoverable x-mic-btn"
                         >
                             <FaMicrophone />
-                            Record Audio
                         </button>
                     )}
                     <button
@@ -402,10 +402,17 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     >
                         <FaRegSmile />
                     </button>
-                    <ProgressCircle maxChars={280} count={count} />
-                    <button className={`btn ${isTweetSubmittable ? "" : "disabled"}`} disabled={!isTweetSubmittable} type="submit">
-                        {t("actions.tweet")}
-                    </button>
+                    </div>
+                    <div className="x-composer-post-group">
+                        <ProgressCircle maxChars={280} count={count} />
+                        <button
+                            className={`btn x-composer-post-btn ${isTweetSubmittable ? "" : "disabled"}`}
+                            disabled={!isTweetSubmittable}
+                            type="submit"
+                        >
+                            {t("actions.tweet")}
+                        </button>
+                    </div>
                 </div>
                 {showPicker && (
                     <div className="emoji-picker">
@@ -480,6 +487,101 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     </button>
                 </div>
             </Dialog>
+            <style jsx>{`
+                .x-composer {
+                    display: flex;
+                    gap: 12px;
+                    align-items: flex-start;
+                    padding: 12px 16px;
+                }
+                .x-composer-avatar {
+                    flex-shrink: 0;
+                }
+                .x-composer-form {
+                    flex: 1;
+                    min-width: 0;
+                }
+                .x-composer-input {
+                    min-height: 40px;
+                    padding-top: 4px;
+                    padding-bottom: 8px;
+                    font-size: 20px;
+                }
+                .x-composer-input :global(input),
+                .x-composer-input :global(textarea) {
+                    font-size: 20px;
+                }
+                .x-composer-input :global(textarea::placeholder) {
+                    color: rgb(113, 118, 123);
+                    opacity: 1;
+                }
+                .x-composer-divider {
+                    border-bottom: 1px solid rgba(239, 243, 244, 0.08);
+                    margin-bottom: 8px;
+                }
+                .x-composer-toolbar {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 8px;
+                }
+                .x-composer-icons {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex: 1;
+                    max-width: 320px;
+                }
+                .x-composer-icons .icon-hoverable {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 70px;
+                    height: 40px;
+                    border-radius: 50%;
+                    font-size: 21px;
+                    color: rgb(162, 179, 189);
+                    transition: background-color 0.15s ease, transform 0.1s ease;
+                }
+                .x-composer-icons .icon-hoverable:hover {
+                    background-color: rgba(29, 155, 240, 0.1);
+                    transform: scale(1.05);
+                }
+                .x-composer-icons .icon-hoverable:active {
+                    background-color: rgba(29, 155, 240, 0.18);
+                }
+                .x-mic-btn {
+                    color: rgb(178, 202, 219) !important;
+                    font-size: 21px !important;
+                }
+                .x-mic-btn:hover {
+                    background-color: rgba(29, 155, 240, 0.1) !important;
+                }
+                .x-mic-btn:active {
+                    background-color: rgba(29, 155, 240, 0.18) !important;
+                }
+                .x-composer-post-group {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-left: auto;
+                }
+                .x-composer-post-btn {
+                    border-radius: 9999px;
+                    padding: 6px 16px;
+                    font-size: 14px;
+                    font-weight: 700;
+                    background-color: #eff3f4;
+                    color: #0f1419;
+                    transition: opacity 0.15s ease;
+                }
+                .x-composer-post-btn.disabled {
+                    opacity: 0.5;
+                }
+                .x-composer-post-btn:hover:not(.disabled) {
+                    opacity: 0.85;
+                }
+            `}</style>
         </div>
     );
 }

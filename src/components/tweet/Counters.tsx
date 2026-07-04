@@ -37,24 +37,25 @@ export default function Counters({ tweet }: { tweet: TweetProps }) {
     return (
         <>
             {tweet.likedBy.length === 0 && tweet.retweetedBy.length === 0 ? null : (
-                <div className="tweet-stats">
-                    <div className="counters">
+                <>
+                <div className="tweet-stats x-counters-row">
+                    <div className="counters x-counters">
                         {tweet.replies.length > 0 && (
-                            <button className="counter-btn" onClick={scrollToBottom}>
+                            <button className="counter-btn x-counter-btn" onClick={scrollToBottom}>
                                 <span className="count">
                                     {tweet.replies.length} <span className="text-muted">Replies</span>
                                 </span>
                             </button>
                         )}
                         {tweet.retweetedBy.length > 0 && (
-                            <button className="counter-btn" onClick={() => handleDialogOpen("retweets")}>
+                            <button className="counter-btn x-counter-btn" onClick={() => handleDialogOpen("retweets")}>
                                 <span className="count">
                                     {tweet.retweetedBy.length} <span className="text-muted">Retweets</span>
                                 </span>
                             </button>
                         )}
                         {tweet.likedBy.length > 0 && (
-                            <button className="counter-btn" onClick={() => handleDialogOpen("likes")}>
+                            <button className="counter-btn x-counter-btn" onClick={() => handleDialogOpen("likes")}>
                                 <span className="count">
                                     {tweet.likedBy.length} <span className="text-muted">Likes</span>
                                 </span>
@@ -62,6 +63,27 @@ export default function Counters({ tweet }: { tweet: TweetProps }) {
                         )}
                     </div>
                 </div>
+                <style jsx>{`
+                    .x-counters-row {
+                        padding: 8px 16px;
+                        border-bottom: 1px solid rgba(239, 243, 244, 0.15);
+                    }
+                    .x-counters {
+                        display: flex;
+                        gap: 20px;
+                    }
+                    .x-counter-btn {
+                        display: flex;
+                        align-items: center;
+                        padding: 4px 0;
+                        transition: opacity 0.15s ease;
+                    }
+                    .x-counter-btn:hover {
+                        opacity: 0.75;
+                        text-decoration: underline;
+                    }
+                `}</style>
+                </>
             )}
             {isDialogOpen && (
                 <Dialog className="dialog" open={isDialogOpen} onClose={handleDialogClose} fullWidth maxWidth="xs">

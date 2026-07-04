@@ -1,28 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Tooltip } from "@mui/material";
-import { FaArrowRight } from "react-icons/fa";
-import Image from "next/image";
-import Link from "next/link";
-import { useTranslation } from "react-i18next";
+import { Box, Button, Divider, Stack, TextField, Typography } from "@mui/material";
+import { FaApple, FaGoogle, FaPhone, FaXTwitter } from "react-icons/fa6";
 
 import SignUpDialog from "@/components/dialog/SignUpDialog";
 import LogInDialog from "@/components/dialog/LogInDialog";
-import { logInAsTest } from "@/utilities/fetch";
-import GlobalLoading from "@/components/misc/GlobalLoading";
 import CustomSnackbar from "@/components/misc/CustomSnackbar";
 import { SnackbarProps } from "@/types/SnackbarProps";
+import { supabase } from "@/utilities/storage";
 
 export default function RootPage() {
     const [isSignUpOpen, setIsSignUpOpen] = useState(false);
     const [isLogInOpen, setIsLogInOpen] = useState(false);
-    const [isLoggingAsTest, setIsLoggingAsTest] = useState(false);
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
-    const { t } = useTranslation();
-
-    const router = useRouter();
 
     const handleSignUpClick = () => {
         setIsSignUpOpen(true);
@@ -36,55 +27,73 @@ export default function RootPage() {
     const handleLogInClose = () => {
         setIsLogInOpen(false);
     };
-    const handleTestLogin = async () => {
-        setIsLoggingAsTest(true);
-        const response = await logInAsTest();
-        if (!response.success) {
-            setIsLoggingAsTest(false);
-            setSnackbar({ message: t("auth.genericFailed"), severity: "error", open: true });
-            return;
-        }
-        router.push("/explore");
-    };
+    const handleGoogleLogin = async () => {
+        const redirectTo = `${window.location.origin}/auth/google/callback`;
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo,
+            },
+        });
 
-    if (isLoggingAsTest) return <GlobalLoading />;
+        if (error) {
+            setSnackbar({ message: error.message, severity: "error", open: true });
+        }
+    };
+    const handleAppleSoon = () => {
+        setSnackbar({ message: "Apple Sign-In coming soon.", severity: "info", open: true });
+    };
 
     return (
         <>
-            <main className="root">
-                <div className="root-left">
-                    <Image src="/assets/root.png" alt="" fill />
-                    <div className="root-left-logo">
-                        <Image src="/assets/favicon-white.png" alt="" width={140} height={140} />
-                    </div>
-                </div>
-                <div className="root-right">
-                    <Image src="/assets/favicon.png" alt="" width={40} height={40} />
-                    <h1>{t("auth.hero")}</h1>
-                    <p>{t("auth.join")}</p>
-                    <div className="button-group">
-                        <button className="btn" onClick={handleSignUpClick}>
-                            {t("actions.createAccount")}
-                        </button>
-                        <button className="btn btn-light" onClick={handleLogInClick}>
-                            {t("actions.signin")}
-                        </button>
-                        <Tooltip
-                            title={t("auth.testTooltip")}
-                            placement="bottom"
-                        >
-                            <button onClick={handleTestLogin} className="btn btn-light">
-                                <span>{t("auth.testAccount")}</span>
-                            </button>
-                        </Tooltip>
-                    </div>
-                </div>
+            <main className="root x-landing">
+                <Box className="x-landing-left">
+                    <Stack spacing={3} className="x-landing-stack">
+                        <Box className="x-landing-brand">
+                            <FaXTwitter />
+                        </Box>
+                        <Typography component="h1" className="x-landing-title">
+                            Happening now.
+                        </Typography>
+                        <Typography component="h2" className="x-landing-subtitle">
+                            Join today.
+                        </Typography>
+                        <Stack spacing={1.5} className="x-landing-actions">
+                            <Button className="x-btn x-btn-outline" variant="outlined" onClick={handleGoogleLogin}>
+                                <FaGoogle />
+                                Continue with Google
+                            </Button>
+                            <Button className="x-btn x-btn-outline" variant="outlined" onClick={handleAppleSoon}>
+                                <FaApple />
+                                Continue with Apple
+                            </Button>
+                        </Stack>
+                        <Divider className="x-divider">
+                            <span>or</span>
+                        </Divider>
+                        <Stack spacing={1.5} className="x-landing-form">
+                            <TextField
+                                fullWidth
+                                label="Email or Username"
+                                placeholder="Enter email or username"
+                                variant="outlined"
+                                size="medium"
+                            />
+                            <Button className="x-btn x-btn-primary" variant="contained" onClick={handleLogInClick}>
+                                Continue
+                            </Button>
+                        </Stack>
+                        <Typography component="p" className="x-landing-footer">
+                            By signing up, you agree to the Terms of Service and Privacy Policy, including Cookie Use.
+                        </Typography>
+                    </Stack>
+                </Box>
+                <Box className="x-landing-right" aria-hidden="true">
+                    <FaXTwitter className="x-watermark" />
+                </Box>
             </main>
             <SignUpDialog open={isSignUpOpen} handleSignUpClose={handleSignUpClose} />
             <LogInDialog open={isLogInOpen} handleLogInClose={handleLogInClose} />
-            <Link className="fixed-link text-muted" href="/explore">
-                {t("auth.exploreWithoutLogin")} <FaArrowRight />
-            </Link>
             {snackbar.open && (
                 <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />
             )}

@@ -329,7 +329,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                                 <p>{t("profile.blueDescription")}</p>
                                 <p>
                                     {t("profile.blueCodeInfo")}
-                                    <a href="https://github.com/fatiharapoglu/twitter" target="_blank">
+                                    <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
                                         {" "}
                                         {t("profile.here")}{" "}
                                     </a>

@@ -205,6 +205,160 @@ main {
     }
 }
 
+.x-landing {
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    background-color: #000;
+    color: #e7e9ea;
+    overflow: hidden;
+
+    .x-landing-left,
+    .x-landing-right {
+        min-height: 100vh;
+    }
+
+    .x-landing-left {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(2rem, 5vw, 4rem);
+        background:
+            radial-gradient(circle at top left, rgba(29, 155, 240, 0.14), transparent 35%),
+            radial-gradient(circle at bottom right, rgba(29, 155, 240, 0.08), transparent 30%),
+            #000;
+    }
+
+    .x-landing-stack {
+        width: min(100%, 30rem);
+        position: relative;
+        z-index: 1;
+    }
+
+    .x-landing-brand {
+        color: #e7e9ea;
+        font-size: 3rem;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .x-landing-title {
+        color: #e7e9ea;
+        font-size: clamp(3rem, 7vw, 5.8rem);
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+    }
+
+    .x-landing-subtitle {
+        color: #e7e9ea;
+        font-size: clamp(1.7rem, 3vw, 2.3rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+    }
+
+    .x-landing-actions,
+    .x-landing-form {
+        width: 100%;
+    }
+
+    .x-btn {
+        min-height: 3rem;
+        border-radius: 9999px !important;
+        text-transform: none !important;
+        font-size: 0.98rem !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.01em !important;
+        box-shadow: none !important;
+        justify-content: center;
+        gap: 0.8rem;
+    }
+
+    .x-btn-outline {
+        color: #0f1419 !important;
+        background: #f5f8fa !important;
+        border: 1px solid #d7dbdf !important;
+
+        &:hover {
+            background: #e7e9ea !important;
+            border-color: #cfd4d9 !important;
+        }
+    }
+
+    .x-btn-primary {
+        background: #1d9bf0 !important;
+        color: #fff !important;
+
+        &:hover {
+            background: #1a8cd8 !important;
+        }
+    }
+
+    .x-divider {
+        width: 100%;
+        color: #2f3336;
+        border-color: #2f3336;
+        margin: 0.25rem 0 !important;
+
+        span {
+            color: #e7e9ea;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0 0.9rem;
+            background: #000;
+        }
+    }
+
+    .x-landing-form .MuiTextField-root {
+        .MuiOutlinedInput-root {
+            color: #e7e9ea;
+            border-radius: 0.9rem;
+            background: #0f1419;
+
+            fieldset {
+                border-color: #2f3336;
+            }
+
+            &:hover fieldset {
+                border-color: #536471;
+            }
+
+            &.Mui-focused fieldset {
+                border-color: #1d9bf0;
+            }
+        }
+
+        .MuiInputLabel-root {
+            color: #71767b;
+        }
+    }
+
+    .x-landing-footer {
+        color: #71767b;
+        font-size: 0.85rem;
+        line-height: 1.45;
+    }
+
+    .x-landing-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background:
+            radial-gradient(circle at center, rgba(29, 155, 240, 0.08), transparent 42%),
+            linear-gradient(135deg, #0a0a0a 0%, #000 55%, #050505 100%);
+        overflow: hidden;
+    }
+
+    .x-watermark {
+        font-size: min(55vw, 40rem);
+        color: #e7e9ea;
+        opacity: 0.06;
+        transform: rotate(-8deg);
+        filter: blur(0.3px);
+        pointer-events: none;
+        user-select: none;
+    }
+}
+
 .dialog {
     .dialog-form {
         width: 100%;
@@ -2171,6 +2325,23 @@ button.icon-hoverable {
         .root-right {
             margin: auto;
             padding: 2rem;
+        }
+    }
+
+    .x-landing {
+        grid-template-columns: 100%;
+
+        .x-landing-right {
+            display: none;
+        }
+
+        .x-landing-left {
+            min-height: 100vh;
+            padding: 2rem 1.25rem;
+        }
+
+        .x-landing-stack {
+            width: min(100%, 32rem);
         }
     }
 }

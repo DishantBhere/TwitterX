@@ -5,36 +5,36 @@ export default function Legal() {
         <footer className="legal">
             <ul className="legal-links">
                 <li>
-                    <a href="https://github.com/fatiharapoglu/twitter" target="_blank">
+                    <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
                         Terms of Service
                     </a>
                 </li>
                 <li>
-                    <a href="https://github.com/fatiharapoglu/twitter" target="_blank">
+                    <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
                         Privacy Policy
                     </a>
                 </li>
                 <li>
-                    <a href="https://github.com/fatiharapoglu/twitter" target="_blank">
+                    <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
                         Cookie Policy
                     </a>
                 </li>
                 <li>
-                    <a href="https://github.com/fatiharapoglu/twitter" target="_blank">
+                    <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
                         Imprint
                     </a>
                 </li>
                 <li>
-                    <a href="https://github.com/fatiharapoglu/twitter" target="_blank">
+                    <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
                         Accessibility
                     </a>
                 </li>
             </ul>
             <div className="copy">
-                <a href="https://fatiharapoglu.com.tr" target="_blank">
-                    &copy; 2023 | Fatih Arapoğlu
+                <a href="https://github.com/DishantBhere" target="_blank">
+                    &copy; 2023 | Dishant Bhere
                 </a>
-                <a href="https://github.com/fatiharapoglu" target="_blank">
+                <a href="https://github.com/DishantBhere" target="_blank">
                     <FaGithub className="github" />
                 </a>
             </div>

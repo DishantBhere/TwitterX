@@ -8,14 +8,20 @@ import { sendEmail } from "@/utilities/email/sendEmail";
 import { getLoginContext } from "@/utilities/auth/shared";
 
 export async function POST(request: NextRequest) {
-    const { username, password } = await request.json();
+    const body = await request.json();
+    const identifier = body.identifier ?? body.username;
+    const password = body.password;
+    console.log("[login] identifier supplied:", identifier);
 
     try {
         const user = await prisma.user.findFirst({
             where: {
-                username: username,
+                OR: [{ username: identifier }, { email: identifier }],
             },
         });
+
+        console.log("[login] user found:", user ? { id: user.id, username: user.username, email: user.email } : null);
+        console.log("[login] stored hash:", user?.password);
 
         if (!user) {
             return NextResponse.json({
@@ -25,6 +31,7 @@ export async function POST(request: NextRequest) {
         }
 
         const isPasswordValid = await comparePasswords(password, user.password);
+        console.log("[login] comparePasswords() result:", isPasswordValid);
 
         if (!isPasswordValid) {
             return NextResponse.json({

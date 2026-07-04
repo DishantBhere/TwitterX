@@ -23,12 +23,9 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
     const router = useRouter();
 
     const validationSchema = yup.object({
-        username: yup
+        identifier: yup
             .string()
-            .min(3, "Username should be of minimum 3 characters length.")
-            .max(20, "Username should be of maximum 20 characters length.")
-            .matches(/^[a-zA-Z0-9_]{1,14}[a-zA-Z0-9]$/, "Username is invalid")
-            .required("Username is required."),
+            .required("Email or username is required."),
         password: yup
             .string()
             .min(8, "Password should be of minimum 8 characters length.")
@@ -38,7 +35,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
 
     const formik = useFormik({
         initialValues: {
-            username: "",
+            identifier: "",
             password: "",
         },
         validationSchema: validationSchema,
@@ -50,7 +47,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
             }
             if (response.requiresOtp) {
                 setPendingOtp({
-                    username: response.username ?? values.username,
+                    username: response.username ?? values.identifier,
                 });
                 setOtp("");
                 setSnackbar({
@@ -94,16 +91,16 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                         <div className="input">
                             <TextField
                                 fullWidth
-                                name="username"
-                                label={t("auth.username")}
-                                placeholder="username"
+                                name="identifier"
+                                label="Email or Username"
+                                placeholder="email or username"
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start">@</InputAdornment>,
                                 }}
-                                value={formik.values.username}
+                                value={formik.values.identifier}
                                 onChange={formik.handleChange}
-                                error={formik.touched.username && Boolean(formik.errors.username)}
-                                helperText={formik.touched.username && formik.errors.username}
+                                error={formik.touched.identifier && Boolean(formik.errors.identifier)}
+                                helperText={formik.touched.identifier && formik.errors.identifier}
                                 autoFocus
                             />
                         </div>

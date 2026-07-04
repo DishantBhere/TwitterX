@@ -260,6 +260,12 @@ main {
         width: 100%;
     }
 
+    .x-landing-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
     .x-btn {
         min-height: 3rem;
         border-radius: 9999px !important;
@@ -290,6 +296,33 @@ main {
         &:hover {
             background: #1a8cd8 !important;
         }
+    }
+
+    .x-btn-back {
+        min-width: 7rem;
+    }
+
+    .x-login-actions {
+        width: 100%;
+        align-items: center;
+    }
+
+    .x-forgot-link {
+        width: fit-content;
+        color: #1d9bf0;
+        font-size: 0.93rem;
+        font-weight: 600;
+        margin-top: -0.25rem;
+
+        &:hover {
+            color: #1a8cd8;
+        }
+    }
+
+    .x-generated-password {
+        color: #71767b;
+        font-size: 0.9rem;
+        margin-top: -0.25rem;
     }
 
     .x-divider {

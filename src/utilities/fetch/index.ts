@@ -92,13 +92,13 @@ export const createTweet = async (tweet: string) => {
     return json;
 };
 
-export const logIn = async (candidate: string) => {
+export const logIn = async (identifierPayload: string) => {
     const response = await fetch(`${HOST_URL}/api/auth/login`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: candidate,
+        body: identifierPayload,
     });
     return response.json();
 };
@@ -251,13 +251,22 @@ export const verifyAudioOtp = async (otp: string) => {
     return response.json();
 };
 
-export const forgotPassword = async (identifier: string) => {
+export const forgotPassword = async (
+    payload: {
+        action: "request" | "verify" | "reset";
+        identifier: string;
+        otp?: string;
+        newPassword?: string;
+        resetToken?: string;
+        userId?: string;
+    }
+) => {
     const response = await fetch(`${HOST_URL}/api/auth/forgot-password`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ identifier }),
+        body: JSON.stringify(payload),
     });
     return response.json();
 };

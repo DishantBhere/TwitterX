@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, useState } from "react";
 import { usePathname } from "next/navigation";
-import { FaArrowLeft, FaRegEnvelope } from "react-icons/fa";
+import { FaArrowLeft, FaRegEnvelope, FaSearch } from "react-icons/fa";
 import { Avatar, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { BiCalendarCheck } from "react-icons/bi";
 import { GoLocation } from "react-icons/go";
-import { AiFillTwitterCircle, AiOutlineLink } from "react-icons/ai";
+import { AiFillTwitterCircle, AiOutlineLink, AiOutlineClose } from "react-icons/ai";
+import { MdVerified } from "react-icons/md";
 
 import { formatDateForProfile } from "@/utilities/date";
 import { AuthContext } from "@/context/AuthContext";
@@ -28,6 +29,7 @@ export default function Profile({ profile }: { profile: UserProps }) {
     const [isNewMessageOpen, setIsNewMessageOpen] = useState(false);
     const [preview, setPreview] = useState({ open: false, url: "" });
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
+    const [isVerifyCardDismissed, setIsVerifyCardDismissed] = useState(false);
 
     const { token } = useContext(AuthContext);
     const pathname = usePathname();
@@ -88,8 +90,8 @@ export default function Profile({ profile }: { profile: UserProps }) {
     };
 
     return (
-        <>
-            <div className="back-to">
+        <div className="profile-layout">
+            <div className="back-to x-back-to">
                 <Link className="icon-hoverable" href="/explore">
                     <FaArrowLeft />
                 </Link>
@@ -97,9 +99,12 @@ export default function Profile({ profile }: { profile: UserProps }) {
                     <span className="top-title">{profile.username}</span>
                     <TweetArrayLength username={profile.username} />
                 </div>
+                <Link className="icon-hoverable x-search-icon" href="/explore">
+                    <FaSearch />
+                </Link>
             </div>
-            <div className="profile">
-                <div className="profile-header">
+            <div className="profile x-profile">
+                <div className="profile-header x-profile-header">
                     <Image
                         onClick={handleImageClick}
                         className="div-link"
@@ -107,11 +112,11 @@ export default function Profile({ profile }: { profile: UserProps }) {
                         src={profile.headerUrl ? getFullURL(profile.headerUrl) : "/assets/header.jpg"}
                         fill
                     />
-                    <div className="avatar-wrapper">
+                    <div className="avatar-wrapper x-avatar-wrapper">
                         <Avatar
                             className="div-link avatar"
                             onClick={handleImageClick}
-                            sx={{ width: 125, height: 125 }}
+                            sx={{ width: 133, height: 133 }}
                             alt="profile-photo"
                             src={profile.photoUrl ? getFullURL(profile.photoUrl) : "/assets/egg.jpg"}
                         />
@@ -130,6 +135,9 @@ export default function Profile({ profile }: { profile: UserProps }) {
                         <div className="text-muted">
                             @{profile.username}{" "}
                             {isFollowingTokenOwner() && <span className="is-following">Follows you</span>}
+                        </div>
+                        <div className="x-profile-tweet-count text-muted">
+                            <TweetArrayLength username={profile.username} />
                         </div>
                     </div>
                     {profile.description && <div className="profile-info-desc">{profile.description}</div>}
@@ -173,14 +181,36 @@ export default function Profile({ profile }: { profile: UserProps }) {
                             <Follow profile={profile} />
                         </div>
                     )}
+                    {token?.username === profile.username && !profile.isPremium && !isVerifyCardDismissed && (
+                        <div className="x-verify-card">
+                            <button
+                                type="button"
+                                className="x-verify-close"
+                                onClick={() => setIsVerifyCardDismissed(true)}
+                                aria-label="Dismiss"
+                            >
+                                <AiOutlineClose />
+                            </button>
+                            <h2 className="x-verify-title">
+                                You aren&apos;t verified yet <MdVerified className="x-verify-badge" />
+                            </h2>
+                            <p className="x-verify-desc">
+                                Get verified for boosted replies, analytics, ad-free browsing, and more. Upgrade your profile
+                                now.
+                            </p>
+                            <Link href="/settings" className="x-verify-btn">
+                                Get verified
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
-            <nav className="profile-nav">
+            <nav className="profile-nav x-profile-nav">
                 <Link
                     className={`profile-nav-link ${pathname === `/${profile.username}` ? "active" : ""}`}
                     href={`/${profile.username}`}
                 >
-                    <span>Tweets</span>
+                    <span>Posts</span>
                 </Link>
                 <Link
                     className={`profile-nav-link ${pathname === `/${profile.username}/replies` ? "active" : ""}`}
@@ -188,6 +218,12 @@ export default function Profile({ profile }: { profile: UserProps }) {
                 >
                     <span>Replies</span>
                 </Link>
+                <span className="profile-nav-link x-tab-inert" title="Coming soon">
+                    <span>Highlights</span>
+                </span>
+                <span className="profile-nav-link x-tab-inert" title="Coming soon">
+                    <span>Articles</span>
+                </span>
                 <Link
                     className={`profile-nav-link ${pathname === `/${profile.username}/media` ? "active" : ""}`}
                     href={`/${profile.username}/media`}
@@ -235,6 +271,6 @@ export default function Profile({ profile }: { profile: UserProps }) {
             {snackbar.open && (
                 <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />
             )}
-        </>
+        </div>
     );
 }

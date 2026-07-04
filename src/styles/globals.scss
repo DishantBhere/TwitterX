@@ -2547,3 +2547,216 @@ button.icon-hoverable {
         max-height: 200px;
     }
 }
+/* ============================================================
+   PROFILE REDESIGN — paste at the END of your global stylesheet
+   (after the existing .profile-layout / .profile-card / .back-to
+   blocks so these overrides win on specificity/order).
+   No logic touched — presentation only.
+   ============================================================ */
+
+:root {
+    --twitter-green: #00ba7c;
+    --twitter-green-background: #00ba7c1a;
+}
+
+/* ---- back-to bar: search icon beside back arrow ---- */
+.x-back-to {
+    justify-content: flex-start;
+
+    .top {
+        flex: 1;
+    }
+
+    .x-search-icon {
+        margin-left: auto;
+        font-size: 1.1rem;
+    }
+}
+
+/* ---- banner / avatar proportions ---- */
+.x-profile-header {
+    height: 200px;
+    background-color: var(--twitter-light-gray);
+}
+
+.x-avatar-wrapper {
+    border: 4px solid var(--background-primary) !important;
+    border-radius: 50% !important;
+    line-height: 0;
+    background-color: var(--background-primary);
+}
+
+/* ---- display name / handle / tweet count ---- */
+.profile-info-main h1 {
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2;
+}
+
+.profile-info-main .text-muted {
+    font-size: 0.93rem;
+}
+
+.x-profile-tweet-count {
+    font-size: 0.85rem;
+    margin-top: 0.1rem;
+}
+
+/* ---- bio / meta row / follow counts spacing ---- */
+.profile-info-desc {
+    margin-top: 0.15rem;
+}
+
+.profile-info-optional {
+    flex-wrap: wrap;
+    row-gap: 0.35rem;
+}
+
+.profile-info-popularity {
+    .popularity-section {
+        display: flex;
+        gap: 0.25rem;
+    }
+}
+
+/* ---- edit profile button placement + rounding ---- */
+.edit-profile-section {
+    &.btn,
+    .btn {
+        border-radius: 9999px !important;
+        font-weight: 700 !important;
+        padding: 0.5rem 1rem !important;
+    }
+}
+
+/* ---- green "not verified" card, matches X style exactly ---- */
+.x-verify-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.1rem 2.5rem 1.25rem 1.25rem;
+    border-radius: 1rem;
+    background-color: #00341f;
+    margin-top: 0.5rem;
+
+    .x-verify-close {
+        position: absolute;
+        top: 0.9rem;
+        right: 1rem;
+        border: none;
+        background: transparent;
+        color: #ffffff;
+        opacity: 0.8;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0.25rem;
+        line-height: 0;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .x-verify-title {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #ffffff;
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .x-verify-badge {
+        color: var(--twitter-blue);
+        font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+
+    .x-verify-desc {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.9rem;
+        line-height: 1.35;
+        margin: 0;
+        max-width: 34rem;
+    }
+
+    .x-verify-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        margin-top: 0.35rem;
+        padding: 0.55rem 1.1rem;
+        border-radius: 9999px;
+        background-color: #ffffff;
+        color: #0f1419;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: #e7e9ea;
+        }
+    }
+}
+
+/* ---- tabs: 6-wide, inert placeholders for Highlights/Articles ---- */
+.x-profile-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    .profile-nav-link {
+        white-space: nowrap;
+        padding: 1rem 1.25rem 0.25rem;
+    }
+
+    .x-tab-inert {
+        cursor: default;
+        opacity: 0.45;
+
+        &:hover {
+            background-color: transparent;
+        }
+    }
+}
+
+/* ---- empty profile state polish (reuses existing .nothing-to-show) ---- */
+.nothing-to-show {
+    padding: 4rem 1.5rem;
+
+    h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--twitter-black);
+    }
+
+    p {
+        font-family: inherit;
+        color: var(--twitter-muted);
+        font-size: 0.95rem;
+    }
+}
+
+/* ---- responsive ---- */
+@media (width <= 650px) {
+    .profile-info-main h1 {
+        font-size: 1.3rem !important;
+    }
+
+    .x-verify-card .x-verify-desc {
+        display: none;
+    }
+}
+
+@media (width <= 550px) {
+    .x-profile-nav .profile-nav-link {
+        padding: 0.85rem 0.75rem 0.25rem;
+        font-size: 0.85rem;
+    }
+}

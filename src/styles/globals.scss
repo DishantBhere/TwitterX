@@ -943,9 +943,9 @@ main {
 
 .footer {
     position: fixed;
+    left: 0;
+    right: 0;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
     width: 100%;
     padding: 1rem;
     display: flex;
@@ -955,6 +955,8 @@ main {
     color: var(--const-white);
     background-color: var(--twitter-blue);
     opacity: 0.9;
+    z-index: 1000;
+    box-sizing: border-box;
 
     .footer-div {
         padding-left: 1rem;

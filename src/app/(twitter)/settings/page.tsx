@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useState, type ChangeEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
     Button,
@@ -13,10 +13,19 @@ import {
     DialogContent,
     DialogTitle,
     Grid,
+    InputAdornment,
+    List,
+    ListItemButton,
+    ListItemText,
+    ListSubheader,
     Stack,
     Switch,
+    TextField,
     Typography,
 } from "@mui/material";
+import type { Theme } from "@mui/material/styles";
+import { FaChevronRight, FaArrowLeft } from "react-icons/fa6";
+import { MdSearch } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { ThemeContext } from "@/app/providers";
@@ -36,6 +45,8 @@ declare global {
     }
 }
 
+type SettingsSection = "theme" | "language" | "subscription" | "loginHistory";
+
 export default function SettingsPage() {
     const { theme, toggleTheme } = useContext(ThemeContext);
     const { token, refreshToken } = useContext(AuthContext);
@@ -52,6 +63,10 @@ export default function SettingsPage() {
         queryFn: getLoginHistory,
         enabled: !!token,
     });
+
+    // UI-only state for the nested X-style settings navigation. No backend/logic impact.
+    const [activeSection, setActiveSection] = useState<SettingsSection | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const loginHistory: LoginHistoryProps[] = data?.loginHistory ?? [];
     const subscriptionPlans = useMemo(
@@ -166,99 +181,426 @@ export default function SettingsPage() {
         }
     };
 
-    return (
-        <main>
-            <h1 className="page-name">{t("settings.title")}</h1>
-            <div className="color-theme-switch">
-                <h1>{t("settings.colorTheme")}</h1>
-                <Switch checked={theme === "dark"} onChange={toggleTheme} />
-                <div className="label">{theme === "dark" ? t("settings.lightsOut") : t("settings.defaultTheme")}</div>
-            </div>
-            {token && (
-                <div className="settings-language">
-                    <h1>{t("settings.language")}</h1>
+    // ---- UI-only helpers (no logic/state impact beyond navigation) ----
+
+    const currentPlanName =
+        subscriptionPlans.find((p) => p.key === token?.subscriptionPlan)?.name ?? "Free";
+
+    type Row = { key: SettingsSection; title: string; subtitle: string; visible: boolean };
+
+    const rows: Row[] = [
+        {
+            key: "theme",
+            title: t("settings.colorTheme"),
+            subtitle: theme === "dark" ? t("settings.lightsOut") : t("settings.defaultTheme"),
+            visible: true,
+        },
+        {
+            key: "language",
+            title: t("settings.language"),
+            subtitle: "Manage the language Twitter displays to you",
+            visible: !!token,
+        },
+        {
+            key: "subscription",
+            title: "Premium",
+            subtitle: `Current plan: ${currentPlanName}`,
+            visible: !!token,
+        },
+        {
+            key: "loginHistory",
+            title: "Login History",
+            subtitle: "See your recent account activity",
+            visible: !!token,
+        },
+    ];
+
+    const filteredRows = rows.filter(
+        (row) => row.visible && row.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    );
+
+    const sectionTitles: Record<SettingsSection, string> = {
+        theme: t("settings.colorTheme"),
+        language: t("settings.language"),
+        subscription: "Premium",
+        loginHistory: "Login History",
+    };
+
+    const renderRow = (row: Row) => (
+        <ListItemButton
+            key={row.key}
+            selected={activeSection === row.key}
+            onClick={() => setActiveSection(row.key)}
+            sx={{
+                px: 2,
+                py: 1.5,
+                borderRadius: 0,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 1.5,
+                "&.Mui-selected": {
+                    backgroundColor: (muiTheme: Theme) => (muiTheme.palette.mode === "dark" ? "rgba(231,233,234,0.1)" : "rgba(15,20,25,0.06)"),
+                },
+                "&.Mui-selected:hover": {
+                    backgroundColor: (muiTheme: Theme) => (muiTheme.palette.mode === "dark" ? "rgba(231,233,234,0.1)" : "rgba(15,20,25,0.06)"),
+                },
+                "&:hover": {
+                    backgroundColor: (muiTheme: Theme) => (muiTheme.palette.mode === "dark" ? "rgba(231,233,234,0.1)" : "rgba(15,20,25,0.06)"),
+                },
+                transition: "background-color 0.15s ease-in-out",
+            }}
+        >
+            <ListItemText
+                primary={row.title}
+                secondary={row.subtitle}
+                primaryTypographyProps={{ fontWeight: 700, fontSize: "0.98rem" }}
+                secondaryTypographyProps={{ fontSize: "0.85rem" }}
+            />
+            <FaChevronRight style={{ flexShrink: 0, opacity: 0.6, fontSize: "0.85rem" }} />
+        </ListItemButton>
+    );
+
+    const renderThemePanel = () => (
+        <Stack spacing={2} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
+            <Typography variant="body2" color="text.secondary">
+                Choose how Twitter looks to you. This setting applies to this browser only.
+            </Typography>
+            <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 3,
+                    px: 2.5,
+                    py: 2,
+                }}
+            >
+                <Stack>
+                    <Typography fontWeight={700}>Dark mode</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {theme === "dark" ? t("settings.lightsOut") : t("settings.defaultTheme")}
+                    </Typography>
+                </Stack>
+                <Switch
+                    checked={theme === "dark"}
+                    onChange={toggleTheme}
+                    sx={{
+                        width: 58,
+                        height: 34,
+                        p: 0,
+                        "& .MuiSwitch-switchBase": {
+                            p: "6px",
+                            "&.Mui-checked": {
+                                transform: "translateX(24px)",
+                                color: "#fff",
+                                "& + .MuiSwitch-track": {
+                                    backgroundColor: "#1d9bf0",
+                                    opacity: 1,
+                                },
+                            },
+                        },
+                        "& .MuiSwitch-thumb": {
+                            width: 22,
+                            height: 22,
+                            boxShadow: "none",
+                        },
+                        "& .MuiSwitch-track": {
+                            borderRadius: 17,
+                            backgroundColor: "#71767b",
+                            opacity: 1,
+                            transition: "background-color 0.2s ease-in-out",
+                        },
+                    }}
+                />
+            </Stack>
+        </Stack>
+    );
+
+    const renderLanguagePanel = () => (
+        <Stack spacing={2} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
+            <Typography variant="body2" color="text.secondary">
+                Manage which language Twitter displays to you.
+            </Typography>
+            <Stack
+                sx={{
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 3,
+                    px: 2.5,
+                    py: 2.5,
+                }}
+            >
+                {token && (
                     <LanguageSelector currentLanguage={token.preferredLanguage ?? "en"} refreshToken={refreshToken} />
-                </div>
-            )}
-            {token && (
-                <div className="settings-language">
-                    <h1>Subscription</h1>
-                    <Grid container spacing={2}>
-                        {subscriptionPlans.map((plan) => {
-                            const isCurrentPlan = token.subscriptionPlan === plan.key;
-                            return (
-                                <Grid item xs={12} sm={6} md={3} key={plan.key}>
-                                    <Card
-                                        sx={{
-                                            height: "100%",
-                                            border: isCurrentPlan ? "2px solid #1d9bf0" : "1px solid rgba(0,0,0,0.12)",
-                                            boxShadow: isCurrentPlan ? "0 0 0 1px rgba(29,155,240,0.2)" : "none",
-                                            background: isCurrentPlan ? "rgba(29,155,240,0.06)" : "inherit",
-                                        }}
+                )}
+            </Stack>
+        </Stack>
+    );
+
+    const renderSubscriptionPanel = () => (
+        <Stack spacing={2.5} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
+            <Typography variant="body2" color="text.secondary">
+                Upgrade your account to unlock more daily tweets and premium perks.
+            </Typography>
+            <Grid container spacing={2}>
+                {subscriptionPlans.map((plan) => {
+                    const isCurrentPlan = token?.subscriptionPlan === plan.key;
+                    return (
+                        <Grid item xs={12} sm={6} key={plan.key}>
+                            <Card
+                                variant="outlined"
+                                sx={{
+                                    height: "100%",
+                                    borderRadius: 4,
+                                    borderColor: isCurrentPlan ? "#1d9bf0" : "divider",
+                                    borderWidth: isCurrentPlan ? 2 : 1,
+                                    boxShadow: "none",
+                                    backgroundColor: isCurrentPlan ? "rgba(29,155,240,0.06)" : "transparent",
+                                    transition: "border-color 0.15s ease-in-out, background-color 0.15s ease-in-out",
+                                }}
+                            >
+                                <CardContent>
+                                    <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
+                                        <Typography variant="h6" component="h2" fontWeight={800}>
+                                            {plan.name}
+                                        </Typography>
+                                        {isCurrentPlan && (
+                                            <Chip
+                                                size="small"
+                                                label="Current"
+                                                sx={{
+                                                    backgroundColor: "#1d9bf0",
+                                                    color: "#fff",
+                                                    fontWeight: 700,
+                                                }}
+                                            />
+                                        )}
+                                    </Stack>
+                                    <Typography variant="h5" sx={{ mt: 1, fontWeight: 800 }}>
+                                        {plan.price}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                        {plan.tweets}
+                                    </Typography>
+                                </CardContent>
+                                <CardActions sx={{ px: 2, pb: 2 }}>
+                                    <Button
+                                        variant={isCurrentPlan ? "outlined" : "contained"}
+                                        fullWidth
+                                        onClick={() => handleChoosePlan(plan.key)}
+                                        disabled={isCheckoutLoading && selectedPlan === plan.key}
+                                        sx={{ borderRadius: 999, fontWeight: 700, textTransform: "none" }}
                                     >
-                                        <CardContent>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-                                                <Typography variant="h6" component="h2">
-                                                    {plan.name}
-                                                </Typography>
-                                                {isCurrentPlan && <Chip size="small" color="primary" label="Current plan" />}
-                                            </div>
-                                            <Typography variant="h5" sx={{ mt: 1, fontWeight: 700 }}>
-                                                {plan.price}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                                                {plan.tweets}
-                                            </Typography>
-                                        </CardContent>
-                                        <CardActions sx={{ px: 2, pb: 2 }}>
-                                            <Button
-                                                variant={isCurrentPlan ? "outlined" : "contained"}
-                                                fullWidth
-                                                onClick={() => handleChoosePlan(plan.key)}
-                                                disabled={isCheckoutLoading && selectedPlan === plan.key}
-                                            >
-                                                Choose Plan
-                                            </Button>
-                                        </CardActions>
-                                    </Card>
-                                </Grid>
-                            );
-                        })}
-                    </Grid>
-                </div>
+                                        Choose Plan
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                        </Grid>
+                    );
+                })}
+            </Grid>
+            {paymentMessage && (
+                <Typography variant="body2" sx={{ color: "text.secondary", fontWeight: 500 }}>
+                    {paymentMessage}
+                </Typography>
             )}
-            {token && (
-                <div className="settings-language">
-                    <h1>Login History</h1>
-                    {isLoading ? (
-                        <CircularLoading />
-                    ) : loginHistory.length === 0 ? (
-                        <p className="text-muted">No login history available.</p>
-                    ) : (
-                        <div className="login-history-list">
-                            {loginHistory.map((entry, index) => (
-                                <div className="login-history-item" key={`${entry.loginTime}-${index}`}>
-                                    <div>
-                                        <strong>Browser:</strong> {entry.browser}
-                                    </div>
-                                    <div>
-                                        <strong>Operating System:</strong> {entry.operatingSystem}
-                                    </div>
-                                    <div>
-                                        <strong>Device Type:</strong> {entry.deviceType}
-                                    </div>
-                                    <div>
-                                        <strong>IP Address:</strong> {entry.ipAddress}
-                                    </div>
-                                    <div>
-                                        <strong>Login Time:</strong> {formatDateExtended(entry.loginTime)}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+        </Stack>
+    );
+
+    const renderLoginHistoryPanel = () => (
+        <Stack spacing={2} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
+            <Typography variant="body2" color="text.secondary">
+                Where you're logged in. See all the devices and locations linked to your account.
+            </Typography>
+            {isLoading ? (
+                <CircularLoading />
+            ) : loginHistory.length === 0 ? (
+                <Typography color="text.secondary" sx={{ textAlign: "center", py: 6 }}>
+                    No login history available.
+                </Typography>
+            ) : (
+                <Stack spacing={1.5}>
+                    {loginHistory.map((entry, index) => (
+                        <Stack
+                            key={`${entry.loginTime}-${index}`}
+                            spacing={0.75}
+                            sx={{
+                                border: "1px solid",
+                                borderColor: "divider",
+                                borderRadius: 3,
+                                px: 2.5,
+                                py: 2,
+                            }}
+                        >
+                            <Typography fontWeight={700} fontSize="0.95rem">
+                                {entry.browser} · {entry.operatingSystem}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {entry.deviceType}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {entry.ipAddress}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {formatDateExtended(entry.loginTime)}
+                            </Typography>
+                        </Stack>
+                    ))}
+                </Stack>
             )}
+        </Stack>
+    );
+
+    const renderActivePanel = () => {
+        switch (activeSection) {
+            case "theme":
+                return renderThemePanel();
+            case "language":
+                return renderLanguagePanel();
+            case "subscription":
+                return renderSubscriptionPanel();
+            case "loginHistory":
+                return renderLoginHistoryPanel();
+            default:
+                return (
+                    <Stack alignItems="center" justifyContent="center" sx={{ height: "100%", px: 3, py: 8 }}>
+                        <Typography color="text.secondary" sx={{ textAlign: "center" }}>
+                            Select a setting on the left to view options here.
+                        </Typography>
+                    </Stack>
+                );
+        }
+    };
+
+    return (
+        <main className="x-settings-shell">
+            {/*
+              Layout-only fix: the app's outer .layout grid caps the middle
+              column at minmax(500px,600px), which squeezed this page's own
+              menu+detail split into a tiny inner area (looked like a popup).
+              This widens ONLY the middle track, ONLY while this page is
+              mounted, so the left nav (280px) and right Trends/News sidebar
+              (290-350px) stay exactly the widths they already are.
+            */}
+            <style>{`
+                .layout:has(.x-settings-shell) {
+                    grid-template-columns: 280px minmax(500px, 1fr) minmax(290px, 350px);
+                }
+            `}</style>
+            <Stack
+                direction="row"
+                sx={{
+                    height: "100%",
+                    minHeight: "100vh",
+                    width: "100%",
+                }}
+            >
+                {/* LEFT PANEL */}
+                <Stack
+                    sx={{
+                        width: { xs: "100%", md: 360 },
+                        flexShrink: 0,
+                        borderRight: { md: "1px solid" },
+                        borderColor: "divider",
+                        display: { xs: activeSection ? "none" : "flex", md: "flex" },
+                    }}
+                >
+                    <Typography
+                        component="h1"
+                        className="page-name"
+                        sx={{ fontWeight: 800, fontSize: "1.25rem" }}
+                    >
+                        {t("settings.title")}
+                    </Typography>
+
+                    <TextField
+                        placeholder="Search settings"
+                        size="small"
+                        value={searchQuery}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                        sx={{
+                            px: 2,
+                            pt: 1.5,
+                            pb: 1,
+                            "& .MuiOutlinedInput-root": {
+                                borderRadius: 999,
+                            },
+                        }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <MdSearch style={{ opacity: 0.6, fontSize: "1.1rem" }} />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
+                    <List sx={{ py: 0 }}>
+                        <ListSubheader sx={{ fontWeight: 700, lineHeight: 2.4, backgroundColor: "transparent" }}>
+                            Accessibility, display, and languages
+                        </ListSubheader>
+                        {filteredRows.filter((r) => r.key === "theme" || r.key === "language").map(renderRow)}
+
+                        {filteredRows.some((r) => r.key === "subscription") && (
+                            <>
+                                <ListSubheader sx={{ fontWeight: 700, lineHeight: 2.4, backgroundColor: "transparent" }}>
+                                    Premium
+                                </ListSubheader>
+                                {filteredRows.filter((r) => r.key === "subscription").map(renderRow)}
+                            </>
+                        )}
+
+                        {filteredRows.some((r) => r.key === "loginHistory") && (
+                            <>
+                                <ListSubheader sx={{ fontWeight: 700, lineHeight: 2.4, backgroundColor: "transparent" }}>
+                                    Security and account access
+                                </ListSubheader>
+                                {filteredRows.filter((r) => r.key === "loginHistory").map(renderRow)}
+                            </>
+                        )}
+                    </List>
+                </Stack>
+
+                {/* RIGHT PANEL — fills all remaining space, no fixed/max width */}
+                <Stack
+                    sx={{
+                        flex: 1,
+                        width: "100%",
+                        display: { xs: activeSection ? "flex" : "none", md: "flex" },
+                        minWidth: 0,
+                    }}
+                >
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        gap={1}
+                        className="page-name"
+                        sx={{ display: { xs: "flex", md: activeSection ? "flex" : "none" } }}
+                    >
+                        <Button
+                            onClick={() => setActiveSection(null)}
+                            sx={{
+                                display: { xs: "inline-flex", md: "none" },
+                                minWidth: 0,
+                                p: 1,
+                                borderRadius: 999,
+                                color: "inherit",
+                            }}
+                        >
+                            <FaArrowLeft />
+                        </Button>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.1rem" }}>
+                            {activeSection ? sectionTitles[activeSection] : ""}
+                        </Typography>
+                    </Stack>
+
+                    {renderActivePanel()}
+                </Stack>
+            </Stack>
+
             <Dialog open={!!activatedSubscription} onClose={() => setActivatedSubscription(null)} fullWidth maxWidth="xs">
                 <DialogTitle sx={{ pb: 1 }}>
                     <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>

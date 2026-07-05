@@ -3,8 +3,7 @@ import { Avatar, Dialog, DialogContent, DialogContentText, DialogTitle, TextFiel
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { FaMicrophone, FaRegImage, FaRegSmile, FaStop } from "react-icons/fa";
-import { MdOutlineAudiotrack } from "react-icons/md";
+import { RiEmotionHappyLine, RiFileGifLine, RiImage2Line, RiMic2Line, RiMusic2Line, RiStopCircleLine } from "react-icons/ri";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useTranslation } from "react-i18next";
@@ -30,7 +29,14 @@ const SUBSCRIPTION_LIMIT_MESSAGES = [
 export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [showPicker, setShowPicker] = useState(false);
     const [showDropzone, setShowDropzone] = useState(false);
+    const [showGifPicker, setShowGifPicker] = useState(false);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
+    const [gifFile, setGifFile] = useState<File | null>(null);
+    const [gifPreviewUrl, setGifPreviewUrl] = useState("");
+    const [gifResults, setGifResults] = useState<Array<{ title: string; previewUrl: string; gifUrl: string }>>([]);
+    const [gifQuery, setGifQuery] = useState("");
+    const [gifLoading, setGifLoading] = useState(false);
+    const [gifError, setGifError] = useState("");
     const [audioFile, setAudioFile] = useState<File | null>(null);
     const [audioPreviewUrl, setAudioPreviewUrl] = useState("");
     const [audioOtp, setAudioOtp] = useState("");
@@ -81,6 +87,17 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
 
     const handlePhotoChange = (file: File) => {
         setPhotoFile(file);
+        setGifFile(null);
+        setGifPreviewUrl("");
+        setGifError("");
+    };
+
+    const clearGifSelection = () => {
+        setGifFile(null);
+        setGifPreviewUrl("");
+        setGifError("");
+        setGifResults([]);
+        setGifQuery("");
     };
 
     const clearAudioSelection = () => {
@@ -90,6 +107,64 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         setAudioOtpVerified(false);
         setPendingAudioOtp(false);
         if (audioInputRef.current) audioInputRef.current.value = "";
+    };
+
+    const fetchGifs = async (query = "") => {
+        const apiKey = process.env.NEXT_PUBLIC_TENOR_API_KEY;
+        if (!apiKey) {
+            setGifError("GIF search is unavailable right now.");
+            return;
+        }
+
+        setGifLoading(true);
+        setGifError("");
+
+        try {
+            const endpoint = query
+                ? `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${apiKey}&client_key=twitter_clone&limit=12&media_filter=gif`
+                : `https://tenor.googleapis.com/v2/trending?key=${apiKey}&client_key=twitter_clone&limit=12&media_filter=gif`;
+
+            const response = await fetch(endpoint);
+            const data = await response.json();
+            const items = (data.results || [])
+                .map((item: any) => {
+                    const media = item.media?.[0];
+                    const gif = media?.gif || media?.tinygif || media?.nanogif;
+                    return gif?.url
+                        ? {
+                              title: item.content_description || "GIF",
+                              previewUrl: gif.url,
+                              gifUrl: gif.url,
+                          }
+                        : null;
+                })
+                .filter(Boolean) as Array<{ title: string; previewUrl: string; gifUrl: string }>;
+
+            setGifResults(items);
+            if (!items.length) {
+                setGifError("No GIFs found for this search.");
+            }
+        } catch {
+            setGifError("Unable to load GIFs right now.");
+        } finally {
+            setGifLoading(false);
+        }
+    };
+
+    const handleGifSelection = async (gifUrl: string) => {
+        try {
+            const response = await fetch(gifUrl);
+            const blob = await response.blob();
+            const file = new File([blob], `selected-gif-${Date.now()}.gif`, { type: blob.type || "image/gif" });
+
+            setPhotoFile(null);
+            setGifFile(file);
+            setGifPreviewUrl(URL.createObjectURL(file));
+            setShowGifPicker(false);
+            setGifError("");
+        } catch {
+            setGifError("Unable to attach this GIF.");
+        }
     };
 
     const getAudioDuration = (file: File) => {
@@ -255,6 +330,18 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     }, [audioFile]);
 
     useEffect(() => {
+        if (!gifFile) {
+            setGifPreviewUrl("");
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(gifFile);
+        setGifPreviewUrl(previewUrl);
+
+        return () => URL.revokeObjectURL(previewUrl);
+    }, [gifFile]);
+
+    useEffect(() => {
         return () => {
             if (mediaRecorderRef.current?.state === "recording") {
                 mediaRecorderRef.current.onstop = null;
@@ -295,6 +382,12 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 values.photoUrl = path;
                 setPhotoFile(null);
             }
+            if (gifFile) {
+                const path: string | void = await uploadFile(gifFile);
+                if (!path) throw new Error("Error uploading GIF.");
+                values.photoUrl = path;
+                clearGifSelection();
+            }
             if (audioFile) {
                 const path: string | void = await uploadFile(audioFile);
                 if (!path) throw new Error("Error uploading audio.");
@@ -309,6 +402,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             resetForm();
             setCount(0);
             setShowDropzone(false);
+            setShowGifPicker(false);
             clearAudioSelection();
             if (handleSubmit) handleSubmit();
         },
@@ -319,7 +413,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         formik.handleChange(e);
     };
 
-    const hasTweetContent = Boolean(formik.values.text.trim() || photoFile || audioFile);
+    const hasTweetContent = Boolean(formik.values.text.trim() || photoFile || gifFile || audioFile);
     const isTweetSubmittable = hasTweetContent && !Boolean(formik.errors.text);
 
     if (formik.isSubmitting) {
@@ -340,7 +434,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                         placeholder={t("home.whatsHappening")}
                         multiline
                         hiddenLabel
-                        minRows={3}
+                        minRows={1}
                         variant="standard"
                         fullWidth
                         name="text"
@@ -350,58 +444,84 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                         helperText={formik.touched.text && formik.errors.text}
                     />
                 </div>
-                <div className="x-composer-divider" />
+                <div className="x-composer-divider-row">
+                    <div className="x-composer-divider" />
+                </div>
                 <div className="input-additions x-composer-toolbar">
                     <div className="x-composer-icons">
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setShowDropzone(true);
-                        }}
-                        className="icon-hoverable"
-                    >
-                        <FaRegImage />
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            audioInputRef.current?.click();
-                        }}
-                        className="icon-hoverable"
-                    >
-                        <MdOutlineAudiotrack />
-                    </button>
-                    <input ref={audioInputRef} type="file" accept="audio/*" onChange={handleAudioChange} hidden />
-                    {isRecording ? (
                         <button
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault();
-                                handleStopRecording();
+                                setShowDropzone(true);
                             }}
-                            className="icon-hoverable x-mic-btn"
+                            className="icon-hoverable"
+                            aria-label="Add image"
                         >
-                            <FaStop />
+                            <RiImage2Line />
                         </button>
-                    ) : (
                         <button
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault();
-                                handleStartRecording();
+                                setShowGifPicker(true);
+                                if (!gifResults.length && !gifLoading) {
+                                    void fetchGifs();
+                                }
                             }}
-                            className="icon-hoverable x-mic-btn"
+                            className="icon-hoverable"
+                            aria-label="Add GIF"
                         >
-                            <FaMicrophone />
+                            <RiFileGifLine />
                         </button>
-                    )}
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setShowPicker(!showPicker);
-                        }}
-                        className="icon-hoverable"
-                    >
-                        <FaRegSmile />
-                    </button>
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                audioInputRef.current?.click();
+                            }}
+                            className="icon-hoverable"
+                            aria-label="Add audio"
+                        >
+                            <RiMusic2Line />
+                        </button>
+                        <input ref={audioInputRef} type="file" accept="audio/*" onChange={handleAudioChange} hidden />
+                        {isRecording ? (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleStopRecording();
+                                }}
+                                className="icon-hoverable x-mic-btn"
+                                aria-label="Stop recording"
+                            >
+                                <RiStopCircleLine />
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleStartRecording();
+                                }}
+                                className="icon-hoverable x-mic-btn"
+                                aria-label="Record audio"
+                            >
+                                <RiMic2Line />
+                            </button>
+                        )}
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setShowPicker(!showPicker);
+                            }}
+                            className="icon-hoverable"
+                            aria-label="Add emoji"
+                        >
+                            <RiEmotionHappyLine />
+                        </button>
                     </div>
                     <div className="x-composer-post-group">
                         <ProgressCircle maxChars={280} count={count} />
@@ -428,6 +548,14 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     </div>
                 )}
                 {showDropzone && <Uploader handlePhotoChange={handlePhotoChange} />}
+                {gifFile && gifPreviewUrl && (
+                    <div className="composer-gif-preview">
+                        <img src={gifPreviewUrl} alt="Selected GIF" />
+                        <button type="button" className="composer-gif-remove" onClick={clearGifSelection}>
+                            Remove
+                        </button>
+                    </div>
+                )}
                 {recordingError && <p className="audio-recording-error">{recordingError}</p>}
                 {audioFile && (
                     <div className="audio-preview">
@@ -463,6 +591,51 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 )}
                 {audioOtpError && !pendingAudioOtp && <p className="audio-otp-error">{audioOtpError}</p>}
             </form>
+            <Dialog
+                className="dialog"
+                open={showGifPicker}
+                onClose={() => setShowGifPicker(false)}
+                fullWidth
+                maxWidth="sm"
+                PaperProps={{ className: "gif-picker-dialog" }}
+            >
+                <DialogTitle className="title">Choose a GIF</DialogTitle>
+                <DialogContent className="gif-picker-content">
+                    <form
+                        className="gif-search-form"
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            void fetchGifs(gifQuery.trim());
+                        }}
+                    >
+                        <input
+                            value={gifQuery}
+                            onChange={(event) => setGifQuery(event.target.value)}
+                            placeholder="Search GIFs"
+                            className="gif-search-input"
+                        />
+                        <button type="submit" className="gif-search-button">
+                            Search
+                        </button>
+                    </form>
+                    {gifLoading && <p className="gif-status">Loading GIFs…</p>}
+                    {gifError && <p className="gif-status error">{gifError}</p>}
+                    {!gifLoading && !gifError && (
+                        <div className="gif-grid">
+                            {gifResults.map((gif) => (
+                                <button
+                                    key={`${gif.title}-${gif.previewUrl}`}
+                                    type="button"
+                                    className="gif-card"
+                                    onClick={() => void handleGifSelection(gif.gifUrl)}
+                                >
+                                    <img src={gif.previewUrl} alt={gif.title} />
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
             <Dialog className="dialog" open={isTweetLimitDialogOpen} onClose={() => setIsTweetLimitDialogOpen(false)} fullWidth maxWidth="xs">
                 <DialogTitle className="title">Tweet Limit Reached</DialogTitle>
                 <DialogContent>
@@ -492,67 +665,110 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     display: flex;
                     gap: 12px;
                     align-items: flex-start;
-                    padding: 12px 16px;
+                    padding: 10px 16px 10px;
                 }
                 .x-composer-avatar {
                     flex-shrink: 0;
+                    margin-top: 2px;
                 }
                 .x-composer-form {
                     flex: 1;
                     min-width: 0;
                 }
                 .x-composer-input {
-                    min-height: 40px;
-                    padding-top: 4px;
-                    padding-bottom: 8px;
-                    font-size: 20px;
+                    min-height: 28px;
+                    padding-top: 2px;
+                    padding-bottom: 4px;
+                    font-size: 17px;
+                }
+                .x-composer-input :global(.MuiInputBase-root) {
+                    padding: 0;
                 }
                 .x-composer-input :global(input),
                 .x-composer-input :global(textarea) {
                     font-size: 20px;
+                    line-height: 1.35;
+                    padding: 0;
                 }
                 .x-composer-input :global(textarea::placeholder) {
                     color: rgb(113, 118, 123);
                     opacity: 1;
                 }
+                .x-composer-divider-row {
+                    display: flex;
+                    align-items: center;
+                    margin: 4px 0 8px;
+                }
                 .x-composer-divider {
-                    border-bottom: 1px solid rgba(239, 243, 244, 0.08);
-                    margin-bottom: 8px;
+                    height: 1px;
+                    width: calc(100% - 104px);
+                    background: rgba(15, 20, 25, 0.12);
                 }
                 .x-composer-toolbar {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    gap: 8px;
+                    gap: 10px;
+                    min-height: 36px;
+                    padding-top: 0;
                 }
                 .x-composer-icons {
                     display: flex;
                     align-items: center;
-                    justify-content: space-between;
+                    justify-content: flex-start;
                     flex: 1;
-                    max-width: 320px;
+                    gap: 2px;
+                    min-height: 34px;
                 }
                 .x-composer-icons .icon-hoverable {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    width: 70px;
-                    height: 40px;
+                    width: 34px;
+                    height: 34px;
                     border-radius: 50%;
-                    font-size: 21px;
-                    color: rgb(162, 179, 189);
-                    transition: background-color 0.15s ease, transform 0.1s ease;
+                    font-size: 20px;
+                    color: rgb(29, 155, 240);
+                    background: transparent;
+                    border: none;
+                    transition: background-color 0.15s ease, transform 0.12s ease, color 0.15s ease;
+                    cursor: pointer;
+                    padding: 0;
                 }
                 .x-composer-icons .icon-hoverable:hover {
                     background-color: rgba(29, 155, 240, 0.1);
-                    transform: scale(1.05);
+                    transform: scale(1.02);
                 }
                 .x-composer-icons .icon-hoverable:active {
                     background-color: rgba(29, 155, 240, 0.18);
+                    transform: scale(0.98);
+                }
+                .x-composer-post-group {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-left: auto;
+                }
+                .x-composer-post-btn {
+                    width: 90px;
+                    height: 36px;
+                    min-height: 36px;
+                    padding: 0;
+                    border-radius: 9999px;
+                    font-size: 15px;
+                    font-weight: 700;
+                    line-height: 1;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .x-composer-post-btn.disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
                 }
                 .x-mic-btn {
-                    color: rgb(178, 202, 219) !important;
-                    font-size: 21px !important;
+                    color: rgb(29, 155, 240) !important;
+                    font-size: 20px !important;
                 }
                 .x-mic-btn:hover {
                     background-color: rgba(29, 155, 240, 0.1) !important;
@@ -563,12 +779,12 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 .x-composer-post-group {
                     display: flex;
                     align-items: center;
-                    gap: 12px;
+                    gap: 10px;
                     margin-left: auto;
                 }
                 .x-composer-post-btn {
                     border-radius: 9999px;
-                    padding: 6px 16px;
+                    padding: 8px 16px;
                     font-size: 14px;
                     font-weight: 700;
                     background-color: #eff3f4;
@@ -580,6 +796,87 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 }
                 .x-composer-post-btn:hover:not(.disabled) {
                     opacity: 0.85;
+                }
+                .composer-gif-preview {
+                    margin-top: 10px;
+                    border: 1px solid rgba(15, 20, 25, 0.12);
+                    border-radius: 16px;
+                    overflow: hidden;
+                    background: var(--twitter-white);
+                }
+                .composer-gif-preview img {
+                    display: block;
+                    width: 100%;
+                    max-height: 220px;
+                    object-fit: cover;
+                }
+                .composer-gif-remove {
+                    width: 100%;
+                    border: none;
+                    background: rgba(15, 20, 25, 0.04);
+                    color: rgb(29, 155, 240);
+                    padding: 8px 12px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                }
+                .gif-picker-dialog {
+                    border-radius: 16px;
+                    overflow: hidden;
+                }
+                .gif-picker-content {
+                    padding: 12px 16px 16px;
+                    background: var(--twitter-white);
+                }
+                .gif-search-form {
+                    display: flex;
+                    gap: 8px;
+                    margin-bottom: 12px;
+                }
+                .gif-search-input {
+                    flex: 1;
+                    border: 1px solid rgba(15, 20, 25, 0.16);
+                    border-radius: 999px;
+                    padding: 10px 12px;
+                    background: transparent;
+                    color: var(--twitter-black);
+                    outline: none;
+                }
+                .gif-search-button {
+                    border: none;
+                    background: rgb(29, 155, 240);
+                    color: white;
+                    border-radius: 999px;
+                    padding: 0 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                }
+                .gif-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 8px;
+                }
+                .gif-card {
+                    border: 1px solid rgba(15, 20, 25, 0.08);
+                    border-radius: 12px;
+                    overflow: hidden;
+                    padding: 0;
+                    background: transparent;
+                    cursor: pointer;
+                }
+                .gif-card img {
+                    display: block;
+                    width: 100%;
+                    height: 120px;
+                    object-fit: cover;
+                }
+                .gif-status {
+                    color: var(--twitter-muted);
+                    font-size: 14px;
+                    margin: 0 0 10px;
+                }
+                .gif-status.error {
+                    color: #f4212e;
                 }
             `}</style>
         </div>

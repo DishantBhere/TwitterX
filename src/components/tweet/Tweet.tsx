@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { AiFillTwitterCircle } from "react-icons/ai";
+import { RiBarChart2Line, RiBookmarkLine } from "react-icons/ri";
 
 import { TweetProps } from "@/types/TweetProps";
 import { formatDate, formatDateExtended } from "@/utilities/date";
@@ -82,7 +83,7 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
             >
                 <Avatar
                     className="avatar x-tweet-avatar"
-                    sx={{ width: 48, height: 48 }}
+                    sx={{ width: 40, height: 40 }}
                     alt=""
                     src={displayedTweet.author.photoUrl ? getFullURL(displayedTweet.author.photoUrl) : "/assets/egg.jpg"}
                 />
@@ -160,6 +161,16 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                     <Reply tweet={displayedTweet} />
                     <Retweet tweetId={displayedTweet.id} tweetAuthor={displayedTweet.author.username} />
                     <Like tweetId={displayedTweet.id} tweetAuthor={displayedTweet.author.username} />
+                    <button className="icon views x-extra-action" aria-label="Views">
+                        <span className="x-icon-circle">
+                            <RiBarChart2Line />
+                        </span>
+                    </button>
+                    <button className="icon bookmark x-extra-action" aria-label="Bookmark">
+                        <span className="x-icon-circle">
+                            <RiBookmarkLine />
+                        </span>
+                    </button>
                     <Share
                         tweetUrl={`https://${window.location.hostname}/${displayedTweet.author.username}/tweets/${displayedTweet.id}`}
                     />
@@ -204,13 +215,13 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                 .x-tweet {
                     display: flex;
                     gap: 12px;
-                    padding: 12px 16px;
-                    border-bottom: 1px solid rgba(239, 243, 244, 0.15);
+                    padding: 12px 16px 10px;
+                    border-bottom: 1px solid rgba(15, 20, 25, 0.12);
                     cursor: pointer;
                     transition: background-color 0.15s ease;
                 }
                 .x-tweet:hover {
-                    background-color: rgba(231, 233, 234, 0.06);
+                    background-color: rgba(15, 20, 25, 0.03);
                 }
                 .x-tweet-avatar {
                     flex-shrink: 0;
@@ -224,37 +235,136 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                     align-items: center;
                     gap: 4px;
                     flex-wrap: wrap;
+                    line-height: 1.15;
+                    margin-top: 1px;
                 }
                 .x-tweet-author {
                     font-weight: 700;
+                    font-size: 0.95rem;
                 }
                 .x-tweet-handle,
                 .x-tweet-date {
                     font-weight: 400;
+                    font-size: 0.9rem;
+                    color: rgb(83, 100, 113);
                 }
                 .x-tweet-text {
                     margin-top: 2px;
-                    font-size: 15px;
-                    line-height: 20px;
+                    font-size: 0.98rem;
+                    line-height: 1.5;
                     white-space: pre-wrap;
                     word-wrap: break-word;
+                    color: rgb(15, 20, 25);
                 }
                 .x-tweet-image {
                     margin-top: 10px;
                     border-radius: 16px;
                     overflow: hidden;
-                    border: 1px solid rgba(239, 243, 244, 0.15);
+                    border: 1px solid rgba(15, 20, 25, 0.08);
+                    width: 100%;
                 }
                 .x-tweet-audio {
                     margin-top: 10px;
-                    padding: 8px 0;
+                    padding: 0;
+                    display: flex;
+                    justify-content: flex-start;
+                    max-width: 340px;
+                    width: 100%;
+                }
+                .x-tweet-audio audio {
+                    width: 100%;
+                    max-width: 340px;
+                    height: 36px;
                 }
                 .x-tweet-bottom {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    max-width: 425px;
+                    width: 100%;
+                    max-width: 500px;
                     margin-top: 8px;
+                    padding-right: 0;
+                    gap: 4px;
+                }
+                .x-tweet .x-action-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    color: rgb(83, 100, 113);
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 0;
+                    min-height: 36px;
+                    min-width: 36px;
+                }
+                .x-tweet .x-icon-circle {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    font-size: 18px;
+                    transition: background-color 150ms ease, color 150ms ease;
+                    flex-shrink: 0;
+                }
+                .x-tweet .x-action-count {
+                    font-size: 13px;
+                    font-weight: 500;
+                    line-height: 1;
+                    margin-left: 1px;
+                }
+                .x-tweet .reply:hover .x-icon-circle {
+                    background-color: rgba(29, 155, 240, 0.12);
+                    color: rgb(29, 155, 240);
+                }
+                .x-tweet .reply:hover .x-action-count {
+                    color: rgb(29, 155, 240);
+                }
+                .x-tweet .retweet:hover .x-icon-circle {
+                    background-color: rgba(0, 186, 124, 0.12);
+                    color: rgb(0, 186, 124);
+                }
+                .x-tweet .retweet:hover .x-action-count {
+                    color: rgb(0, 186, 124);
+                }
+                .x-tweet .retweet.active .x-icon-circle,
+                .x-tweet .retweet.active .x-action-count {
+                    color: rgb(0, 186, 124);
+                }
+                .x-tweet .like:hover .x-icon-circle {
+                    background-color: rgba(249, 24, 128, 0.12);
+                    color: rgb(249, 24, 128);
+                }
+                .x-tweet .like:hover .x-action-count {
+                    color: rgb(249, 24, 128);
+                }
+                .x-tweet .like.active .x-icon-circle,
+                .x-tweet .like.active .x-action-count {
+                    color: rgb(249, 24, 128);
+                }
+                .x-tweet .share:hover .x-icon-circle,
+                .x-tweet .x-extra-action:hover .x-icon-circle {
+                    background-color: rgba(29, 155, 240, 0.12);
+                    color: rgb(29, 155, 240);
+                }
+                .x-tweet .x-extra-action {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: rgb(83, 100, 113);
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 0;
+                    min-height: 36px;
+                    min-width: 36px;
+                }
+                .x-tweet .views,
+                .x-tweet .bookmark {
+                    min-width: 36px;
                 }
             `}</style>
         </motion.div>

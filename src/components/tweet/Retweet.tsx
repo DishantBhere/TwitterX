@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { RiRepeat2Line } from "react-icons/ri";
 
 import { TweetOptionsProps } from "@/types/TweetProps";
 import { AuthContext } from "@/context/AuthContext";
 import { getUserTweet, updateRetweets } from "@/utilities/fetch";
-import RetweetIcon from "../misc/RetweetIcon";
 import { SnackbarProps } from "@/types/SnackbarProps";
 import CustomSnackbar from "../misc/CustomSnackbar";
 
@@ -83,7 +83,7 @@ export default function Retweet({ tweetId, tweetAuthor }: TweetOptionsProps) {
             >
                 <span className="x-icon-circle">
                     <motion.span animate={{ scale: [1, 1.5, 1.2, 1] }} transition={{ duration: 0.25 }}>
-                        <RetweetIcon />
+                        <RiRepeat2Line />
                     </motion.span>
                 </span>
                 <motion.span animate={{ scale: isRetweeted ? [0, 1.2, 1] : 0 }} transition={{ duration: 0.25 }} />
@@ -98,12 +98,13 @@ export default function Retweet({ tweetId, tweetAuthor }: TweetOptionsProps) {
                 .x-action-btn {
                     display: flex;
                     align-items: center;
-                    gap: 2px;
+                    gap: 6px;
                     color: rgb(113, 118, 123);
                     background: none;
                     border: none;
                     cursor: pointer;
                     padding: 0;
+                    min-height: 34px;
                 }
                 .x-icon-circle {
                     display: flex;
@@ -112,15 +113,16 @@ export default function Retweet({ tweetId, tweetAuthor }: TweetOptionsProps) {
                     width: 34px;
                     height: 34px;
                     border-radius: 50%;
-                    font-size: 18px;
+                    font-size: 19px;
                     transition: background-color 150ms ease, color 150ms ease;
                 }
                 .x-action-count {
                     font-size: 13px;
+                    font-weight: 500;
                     transition: color 150ms ease;
                 }
                 .retweet:hover .x-icon-circle {
-                    background-color: rgba(0, 186, 124, 0.1);
+                    background-color: rgba(0, 186, 124, 0.12);
                     color: rgb(0, 186, 124);
                 }
                 .retweet:hover .x-action-count {

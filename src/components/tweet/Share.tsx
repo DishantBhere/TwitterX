@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiShare } from "react-icons/fi";
+import { RiUpload2Line } from "react-icons/ri";
 
 import { SnackbarProps } from "@/types/SnackbarProps";
 import CustomSnackbar from "../misc/CustomSnackbar";
@@ -20,7 +20,7 @@ export default function Share({ tweetUrl }: { tweetUrl: string }) {
         <>
             <button className="icon share x-action-btn" onClick={handleCopy}>
                 <span className="x-icon-circle">
-                    <FiShare />
+                    <RiUpload2Line />
                 </span>
             </button>
             {snackbar.open && (
@@ -35,6 +35,7 @@ export default function Share({ tweetUrl }: { tweetUrl: string }) {
                     border: none;
                     cursor: pointer;
                     padding: 0;
+                    min-height: 34px;
                 }
                 .x-icon-circle {
                     display: flex;
@@ -43,11 +44,11 @@ export default function Share({ tweetUrl }: { tweetUrl: string }) {
                     width: 34px;
                     height: 34px;
                     border-radius: 50%;
-                    font-size: 18px;
+                    font-size: 19px;
                     transition: background-color 150ms ease, color 150ms ease;
                 }
                 .share:hover .x-icon-circle {
-                    background-color: rgba(29, 155, 240, 0.1);
+                    background-color: rgba(29, 155, 240, 0.12);
                     color: rgb(29, 155, 240);
                 }
             `}</style>

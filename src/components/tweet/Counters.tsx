@@ -63,20 +63,21 @@ export default function Counters({ tweet }: { tweet: TweetProps }) {
                         )}
                     </div>
                 </div>
-                <style jsx>{`
+            <style jsx>{`
                     .x-counters-row {
-                        padding: 8px 16px;
-                        border-bottom: 1px solid rgba(239, 243, 244, 0.15);
+                        padding: 10px 16px 8px;
+                        border-bottom: 1px solid rgba(239, 243, 244, 0.12);
                     }
                     .x-counters {
                         display: flex;
-                        gap: 20px;
+                        gap: 24px;
                     }
                     .x-counter-btn {
                         display: flex;
                         align-items: center;
-                        padding: 4px 0;
+                        padding: 0;
                         transition: opacity 0.15s ease;
+                        line-height: 1;
                     }
                     .x-counter-btn:hover {
                         opacity: 0.75;

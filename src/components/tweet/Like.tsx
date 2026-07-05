@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { RiHeart3Line, RiHeart3Fill } from "react-icons/ri";
 
 import { TweetOptionsProps, TweetResponse } from "@/types/TweetProps";
 import { getUserTweet, updateTweetLikes } from "@/utilities/fetch";
@@ -135,11 +135,11 @@ export default function Like({ tweetId, tweetAuthor }: TweetOptionsProps) {
                 <span className="x-icon-circle">
                     {isLiked ? (
                         <motion.span animate={{ scale: [1, 1.5, 1.2, 1] }} transition={{ duration: 0.25 }}>
-                            <FaHeart />
+                            <RiHeart3Fill />
                         </motion.span>
                     ) : (
                         <motion.span animate={{ scale: [1, 0.8, 1] }} transition={{ duration: 0.25 }}>
-                            <FaRegHeart />
+                            <RiHeart3Line />
                         </motion.span>
                     )}
                 </span>
@@ -153,12 +153,13 @@ export default function Like({ tweetId, tweetAuthor }: TweetOptionsProps) {
                 .x-action-btn {
                     display: flex;
                     align-items: center;
-                    gap: 2px;
+                    gap: 6px;
                     color: rgb(113, 118, 123);
                     background: none;
                     border: none;
                     cursor: pointer;
                     padding: 0;
+                    min-height: 34px;
                 }
                 .x-icon-circle {
                     display: flex;
@@ -167,15 +168,16 @@ export default function Like({ tweetId, tweetAuthor }: TweetOptionsProps) {
                     width: 34px;
                     height: 34px;
                     border-radius: 50%;
-                    font-size: 18px;
+                    font-size: 19px;
                     transition: background-color 150ms ease, color 150ms ease;
                 }
                 .x-action-count {
                     font-size: 13px;
+                    font-weight: 500;
                     transition: color 150ms ease;
                 }
                 .like:hover .x-icon-circle {
-                    background-color: rgba(249, 24, 128, 0.1);
+                    background-color: rgba(249, 24, 128, 0.12);
                     color: rgb(249, 24, 128);
                 }
                 .like:hover .x-action-count {

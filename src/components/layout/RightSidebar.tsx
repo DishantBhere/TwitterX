@@ -3,7 +3,7 @@
 import { useContext } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { Avatar, Box, Button, Divider, IconButton, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Button, IconButton, Stack, Typography } from "@mui/material";
 import { FaTimes } from "react-icons/fa";
 
 import { AuthContext } from "@/context/AuthContext";
@@ -75,7 +75,7 @@ export default function RightSidebar() {
                     </Button>
                 </div>
 
-                <div className="reminder" style={{ position: "relative" }}>
+                <div className="reminder todays-news-widget" style={{ position: "relative" }}>
                     <IconButton
                         size="small"
                         aria-label="dismiss"
@@ -91,48 +91,20 @@ export default function RightSidebar() {
                         <FaTimes size={14} />
                     </IconButton>
                     <h1>Today&apos;s News</h1>
-                    <Stack spacing={1.25}>
+                    <Stack className="todays-news-list" spacing={0}>
                         {NEWS_ITEMS.map((item, index) => (
-                            <Box
-                                key={item.title}
-                                sx={{
-                                    display: "flex",
-                                    gap: 1.1,
-                                    alignItems: "flex-start",
-                                }}
-                            >
+                            <Box key={item.title} className="news-item">
                                 <Avatar
-                                    src={`https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=96&q=60&sig=${index}`}
+                                    src={`https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=120&q=60&sig=${index}`}
                                     alt=""
-                                    sx={{
-                                        width: 44,
-                                        height: 44,
-                                        flexShrink: 0,
-                                        borderRadius: 2,
-                                    }}
+                                    className="news-thumb"
                                 />
-                                <Box sx={{ minWidth: 0, flex: 1 }}>
-                                    <Typography
-                                        sx={{
-                                            fontSize: "0.92rem",
-                                            fontWeight: 700,
-                                            lineHeight: 1.25,
-                                            color: "var(--twitter-black)",
-                                            mb: 0.35,
-                                        }}
-                                    >
-                                        {item.title}
-                                    </Typography>
-                                    <Typography
-                                        component="p"
-                                        className="text-muted"
-                                        sx={{
-                                            fontSize: "0.78rem",
-                                            lineHeight: 1.35,
-                                        }}
-                                    >
-                                        {item.time} <span className="middle-dot">{"·"}</span> {item.category}{" "}
-                                        <span className="middle-dot">{"·"}</span> {item.posts} posts
+                                <Box className="news-copy">
+                                    <Typography className="news-kicker">{item.category} · Trending</Typography>
+                                    <Typography className="news-headline">{item.title}</Typography>
+                                    <Typography component="p" className="news-meta text-muted">
+                                        {item.time} <span className="middle-dot">·</span> {item.category}{" "}
+                                        <span className="middle-dot">·</span> {item.posts} posts
                                     </Typography>
                                 </Box>
                             </Box>
@@ -140,84 +112,73 @@ export default function RightSidebar() {
                     </Stack>
                 </div>
 
-                <div className="reminder">
+                <div className="reminder football-widget">
                     <h1>Football</h1>
-                    <Stack spacing={0.75} sx={{ mt: 0.5 }}>
-                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ gap: 1 }}>
-                            <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
-                                <Typography sx={{ fontSize: "1rem", lineHeight: 1 }}>{"\uD83C\uDDE6\uD83C\uDDF7"}</Typography>
-                                <Typography
-                                    sx={{
-                                        fontWeight: 700,
-                                        fontSize: "0.96rem",
-                                        color: "var(--twitter-black)",
-                                        whiteSpace: "nowrap",
-                                    }}
-                                >
-                                    Argentina
-                                </Typography>
-                            </Stack>
-                            <Typography
-                                sx={{
-                                    fontWeight: 900,
-                                    fontSize: "1.45rem",
-                                    lineHeight: 1,
-                                    color: "var(--twitter-black)",
-                                }}
-                            >
-                                2
-                            </Typography>
-                        </Stack>
-                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ gap: 1 }}>
-                            <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
-                                <Typography sx={{ fontSize: "1rem", lineHeight: 1 }}>{"\uD83C\uDDE8\uD83C\uDDFB"}</Typography>
-                                <Typography
-                                    sx={{
-                                        fontWeight: 700,
-                                        fontSize: "0.96rem",
-                                        color: "var(--twitter-black)",
-                                        whiteSpace: "nowrap",
-                                    }}
-                                >
-                                    Cape Verde
-                                </Typography>
-                            </Stack>
-                            <Typography
-                                sx={{
-                                    fontWeight: 900,
-                                    fontSize: "1.45rem",
-                                    lineHeight: 1,
-                                    color: "var(--twitter-black)",
-                                }}
-                            >
-                                0
-                            </Typography>
-                        </Stack>
-                    </Stack>
-                    <p className="text-muted" style={{ fontSize: "0.75rem", marginTop: "0.4rem" }}>
-                        FT
-                    </p>
-
-                    <Divider sx={{ my: 1.5, borderColor: "var(--border-color)" }} />
-
-                    <Stack spacing={1.2}>
-                        <Box>
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.92rem", color: "var(--twitter-black)" }}>
-                                Brazil vs France
-                            </Typography>
-                            <p className="text-muted" style={{ fontSize: "0.8rem", marginTop: "0.1rem" }}>
-                                Tomorrow {"·"} 8:30 PM
-                            </p>
+                    <Stack className="football-list" spacing={0}>
+                        <Box className="football-match football-match-group">
+                            <Box className="football-teams">
+                                <Box className="football-team">
+                                    <span className="team-flag" aria-hidden="true">
+                                        🇦🇷
+                                    </span>
+                                    <Typography className="team-name">Argentina</Typography>
+                                </Box>
+                                <Box className="football-team">
+                                    <span className="team-flag" aria-hidden="true">
+                                        🇨🇻
+                                    </span>
+                                    <Typography className="team-name">Cape Verde</Typography>
+                                </Box>
+                            </Box>
+                            <Box className="football-meta">
+                                <Typography className="football-status">FT</Typography>
+                                <Typography className="football-score">2-0</Typography>
+                            </Box>
                         </Box>
-                        <Box>
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.92rem", color: "var(--twitter-black)" }}>
-                                Spain vs Portugal
-                            </Typography>
-                            <p className="text-muted" style={{ fontSize: "0.8rem", marginTop: "0.1rem" }}>
-                                Tomorrow {"·"} 11:00 PM
-                            </p>
+                        <Box className="football-match">
+                            <Box className="football-teams">
+                                <Box className="football-team">
+                                    <span className="team-flag" aria-hidden="true">
+                                        🇧🇷
+                                    </span>
+                                    <Typography className="team-name">Brazil</Typography>
+                                </Box>
+                                <Box className="football-team">
+                                    <span className="team-flag" aria-hidden="true">
+                                        🇫🇷
+                                    </span>
+                                    <Typography className="team-name">France</Typography>
+                                </Box>
+                            </Box>
+                            <Box className="football-meta">
+                                <Typography className="football-status">Tomorrow</Typography>
+                                <Typography className="football-score">8:30 PM</Typography>
+                            </Box>
+                        </Box>
+                        <Box className="football-match">
+                            <Box className="football-teams">
+                                <Box className="football-team">
+                                    <span className="team-flag" aria-hidden="true">
+                                        🇪🇸
+                                    </span>
+                                    <Typography className="team-name">Spain</Typography>
+                                </Box>
+                                <Box className="football-team">
+                                    <span className="team-flag" aria-hidden="true">
+                                        🇵🇹
+                                    </span>
+                                    <Typography className="team-name">Portugal</Typography>
+                                </Box>
+                            </Box>
+                            <Box className="football-meta">
+                                <Typography className="football-status">Tomorrow</Typography>
+                                <Typography className="football-score">11:00 PM</Typography>
+                            </Box>
                         </Box>
                     </Stack>
+                    <Button className="football-more-btn" variant="text">
+                        Show more
+                    </Button>
                 </div>
 
                 {token && <WhoToFollow />}

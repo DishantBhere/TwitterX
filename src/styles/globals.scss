@@ -842,6 +842,179 @@ main {
         }
     }
 
+    .todays-news-widget {
+        padding: 1rem 0 0.85rem;
+
+        h1 {
+            padding-inline: 1rem;
+        }
+
+        .todays-news-list {
+            margin-top: 0.35rem;
+        }
+
+        .news-item {
+            display: flex;
+            gap: 0.85rem;
+            align-items: flex-start;
+            padding: 0.8rem 1rem;
+            border-radius: 16px;
+            transition:
+                background-color 0.18s ease-in-out,
+                transform 0.18s ease-in-out;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.04);
+            }
+        }
+
+        .news-thumb {
+            width: 72px;
+            height: 72px;
+            flex-shrink: 0;
+            border-radius: 16px;
+        }
+
+        .news-copy {
+            min-width: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .news-kicker {
+            font-size: 0.72rem;
+            line-height: 1.1;
+            font-weight: 600;
+            color: var(--twitter-muted);
+        }
+
+        .news-headline {
+            font-size: 0.98rem;
+            line-height: 1.25;
+            font-weight: 700;
+            color: var(--twitter-black);
+            overflow-wrap: anywhere;
+        }
+
+        .news-meta {
+            font-size: 0.77rem;
+            line-height: 1.35;
+            color: var(--twitter-muted);
+        }
+    }
+
+    .football-widget {
+        padding-bottom: 0.9rem;
+
+        h1 {
+            padding-inline: 1rem;
+        }
+
+        .football-list {
+            margin-top: 0.45rem;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .football-match {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.85rem 1rem;
+            transition: background-color 0.18s ease-in-out;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.035);
+            }
+
+            & + .football-match {
+                border-top: 1px solid var(--border-color);
+            }
+        }
+
+        .football-match-group {
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        .football-teams {
+            min-width: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .football-team {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            min-width: 0;
+        }
+
+        .team-flag {
+            font-size: 1rem;
+            line-height: 1;
+            width: 1.1rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .team-name {
+            font-size: 0.94rem;
+            font-weight: 500;
+            line-height: 1.15;
+            color: var(--twitter-black);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .football-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            min-width: 72px;
+            margin-left: auto;
+            gap: 0.2rem;
+            text-align: right;
+        }
+
+        .football-status {
+            font-size: 0.72rem;
+            line-height: 1;
+            font-weight: 500;
+            color: var(--twitter-muted);
+        }
+
+        .football-score {
+            font-size: 0.95rem;
+            line-height: 1;
+            font-weight: 700;
+            color: var(--twitter-black);
+        }
+
+        .football-more-btn {
+            margin: 0.85rem 1rem 0;
+            width: calc(100% - 2rem);
+            border-radius: 9999px;
+            padding: 0.72rem 1rem;
+            text-transform: none;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(90deg, #7c3aed 0%, #ec4899 52%, #f97316 100%);
+
+            &:hover {
+                background: linear-gradient(90deg, #6d28d9 0%, #db2777 52%, #ea580c 100%);
+            }
+        }
+    }
+
     .complete-reminder {
         border: none;
         border-radius: 1rem;

@@ -74,24 +74,63 @@ export default function Retweet({ tweetId, tweetAuthor }: TweetOptionsProps) {
     return (
         <>
             <motion.button
-                className={`icon retweet ${isRetweeted ? "active" : ""}`}
+                className={`icon retweet x-action-btn ${isRetweeted ? "active" : ""}`}
                 onClick={handleRetweet}
                 whileTap={{ scale: 0.9 }}
                 animate={{ scale: isRetweeted ? [1, 1.5, 1.2, 1] : 1 }}
                 transition={{ duration: 0.25 }}
                 disabled={isButtonDisabled}
             >
-                <motion.span animate={{ scale: [1, 1.5, 1.2, 1] }} transition={{ duration: 0.25 }}>
-                    <RetweetIcon />
-                </motion.span>
+                <span className="x-icon-circle">
+                    <motion.span animate={{ scale: [1, 1.5, 1.2, 1] }} transition={{ duration: 0.25 }}>
+                        <RetweetIcon />
+                    </motion.span>
+                </span>
                 <motion.span animate={{ scale: isRetweeted ? [0, 1.2, 1] : 0 }} transition={{ duration: 0.25 }} />
                 {data?.tweet?.retweetedBy?.length === 0 ? null : (
-                    <span className="count">{data?.tweet?.retweetedBy?.length}</span>
+                    <span className="count x-action-count">{data?.tweet?.retweetedBy?.length}</span>
                 )}
             </motion.button>
             {snackbar.open && (
                 <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />
             )}
+            <style jsx>{`
+                .x-action-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 2px;
+                    color: rgb(113, 118, 123);
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 0;
+                }
+                .x-icon-circle {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 34px;
+                    height: 34px;
+                    border-radius: 50%;
+                    font-size: 18px;
+                    transition: background-color 150ms ease, color 150ms ease;
+                }
+                .x-action-count {
+                    font-size: 13px;
+                    transition: color 150ms ease;
+                }
+                .retweet:hover .x-icon-circle {
+                    background-color: rgba(0, 186, 124, 0.1);
+                    color: rgb(0, 186, 124);
+                }
+                .retweet:hover .x-action-count {
+                    color: rgb(0, 186, 124);
+                }
+                .retweet.active .x-icon-circle,
+                .retweet.active .x-action-count {
+                    color: rgb(0, 186, 124);
+                }
+            `}</style>
         </>
     );
 }

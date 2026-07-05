@@ -1071,31 +1071,34 @@ main {
         }
 
         .tweet-bottom {
-            max-width: 425px;
-            display: flex;
-            justify-content: space-between;
-            margin-top: 0.35rem;
-            transform: translate(-8px, -6px);
+    max-width: 470px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.25rem;
+    transform: translate(-8px, -8px);
 
-            .icon {
-                border: none;
-                background-color: inherit;
-                display: flex;
-                justify-content: center;
-                color: var(--twitter-muted);
-                opacity: 1;
-                align-items: center;
-                font-size: 0.8rem;
-                gap: 0.1rem;
+    .icon {
+        border: none;
+        background-color: inherit;
+        display: flex;
+        justify-content: center;
+        color: var(--twitter-muted);
+        opacity: 1;
+        align-items: center;
+        font-size: 0.8125rem;
+        line-height: 1;
+        gap: 0.2rem;
 
-                svg {
-                    border-radius: 9999px;
-                    transition:
-                        background-color 0.15s ease-in-out,
-                        color 0.15s ease-in-out;
-                    padding: 0.45rem;
-                    font-size: 1.15rem;
-                }
+        svg {
+            border-radius: 9999px;
+            transition:
+                background-color 0.15s ease-in-out,
+                color 0.15s ease-in-out;
+            padding: 0.4rem;
+            font-size: 1.125rem;
+            box-sizing: content-box;
+        }
 
                 &:hover {
                     cursor: pointer;

@@ -18,12 +18,39 @@ export default function Share({ tweetUrl }: { tweetUrl: string }) {
 
     return (
         <>
-            <button className="icon share" onClick={handleCopy}>
-                <FiShare />
+            <button className="icon share x-action-btn" onClick={handleCopy}>
+                <span className="x-icon-circle">
+                    <FiShare />
+                </span>
             </button>
             {snackbar.open && (
                 <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />
             )}
+            <style jsx>{`
+                .x-action-btn {
+                    display: flex;
+                    align-items: center;
+                    color: rgb(113, 118, 123);
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 0;
+                }
+                .x-icon-circle {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 34px;
+                    height: 34px;
+                    border-radius: 50%;
+                    font-size: 18px;
+                    transition: background-color 150ms ease, color 150ms ease;
+                }
+                .share:hover .x-icon-circle {
+                    background-color: rgba(29, 155, 240, 0.1);
+                    color: rgb(29, 155, 240);
+                }
+            `}</style>
         </>
     );
 }

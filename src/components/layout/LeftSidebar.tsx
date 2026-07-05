@@ -4,7 +4,16 @@ import Link from "next/link";
 import { useContext, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Avatar, Menu, MenuItem } from "@mui/material";
-import { FaHome, FaBell, FaEnvelope, FaUser, FaCog, FaHashtag, FaEllipsisH, FaTwitter } from "react-icons/fa";
+import {
+    RiTwitterXFill,
+    RiHome5Line,
+    RiHashtag,
+    RiNotification3Line,
+    RiMailLine,
+    RiUser3Line,
+    RiSettings5Line,
+} from "react-icons/ri";
+import { FaEllipsisH } from "react-icons/fa";
 import { AiFillTwitterCircle } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
 
@@ -58,7 +67,7 @@ export default function LeftSidebar() {
             <aside className="left-sidebar">
                 <div className="fixed">
                     <Link href="/explore" className="twitter-icon">
-                        <FaTwitter />
+                        <RiTwitterXFill aria-hidden="true" focusable="false" />
                     </Link>
                     <nav>
                         <ul>
@@ -66,7 +75,7 @@ export default function LeftSidebar() {
                                 <li>
                                     <Link href="/home">
                                         <div className={`nav-link ${pathname.startsWith("/home") ? "active" : ""}`}>
-                                            <FaHome /> <span className="nav-title">{t("nav.home")}</span>
+                                            <RiHome5Line /> <span className="nav-title">{t("nav.home")}</span>
                                         </div>
                                     </Link>
                                 </li>
@@ -74,7 +83,7 @@ export default function LeftSidebar() {
                             <li>
                                 <Link href="/explore">
                                     <div className={`nav-link ${pathname.startsWith("/explore") ? "active" : ""}`}>
-                                        <FaHashtag /> <span className="nav-title">{t("nav.explore")}</span>
+                                        <RiHashtag /> <span className="nav-title">{t("nav.explore")}</span>
                                     </div>
                                 </Link>
                             </li>
@@ -88,7 +97,7 @@ export default function LeftSidebar() {
                                                 }`}
                                             >
                                                 <div className="badge-wrapper">
-                                                    <FaBell /> <UnreadNotificationsBadge />
+                                                    <RiNotification3Line /> <UnreadNotificationsBadge />
                                                 </div>
                                                 <span className="nav-title">{t("nav.notifications")}</span>
                                             </div>
@@ -97,7 +106,7 @@ export default function LeftSidebar() {
                                     <li>
                                         <Link href="/messages">
                                             <div className={`nav-link ${pathname.startsWith("/messages") ? "active" : ""}`}>
-                                                <FaEnvelope /> <span className="nav-title">{t("nav.messages")}</span>
+                                                <RiMailLine /> <span className="nav-title">{t("nav.messages")}</span>
                                             </div>
                                         </Link>
                                     </li>
@@ -108,7 +117,7 @@ export default function LeftSidebar() {
                                                     pathname.startsWith(`/${token.username}`) ? "active" : ""
                                                 }`}
                                             >
-                                                <FaUser /> <span className="nav-title">{t("nav.profile")}</span>
+                                                <RiUser3Line /> <span className="nav-title">{t("nav.profile")}</span>
                                             </div>
                                         </Link>
                                     </li>
@@ -117,7 +126,7 @@ export default function LeftSidebar() {
                             <li>
                                 <Link href="/settings">
                                     <div className={`nav-link ${pathname.startsWith("/settings") ? "active" : ""}`}>
-                                        <FaCog /> <span className="nav-title">{t("nav.settings")}</span>
+                                        <RiSettings5Line /> <span className="nav-title">{t("nav.settings")}</span>
                                     </div>
                                 </Link>
                             </li>

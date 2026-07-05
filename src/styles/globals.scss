@@ -547,34 +547,31 @@ main {
             }
 
             svg {
-                display: none;
-            }
-
-            &::after {
-                content: "X";
-                font-size: 34px;
-                font-weight: 800;
-                line-height: 1;
-                color: var(--twitter-black);
+                width: 30px;
+                height: 30px;
+                display: block;
+                flex-shrink: 0;
+                color: currentColor;
             }
         }
 
         nav {
             ul {
-                font-size: 1.25rem;
+                font-size: 1.2rem;
                 display: flex;
                 flex-direction: column;
-                gap: 0.6rem;
+                gap: 0.9rem;
 
                 li {
                     .nav-link {
-                        padding: 0.9rem 1.5rem 0.9rem 0.9rem;
+                        padding: 0.7rem 1.2rem 0.7rem 0.95rem;
                         border-radius: 9999px;
                         display: inline-flex;
                         align-items: center;
                         transition: background-color 0.2s ease-in-out;
                         color: var(--twitter-black);
                         font-weight: 500;
+                        line-height: 1;
                         width: fit-content;
                         max-width: 100%;
 
@@ -583,18 +580,26 @@ main {
                         }
 
                         svg {
-                            padding-right: 1.15rem;
-                            color: var(--twitter-black);
-                            font-size: 28px;
+                            margin-right: 18px;
+                            color: currentColor;
+                            font-size: 25px;
+                            width: 25px;
+                            height: 25px;
                             flex-shrink: 0;
                         }
 
+                        .nav-title {
+                            font-size: 20px;
+                            font-weight: 500;
+                            line-height: 1;
+                        }
+
                         &.active {
-                            font-weight: 700;
+                            font-weight: 500;
                             background-color: var(--hover);
 
                             svg {
-                                color: var(--twitter-black);
+                                color: currentColor;
                             }
                         }
                     }

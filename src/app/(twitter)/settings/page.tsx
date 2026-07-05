@@ -413,7 +413,7 @@ export default function SettingsPage() {
     const renderLoginHistoryPanel = () => (
         <Stack spacing={2} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
             <Typography variant="body2" color="text.secondary">
-                Where you're logged in. See all the devices and locations linked to your account.
+                Where you&apos;re logged in. See all the devices and locations linked to your account.
             </Typography>
             {isLoading ? (
                 <CircularLoading />

@@ -56,8 +56,8 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
         email: yup.string().email("Email is invalid").required("Email is required."),
         phone: yup.string().required("Phone is required."),
         description: yup.string().max(160, "Description should be of maximum 160 characters length."),
-        location: yup.string().max(30, "Location should be of maximum 30 characters length."),
-        website: yup.string().max(30, "Website should be of maximum 30 characters length."),
+        location: yup.string().max(50, "Location should be of maximum 50 characters length."),
+        website: yup.string().max(50, "Website should be of maximum 50 characters length."),
         photoUrl: yup.string(),
         headerUrl: yup.string(),
         browserNotificationsEnabled: yup.boolean(),
@@ -292,6 +292,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                     ) : (
                         <button
                             className={`btn btn-dark save ${formik.isValid ? "" : "disabled"}`}
+                            
                             disabled={!formik.isValid}
                             type="submit"
                         >

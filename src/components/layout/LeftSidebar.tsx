@@ -12,6 +12,8 @@ import {
     RiMailLine,
     RiUser3Line,
     RiSettings5Line,
+    RiEdit2Line,
+    RiLogoutBoxRLine,
 } from "react-icons/ri";
 import { FaEllipsisH } from "react-icons/fa";
 import { AiFillTwitterCircle } from "react-icons/ai";
@@ -165,6 +167,8 @@ export default function LeftSidebar() {
                                     anchorEl={anchorEl}
                                     onClose={handleAnchorClose}
                                     open={Boolean(anchorEl)}
+                                    classes={{ paper: "profile-menu-paper", list: "profile-menu-list" }}
+                                    MenuListProps={{ disablePadding: true }}
                                     anchorOrigin={{
                                         vertical: "bottom",
                                         horizontal: "right",
@@ -174,16 +178,28 @@ export default function LeftSidebar() {
                                         horizontal: "right",
                                     }}
                                 >
-                                    <MenuItem onClick={handleAnchorClose}>
-                                        <Link href={`/${token.username}`}>{t("nav.profile")}</Link>
+                                    <MenuItem className="profile-menu-item" onClick={handleAnchorClose}>
+                                        <Link className="profile-menu-link" href={`/${token.username}`}>
+                                            <RiUser3Line />
+                                            <span>{t("nav.profile")}</span>
+                                        </Link>
                                     </MenuItem>
-                                    <MenuItem onClick={handleAnchorClose}>
-                                        <Link href={`/${token.username}/edit`}>{t("nav.editProfile")}</Link>
+                                    <MenuItem className="profile-menu-item" onClick={handleAnchorClose}>
+                                        <Link className="profile-menu-link" href={`/${token.username}/edit`}>
+                                            <RiEdit2Line />
+                                            <span>{t("nav.editProfile")}</span>
+                                        </Link>
                                     </MenuItem>
-                                    <MenuItem onClick={handleAnchorClose}>
-                                        <Link href="/settings">{t("nav.settings")}</Link>
+                                    <MenuItem className="profile-menu-item" onClick={handleAnchorClose}>
+                                        <Link className="profile-menu-link" href="/settings">
+                                            <RiSettings5Line />
+                                            <span>{t("nav.settings")}</span>
+                                        </Link>
                                     </MenuItem>
-                                    <MenuItem onClick={handleLogOutClick}>{t("nav.logout")}</MenuItem>
+                                    <MenuItem className="profile-menu-item logout" onClick={handleLogOutClick}>
+                                        <RiLogoutBoxRLine />
+                                        <span>{t("nav.logout")}</span>
+                                    </MenuItem>
                                 </Menu>
                             </>
                         )}

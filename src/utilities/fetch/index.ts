@@ -315,11 +315,11 @@ export const updateUserFollows = async (followedUsername: string, tokenOwnerId: 
 
 export const deleteTweet = async (tweetId: string, tweetAuthor: string, tokenOwnerId: string) => {
     const response = await fetch(`${HOST_URL}/api/tweets/${tweetAuthor}/${tweetId}/delete`, {
-        method: "POST",
+        method: "DELETE",
         headers: {
             "Content-Type": "application/json",
+            "x-token-owner-id": tokenOwnerId,
         },
-        body: tokenOwnerId,
     });
     const json = await response.json();
     if (!json.success) throw new Error(json.message ? json.message : "Something went wrong.");

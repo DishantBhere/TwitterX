@@ -1,11 +1,13 @@
-import { Avatar, Popover, Tooltip } from "@mui/material";
+import { Avatar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu, MenuItem, Popover, Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { AiFillTwitterCircle } from "react-icons/ai";
 import { RiBarChart2Line, RiBookmarkLine } from "react-icons/ri";
+import { RxDotsHorizontal } from "react-icons/rx";
 
 import { TweetProps } from "@/types/TweetProps";
 import { formatDate, formatDateExtended } from "@/utilities/date";
@@ -19,14 +21,23 @@ import { getFullURL } from "@/utilities/misc/getFullURL";
 import { AuthContext } from "@/context/AuthContext";
 import RetweetIcon from "../misc/RetweetIcon";
 import ProfileCard from "../user/ProfileCard";
+import { deleteTweet } from "@/utilities/fetch";
+import CustomSnackbar from "../misc/CustomSnackbar";
+import { SnackbarProps } from "@/types/SnackbarProps";
 
 export default function Tweet({ tweet }: { tweet: TweetProps }) {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [hoveredProfile, setHoveredProfile] = useState("");
+    const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isDeleted, setIsDeleted] = useState(false);
+    const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
 
     const { token } = useContext(AuthContext);
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     let displayedTweet = tweet;
 
@@ -65,6 +76,50 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
     const handlePopoverClose = () => {
         setAnchorEl(null);
     };
+    const handleDeleteMenuOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setIsDeleteMenuOpen(true);
+        setAnchorEl(e.currentTarget);
+    };
+    const handleDeleteMenuClose = () => {
+        setIsDeleteMenuOpen(false);
+        setAnchorEl(null);
+    };
+    const handleDeleteDialogOpen = () => {
+        handleDeleteMenuClose();
+        setIsDeleteDialogOpen(true);
+    };
+    const mutation = useMutation({
+        mutationFn: (jsonId: string) => deleteTweet(tweet.id, tweet.author.username, jsonId),
+        onSuccess: () => {
+            setIsDeleting(false);
+            setIsDeleteDialogOpen(false);
+            setIsDeleted(true);
+            setSnackbar({ message: "Tweet deleted.", severity: "success", open: true });
+            queryClient.invalidateQueries({ queryKey: ["tweets"] });
+        },
+        onError: () => {
+            setIsDeleting(false);
+            setIsDeleteDialogOpen(false);
+            setIsDeleted(false);
+            setSnackbar({ message: "Could not delete tweet. Please try again.", severity: "error", open: true });
+        },
+    });
+    const handleDeleteConfirm = () => {
+        if (!token) {
+            setSnackbar({ message: "You need to be signed in to delete this tweet.", severity: "info", open: true });
+            return;
+        }
+
+        setIsDeleting(true);
+        setIsDeleteDialogOpen(false);
+        setIsDeleted(true);
+        mutation.mutate(JSON.stringify(token.id));
+    };
+
+    if (isDeleted) {
+        return <>{snackbar.open && <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />}</>;
+    }
 
     return (
         <motion.div
@@ -90,6 +145,27 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
             </Link>
             <div className="tweet-main x-tweet-main">
                 <section className="tweet-author-section x-tweet-author-section">
+                    {token?.username === tweet.author.username && (
+                        <div className="x-tweet-more-wrap">
+                            <button type="button" className="x-tweet-more" aria-label="More tweet actions" onClick={handleDeleteMenuOpen}>
+                                <RxDotsHorizontal />
+                            </button>
+                            <Menu anchorEl={anchorEl} open={isDeleteMenuOpen} onClose={handleDeleteMenuClose} anchorOrigin={{ vertical: "bottom", horizontal: "right" }} transformOrigin={{ vertical: "top", horizontal: "right" }}>
+                                <MenuItem onClick={handleDeleteDialogOpen} sx={{ color: "#f4212e", gap: 1, py: 1.25 }}>
+                                    <span style={{ display: "inline-flex", alignItems: "center" }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M3 6h18" />
+                                            <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                            <path d="M10 11v6" />
+                                            <path d="M14 11v6" />
+                                        </svg>
+                                    </span>
+                                    Delete Tweet
+                                </MenuItem>
+                            </Menu>
+                        </div>
+                    )}
                     <Link
                         onClick={handlePropagation}
                         className="tweet-author-link"
@@ -192,6 +268,22 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                         <RetweetIcon /> {`${tweet.author.name ? tweet.author.name : tweet.author.username} retweeted.`}
                     </Link>
                 ))}
+            <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle sx={{ fontWeight: 700, fontSize: 24, pb: 0.5 }}>Delete post?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText sx={{ color: "rgb(83, 100, 113)", fontSize: 15, lineHeight: 1.5 }}>
+                        This can’t be undone and it will be removed from your profile, timelines, bookmarks and search results.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+                    <button className="btn btn-white x-delete-cancel" onClick={() => setIsDeleteDialogOpen(false)}>
+                        Cancel
+                    </button>
+                    <button className="btn btn-danger x-delete-confirm" onClick={handleDeleteConfirm} disabled={isDeleting}>
+                        {isDeleting ? "Deleting..." : "Delete"}
+                    </button>
+                </DialogActions>
+            </Dialog>
             <Popover
                 sx={{
                     pointerEvents: "none",
@@ -215,13 +307,14 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                 .x-tweet {
                     display: flex;
                     gap: 12px;
-                    padding: 12px 16px 10px;
+                    padding: 14px 16px 12px;
                     border-bottom: 1px solid rgba(15, 20, 25, 0.12);
                     cursor: pointer;
-                    transition: background-color 0.15s ease;
+                    transition: background-color 0.16s ease, transform 0.16s ease;
                 }
                 .x-tweet:hover {
                     background-color: rgba(15, 20, 25, 0.03);
+                    transform: translateY(-1px);
                 }
                 .x-tweet-avatar {
                     flex-shrink: 0;
@@ -237,6 +330,43 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                     flex-wrap: wrap;
                     line-height: 1.15;
                     margin-top: 1px;
+                    position: relative;
+                }
+                .x-tweet-more-wrap {
+                    margin-left: auto;
+                    display: flex;
+                    align-items: center;
+                }
+                .x-tweet-more {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 32px;
+                    height: 32px;
+                    border: none;
+                    background: transparent;
+                    color: rgb(83, 100, 113);
+                    border-radius: 50%;
+                    cursor: pointer;
+                    transition: background-color 0.15s ease, color 0.15s ease;
+                }
+                .x-tweet-more:hover {
+                    background-color: rgba(29, 155, 240, 0.1);
+                    color: rgb(29, 155, 240);
+                }
+                .x-delete-cancel,
+                .x-delete-confirm {
+                    min-height: 36px;
+                    border-radius: 9999px;
+                    padding: 0 16px;
+                    font-weight: 700;
+                }
+                .x-delete-confirm {
+                    background-color: #f4212e;
+                    color: white;
+                }
+                .x-delete-confirm:hover {
+                    background-color: #e0245e;
                 }
                 .x-tweet-author {
                     font-weight: 700;
@@ -256,12 +386,16 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                     word-wrap: break-word;
                     color: rgb(15, 20, 25);
                 }
+                .x-tweet-text .mention {
+                    font-weight: 600;
+                }
                 .x-tweet-image {
                     margin-top: 10px;
                     border-radius: 16px;
                     overflow: hidden;
                     border: 1px solid rgba(15, 20, 25, 0.08);
                     width: 100%;
+                    box-shadow: 0 6px 18px rgba(15, 20, 25, 0.04);
                 }
                 .x-tweet-audio {
                     margin-top: 10px;
@@ -282,7 +416,7 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                     justify-content: space-between;
                     width: 100%;
                     max-width: 500px;
-                    margin-top: 8px;
+                    margin-top: 10px;
                     padding-right: 0;
                     gap: 4px;
                 }

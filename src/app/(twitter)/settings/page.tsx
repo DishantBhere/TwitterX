@@ -348,23 +348,102 @@ export default function SettingsPage() {
             <Grid container spacing={2}>
                 {subscriptionPlans.map((plan) => {
                     const isCurrentPlan = token?.subscriptionPlan === plan.key;
+                    const planStyles = {
+                        FREE: {
+                            accent: "#1d9bf0",
+                            border: "1px solid rgba(29,155,240,0.45)",
+                            background: "linear-gradient(135deg, rgba(29,155,240,0.10), rgba(255,255,255,0.96))",
+                            glow: "0 10px 30px rgba(29,155,240,0.16)",
+                            title: "#1d9bf0",
+                            description: "rgba(20,20,20,0.75)",
+                            button: {
+                                background: "linear-gradient(135deg, #1d9bf0 0%, #4ba3ff 100%)",
+                                hover: "linear-gradient(135deg, #1a8cd8 0%, #3b95ea 100%)",
+                                color: "#fff",
+                            },
+                        },
+                        BRONZE: {
+                            accent: "#a45f1d",
+                            border: "1px solid rgba(164,95,29,0.45)",
+                            background: "linear-gradient(135deg, rgba(255,232,206,0.95), rgba(255,248,239,0.96))",
+                            glow: "0 12px 34px rgba(164,95,29,0.16)",
+                            title: "#8c4512",
+                            description: "rgba(60,35,15,0.75)",
+                            button: {
+                                background: "linear-gradient(135deg, #a45f1d 0%, #c27a35 100%)",
+                                hover: "linear-gradient(135deg, #8f4d18 0%, #ad6b2b 100%)",
+                                color: "#fff",
+                            },
+                        },
+                        SILVER: {
+                            accent: "#8d98a2",
+                            border: "1px solid rgba(255,255,255,0.9)",
+                            background: "linear-gradient(135deg, rgba(255,255,255,0.98), rgba(232,236,240,0.92))",
+                            glow: "0 16px 42px rgba(141,152,162,0.24)",
+                            title: "#5f6870",
+                            description: "rgba(55,55,55,0.75)",
+                            button: {
+                                background: "linear-gradient(135deg, #ffffff 0%, #e8ebef 100%)",
+                                hover: "linear-gradient(135deg, #f5f7fa 0%, #dde3ea 100%)",
+                                color: "#0f1419",
+                            },
+                        },
+                        GOLD: {
+                            accent: "#caa24f",
+                            border: "1px solid rgba(202,162,79,0.55)",
+                            background: "linear-gradient(135deg, rgba(255,248,214,0.96), rgba(255,236,172,0.92))",
+                            glow: "0 16px 42px rgba(202,162,79,0.24)",
+                            title: "#a47b1d",
+                            description: "rgba(90,70,0,0.8)",
+                            button: {
+                                background: "linear-gradient(135deg, #d8b14a 0%, #f1c75d 100%)",
+                                hover: "linear-gradient(135deg, #c59c2c 0%, #dfb12d 100%)",
+                                color: "#221404",
+                            },
+                        },
+                    }[plan.key];
                     return (
                         <Grid item xs={12} sm={6} key={plan.key}>
                             <Card
                                 variant="outlined"
                                 sx={{
                                     height: "100%",
-                                    borderRadius: 4,
-                                    borderColor: isCurrentPlan ? "#1d9bf0" : "divider",
-                                    borderWidth: isCurrentPlan ? 2 : 1,
-                                    boxShadow: "none",
-                                    backgroundColor: isCurrentPlan ? "rgba(29,155,240,0.06)" : "transparent",
-                                    transition: "border-color 0.15s ease-in-out, background-color 0.15s ease-in-out",
+                                    borderRadius: 3.5,
+                                    border: planStyles.border,
+                                    boxShadow: isCurrentPlan ? planStyles.glow : "0 6px 18px rgba(15,20,25,0.06)",
+                                    background: planStyles.background,
+                                    position: "relative",
+                                    overflow: "hidden",
+                                    transition: "transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease",
+                                    transform: "translateY(0)",
+                                    "&:hover": {
+                                        transform: "translateY(-4px)",
+                                        boxShadow: planStyles.glow,
+                                    },
+                                    "&::before": {
+                                        content: '""',
+                                        position: "absolute",
+                                        inset: 0,
+                                        background: plan.key === "SILVER"
+                                            ? "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.6) 40%, transparent 75%)"
+                                            : "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.38) 40%, transparent 75%)",
+                                        pointerEvents: "none",
+                                        transform: "translateX(-100%)",
+                                        transition: "transform 220ms ease",
+                                    },
+                                    "&:hover::before": {
+                                        transform: "translateX(100%)",
+                                    },
                                 }}
                             >
-                                <CardContent>
+                                <CardContent sx={{ position: "relative", zIndex: 1 }}>
                                     <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
-                                        <Typography variant="h6" component="h2" fontWeight={800}>
+                                        <Typography
+                                            variant="h6"
+                                            component="h2"
+                                            fontWeight={800}
+                                            sx={{ color: planStyles.title }}
+                                        >
                                             {plan.name}
                                         </Typography>
                                         {isCurrentPlan && (
@@ -372,27 +451,58 @@ export default function SettingsPage() {
                                                 size="small"
                                                 label="Current"
                                                 sx={{
-                                                    backgroundColor: "#1d9bf0",
-                                                    color: "#fff",
+                                                    background: plan.key === "SILVER"
+                                                        ? "linear-gradient(135deg, #f5f7fa 0%, #dae1e8 100%)"
+                                                        : plan.key === "GOLD"
+                                                          ? "linear-gradient(135deg, #d8b14a 0%, #f1c75d 100%)"
+                                                          : plan.key === "BRONZE"
+                                                            ? "linear-gradient(135deg, #a45f1d 0%, #c27a35 100%)"
+                                                            : "linear-gradient(135deg, #1d9bf0 0%, #4ba3ff 100%)",
+                                                    color: plan.key === "SILVER" ? "#0f1419" : "#fff",
                                                     fontWeight: 700,
+                                                    borderRadius: 999,
+                                                    boxShadow: plan.key === "SILVER" ? "0 6px 18px rgba(141,152,162,0.16)" : "none",
                                                 }}
                                             />
                                         )}
                                     </Stack>
-                                    <Typography variant="h5" sx={{ mt: 1, fontWeight: 800 }}>
+                                    <Typography variant="h5" sx={{ mt: 1, fontWeight: 800, color: "#0f1419" }}>
                                         {plan.price}
                                     </Typography>
-                                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            mt: 0.5,
+                                            fontSize: "0.95rem",
+                                            fontWeight: 600,
+                                            color: planStyles.description,
+                                            lineHeight: 1.4,
+                                        }}
+                                    >
                                         {plan.tweets}
                                     </Typography>
                                 </CardContent>
-                                <CardActions sx={{ px: 2, pb: 2 }}>
+                                <CardActions sx={{ px: 2, pb: 2, position: "relative", zIndex: 1 }}>
                                     <Button
                                         variant={isCurrentPlan ? "outlined" : "contained"}
                                         fullWidth
                                         onClick={() => handleChoosePlan(plan.key)}
                                         disabled={isCheckoutLoading && selectedPlan === plan.key}
-                                        sx={{ borderRadius: 999, fontWeight: 700, textTransform: "none" }}
+                                        sx={{
+                                            borderRadius: 999,
+                                            fontWeight: 700,
+                                            textTransform: "none",
+                                            borderColor: planStyles.accent,
+                                            color: isCurrentPlan ? planStyles.title : planStyles.button.color,
+                                            background: isCurrentPlan ? "rgba(255,255,255,0.9)" : planStyles.button.background,
+                                            boxShadow: isCurrentPlan ? "none" : `0 8px 22px ${planStyles.accent}22`,
+                                            transition: "transform 200ms ease, box-shadow 200ms ease, background 200ms ease",
+                                            "&:hover": {
+                                                background: isCurrentPlan ? "rgba(255,255,255,0.95)" : planStyles.button.hover,
+                                                transform: "translateY(-2px)",
+                                                boxShadow: isCurrentPlan ? "0 8px 18px rgba(15,20,25,0.08)" : `0 10px 24px ${planStyles.accent}33`,
+                                            },
+                                        }}
                                     >
                                         Choose Plan
                                     </Button>

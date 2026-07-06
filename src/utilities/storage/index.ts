@@ -17,3 +17,10 @@ export const uploadFile = async (file: File) => {
     }
     return data.path;
 };
+
+export const deleteFile = async (path: string) => {
+    const { error } = await supabase.storage.from("media").remove([path]);
+    if (error) {
+        console.log(error);
+    }
+};

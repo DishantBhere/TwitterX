@@ -665,7 +665,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     display: flex;
                     gap: 12px;
                     align-items: flex-start;
-                    padding: 10px 16px 10px;
+                    padding: 12px 16px 12px;
                 }
                 .x-composer-avatar {
                     flex-shrink: 0;
@@ -676,9 +676,9 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     min-width: 0;
                 }
                 .x-composer-input {
-                    min-height: 28px;
+                    min-height: 34px;
                     padding-top: 2px;
-                    padding-bottom: 4px;
+                    padding-bottom: 6px;
                     font-size: 17px;
                 }
                 .x-composer-input :global(.MuiInputBase-root) {
@@ -687,7 +687,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 .x-composer-input :global(input),
                 .x-composer-input :global(textarea) {
                     font-size: 20px;
-                    line-height: 1.35;
+                    line-height: 1.4;
                     padding: 0;
                 }
                 .x-composer-input :global(textarea::placeholder) {
@@ -697,11 +697,11 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 .x-composer-divider-row {
                     display: flex;
                     align-items: center;
-                    margin: 4px 0 8px;
+                    margin: 10px 0 10px;
                 }
                 .x-composer-divider {
                     height: 1px;
-                    width: calc(100% - 104px);
+                    width: calc(100% - 110px);
                     background: rgba(15, 20, 25, 0.12);
                 }
                 .x-composer-toolbar {
@@ -709,7 +709,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     align-items: center;
                     justify-content: space-between;
                     gap: 10px;
-                    min-height: 36px;
+                    min-height: 40px;
                     padding-top: 0;
                 }
                 .x-composer-icons {
@@ -718,14 +718,14 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     justify-content: flex-start;
                     flex: 1;
                     gap: 2px;
-                    min-height: 34px;
+                    min-height: 38px;
                 }
                 .x-composer-icons .icon-hoverable {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    width: 34px;
-                    height: 34px;
+                    width: 36px;
+                    height: 36px;
                     border-radius: 50%;
                     font-size: 20px;
                     color: rgb(29, 155, 240);
@@ -750,9 +750,9 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     margin-left: auto;
                 }
                 .x-composer-post-btn {
-                    width: 90px;
-                    height: 36px;
-                    min-height: 36px;
+                    width: 96px;
+                    height: 40px;
+                    min-height: 40px;
                     padding: 0;
                     border-radius: 9999px;
                     font-size: 15px;
@@ -761,10 +761,12 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
+                    box-shadow: 0 6px 18px rgba(29, 155, 240, 0.16);
                 }
                 .x-composer-post-btn.disabled {
-                    opacity: 0.5;
+                    opacity: 0.55;
                     cursor: not-allowed;
+                    box-shadow: none;
                 }
                 .x-mic-btn {
                     color: rgb(29, 155, 240) !important;
@@ -776,26 +778,9 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 .x-mic-btn:active {
                     background-color: rgba(29, 155, 240, 0.18) !important;
                 }
-                .x-composer-post-group {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    margin-left: auto;
-                }
-                .x-composer-post-btn {
-                    border-radius: 9999px;
-                    padding: 8px 16px;
-                    font-size: 14px;
-                    font-weight: 700;
-                    background-color: #eff3f4;
-                    color: #0f1419;
-                    transition: opacity 0.15s ease;
-                }
-                .x-composer-post-btn.disabled {
-                    opacity: 0.5;
-                }
                 .x-composer-post-btn:hover:not(.disabled) {
-                    opacity: 0.85;
+                    transform: translateY(-1px);
+                    filter: brightness(1.01);
                 }
                 .composer-gif-preview {
                     margin-top: 10px;

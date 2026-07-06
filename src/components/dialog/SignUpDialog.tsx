@@ -11,6 +11,7 @@ import { checkUserExists, createUser } from "@/utilities/fetch";
 import CircularLoading from "../misc/CircularLoading";
 import CustomSnackbar from "../misc/CustomSnackbar";
 import { SnackbarProps } from "@/types/SnackbarProps";
+import OtpVerificationCard from "@/components/auth/OtpVerificationCard";
 
 export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogProps) {
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
@@ -114,19 +115,16 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
             <form className="dialog-form" onSubmit={formik.handleSubmit}>
                 <DialogContent>
                     {pendingSignup ? (
-                        <div className="input-group">
-                            <div className="input">
-                                <div className="info">A verification code has been sent to your email.</div>
-                                <TextField
-                                    fullWidth
-                                    name="otp"
-                                    label="Enter OTP"
-                                    value={otp}
-                                    onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                                    autoFocus
-                                />
-                            </div>
-                        </div>
+                        <OtpVerificationCard
+                            title="Verify your identity"
+                            subtitle="We've sent a 6-digit verification code to"
+                            destinationValue={pendingSignup.email}
+                            otp={otp}
+                            setOtp={setOtp}
+                            onVerify={handleVerifySignupOtp}
+                            loading={formik.isSubmitting}
+                            verifyLabel="Verify Code"
+                        />
                     ) : (
                         <div className="input-group">
                             <div className="input">
@@ -199,20 +197,7 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
                         </div>
                     )}
                 </DialogContent>
-                {pendingSignup ? (
-                    formik.isSubmitting ? (
-                        <CircularLoading />
-                    ) : (
-                        <button
-                            className={`btn btn-dark ${otp.length === 6 ? "" : "disabled"}`}
-                            type="button"
-                            onClick={handleVerifySignupOtp}
-                            disabled={otp.length !== 6}
-                        >
-                            {t("actions.verify")}
-                        </button>
-                    )
-                ) : formik.isSubmitting ? (
+                {pendingSignup ? null : formik.isSubmitting ? (
                     <CircularLoading />
                 ) : (
                     <button

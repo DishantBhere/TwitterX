@@ -1,15 +1,15 @@
 "use client";
 
-import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import i18n from "@/i18n";
 import { requestLanguageOtp, verifyLanguageOtp } from "@/utilities/fetch";
 import { languageLabels, SupportedLanguage, supportedLanguages } from "@/utilities/language";
-import CircularLoading from "./CircularLoading";
 import CustomSnackbar from "./CustomSnackbar";
 import { SnackbarProps } from "@/types/SnackbarProps";
+import OtpVerificationCard from "@/components/auth/OtpVerificationCard";
 
 type PendingOtp = {
     language: SupportedLanguage;
@@ -101,35 +101,22 @@ export default function LanguageSelector({
                 </Select>
             </FormControl>
             {pendingOtp && (
-                <div className="language-otp">
-                    <h2>{t("settings.otpTitle")}</h2>
-                    <p>
-                        {t("settings.otpSent", {
-                            method: pendingOtp.deliveryMethod,
-                            destination: pendingOtp.destination,
-                        })}
-                    </p>
-                    <p className="simulated-otp">{t("settings.simulatedOtp", { otp: pendingOtp.simulatedOtp })}</p>
-                    <TextField
-                        fullWidth
-                        name="otp"
-                        label={t("settings.otpPlaceholder")}
-                        value={otp}
-                        onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                    />
-                    {isLoading ? (
-                        <CircularLoading />
-                    ) : (
-                        <button
-    type="button"
-    className={`btn btn-dark ${otp.length === 6 ? "" : "disabled"}`}
-    disabled={otp.length !== 6}
-    onClick={handleVerify}
->
-                            {t("actions.verify")}
-                        </button>
-                    )}
-                </div>
+                <OtpVerificationCard
+                    title={t("settings.otpTitle")}
+                    subtitle={t("settings.otpSent", {
+                        method: pendingOtp.deliveryMethod,
+                        destination: pendingOtp.destination,
+                    })}
+                    destinationType={pendingOtp.deliveryMethod}
+                    destinationValue={pendingOtp.destination}
+                    otp={otp}
+                    setOtp={setOtp}
+                    onVerify={handleVerify}
+                    loading={isLoading}
+                    verifyLabel={t("actions.verify")}
+                    successMessage=""
+                    demoOtp={pendingOtp.deliveryMethod === "phone" && process.env.NODE_ENV !== "production" ? pendingOtp.simulatedOtp : undefined}
+                />
             )}
             {snackbar.open && (
                 <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />

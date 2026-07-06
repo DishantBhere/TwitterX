@@ -11,6 +11,7 @@ import { logIn, verifyLoginOtp } from "@/utilities/fetch";
 import CircularLoading from "../misc/CircularLoading";
 import { SnackbarProps } from "@/types/SnackbarProps";
 import CustomSnackbar from "../misc/CustomSnackbar";
+import OtpVerificationCard from "@/components/auth/OtpVerificationCard";
 
 export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps) {
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
@@ -118,30 +119,25 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                         </div>
                     </div>
                     {pendingOtp && (
-                        <div className="language-otp">
-                            <h2>Verify your login</h2>
-                            <p>A verification code has been sent to your registered email.</p>
-                            <TextField
-                                fullWidth
-                                name="otp"
-                                label="Enter OTP"
-                                value={otp}
-                                onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                            />
-                        </div>
+                        <OtpVerificationCard
+                            title="Verify your identity"
+                            subtitle="We've sent a 6-digit verification code to"
+                            destinationValue={pendingOtp.username}
+                            otp={otp}
+                            setOtp={setOtp}
+                            onVerify={handleVerifyOtp}
+                            loading={formik.isSubmitting}
+                            verifyLabel="Verify Code"
+                        />
                     )}
                 </DialogContent>
                 {formik.isSubmitting ? (
                     <CircularLoading />
-                ) : pendingOtp ? (
-                    <button className="btn btn-dark" type="button" onClick={handleVerifyOtp} disabled={otp.length !== 6}>
-                        {t("actions.verify")}
-                    </button>
-                ) : (
+                ) : !pendingOtp ? (
                     <button className="btn btn-dark" type="submit">
                         {t("actions.login")}
                     </button>
-                )}
+                ) : null}
             </form>
             {snackbar.open && (
                 <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />

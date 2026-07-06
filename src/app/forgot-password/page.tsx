@@ -11,6 +11,7 @@ import CircularLoading from "@/components/misc/CircularLoading";
 import CustomSnackbar from "@/components/misc/CustomSnackbar";
 import { SnackbarProps } from "@/types/SnackbarProps";
 import { forgotPassword } from "@/utilities/fetch";
+import OtpVerificationCard from "@/components/auth/OtpVerificationCard";
 
 type ResetStep = 1 | 2 | 3;
 
@@ -180,19 +181,17 @@ export default function ForgotPasswordPage() {
                                 />
                             )}
                             {step >= 2 && (
-                                <TextField
-                                    fullWidth
-                                    name="otp"
-                                    label="Enter OTP"
-                                    placeholder="6-digit code"
-                                    variant="outlined"
-                                    size="medium"
-                                    value={formik.values.otp}
-                                    onChange={(event) => formik.setFieldValue("otp", event.target.value.replace(/\D/g, "").slice(0, 6))}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.otp && Boolean(formik.errors.otp)}
-                                    helperText={formik.touched.otp && formik.errors.otp}
-                                    autoFocus={step === 2}
+                                <OtpVerificationCard
+                                    title="Verify your identity"
+                                    subtitle="We've sent a 6-digit verification code to"
+                                    destinationValue={formik.values.identifier}
+                                    otp={formik.values.otp}
+                                    setOtp={(value) => formik.setFieldValue("otp", value)}
+                                    onVerify={formik.handleSubmit}
+                                    loading={isBusy}
+                                    verifyLabel="Verify Code"
+                                    cancelLabel="Cancel"
+                                    onCancel={handleBack}
                                 />
                             )}
                             {step === 3 && (
@@ -242,32 +241,30 @@ export default function ForgotPasswordPage() {
                                     )}
                                 </>
                             )}
-                            <Stack direction="row" spacing={1.25} className="x-login-actions">
-                                <Button
-                                    className="x-btn x-btn-outline x-btn-back"
-                                    variant="outlined"
-                                    type="button"
-                                    onClick={handleBack}
-                                >
-                                    <FaArrowLeft />
-                                    Back
-                                </Button>
-                                {isBusy ? (
-                                    <CircularLoading />
-                                ) : step === 1 ? (
-                                    <Button className="x-btn x-btn-primary" variant="contained" type="submit">
-                                        Send OTP
+                            {step !== 2 && (
+                                <Stack direction="row" spacing={1.25} className="x-login-actions">
+                                    <Button
+                                        className="x-btn x-btn-outline x-btn-back"
+                                        variant="outlined"
+                                        type="button"
+                                        onClick={handleBack}
+                                    >
+                                        <FaArrowLeft />
+                                        Back
                                     </Button>
-                                ) : step === 2 ? (
-                                    <Button className="x-btn x-btn-primary" variant="contained" type="submit">
-                                        Verify OTP
-                                    </Button>
-                                ) : (
-                                    <Button className="x-btn x-btn-primary" variant="contained" type="submit">
-                                        Save Password
-                                    </Button>
-                                )}
-                            </Stack>
+                                    {isBusy ? (
+                                        <CircularLoading />
+                                    ) : step === 1 ? (
+                                        <Button className="x-btn x-btn-primary" variant="contained" type="submit">
+                                            Send OTP
+                                        </Button>
+                                    ) : (
+                                        <Button className="x-btn x-btn-primary" variant="contained" type="submit">
+                                            Save Password
+                                        </Button>
+                                    )}
+                                </Stack>
+                            )}
                         </Stack>
                     </form>
                 </Stack>

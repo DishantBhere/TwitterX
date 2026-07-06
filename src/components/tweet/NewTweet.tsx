@@ -16,6 +16,7 @@ import Uploader from "../misc/Uploader";
 import { getFullURL } from "@/utilities/misc/getFullURL";
 import { uploadFile } from "@/utilities/storage";
 import ProgressCircle from "../misc/ProgressCircle";
+import OtpVerificationCard from "@/components/auth/OtpVerificationCard";
 
 const MAX_AUDIO_SIZE_BYTES = 100 * 1024 * 1024;
 const MAX_AUDIO_DURATION_SECONDS = 300;
@@ -558,36 +559,34 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 )}
                 {recordingError && <p className="audio-recording-error">{recordingError}</p>}
                 {audioFile && (
-                    <div className="audio-preview">
-                        <p>{audioFile.name}</p>
-                        {audioPreviewUrl && <audio controls src={audioPreviewUrl} />}
+                    <div className="audio-preview x-audio-card">
+                        <div className="x-audio-card-header">
+                            <div className="x-audio-icon">🎵</div>
+                            <div>
+                                <p className="x-audio-title">{audioFile.name}</p>
+                                <p className="x-audio-subtitle">{audioPreviewUrl ? "Selected audio ready" : "Audio attached"}</p>
+                            </div>
+                            <button type="button" className="x-audio-remove" onClick={clearAudioSelection}>
+                                Remove
+                            </button>
+                        </div>
+                        {audioPreviewUrl && <audio controls src={audioPreviewUrl} className="x-audio-player" />}
                     </div>
                 )}
                 {isAudioOtpLoading && <CircularLoading />}
                 {pendingAudioOtp && (
-                    <div className="audio-otp">
-                        <p>An audio verification code has been sent to your registered email.</p>
-                        <TextField
-                            fullWidth
-                            name="audioOtp"
-                            label="Enter OTP"
-                            value={audioOtp}
-                            onChange={(event) => setAudioOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                            error={Boolean(audioOtpError)}
-                            helperText={audioOtpError}
-                        />
-                        <button
-                            type="button"
-                            className={`btn btn-dark ${audioOtp.length === 6 ? "" : "disabled"}`}
-                            disabled={audioOtp.length !== 6}
-                            onClick={handleVerifyAudioOtp}
-                        >
-                            Verify
-                        </button>
-                        <button type="button" className="btn" onClick={clearAudioSelection}>
-                            Cancel
-                        </button>
-                    </div>
+                    <OtpVerificationCard
+                        title="Verify your identity"
+                        subtitle="We've sent a 6-digit verification code to"
+                        destinationValue={token.email ?? "your registered email"}
+                        otp={audioOtp}
+                        setOtp={setAudioOtp}
+                        onVerify={handleVerifyAudioOtp}
+                        onCancel={clearAudioSelection}
+                        loading={isAudioOtpLoading}
+                        error={audioOtpError}
+                        verifyLabel="Verify Code"
+                    />
                 )}
                 {audioOtpError && !pendingAudioOtp && <p className="audio-otp-error">{audioOtpError}</p>}
             </form>
@@ -871,6 +870,51 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 }
                 .gif-status.error {
                     color: #f4212e;
+                }
+                .x-audio-card {
+                    margin-top: 10px;
+                    padding: 14px;
+                    border: 1px solid rgba(15, 20, 25, 0.12);
+                    border-radius: 16px;
+                    background: var(--twitter-white);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+                .x-audio-card-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                }
+                .x-audio-icon {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 14px;
+                    display: grid;
+                    place-items: center;
+                    background: rgba(29, 155, 240, 0.1);
+                    font-size: 20px;
+                }
+                .x-audio-title {
+                    margin: 0;
+                    font-weight: 700;
+                    color: var(--twitter-black);
+                }
+                .x-audio-subtitle {
+                    margin: 2px 0 0;
+                    color: var(--twitter-muted);
+                    font-size: 13px;
+                }
+                .x-audio-remove {
+                    margin-left: auto;
+                    border: none;
+                    background: transparent;
+                    color: rgb(29, 155, 240);
+                    font-weight: 700;
+                    cursor: pointer;
+                }
+                .x-audio-player {
+                    width: 100%;
                 }
             `}</style>
         </div>

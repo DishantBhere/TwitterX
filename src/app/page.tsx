@@ -13,6 +13,7 @@ import { SnackbarProps } from "@/types/SnackbarProps";
 import { logIn, verifyLoginOtp } from "@/utilities/fetch";
 import { supabase } from "@/utilities/storage";
 import CircularLoading from "@/components/misc/CircularLoading";
+import OtpVerificationCard from "@/components/auth/OtpVerificationCard";
 
 export default function RootPage() {
     const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -184,12 +185,17 @@ export default function RootPage() {
                                             autoFocus
                                         />
                                         {pendingOtp && (
-                                            <TextField
-                                                fullWidth
-                                                label="OTP"
-                                                value={otp}
-                                                onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                                                helperText="Enter the 6-digit code sent to your registered email."
+                                            <OtpVerificationCard
+                                                title="Verify your identity"
+                                                subtitle="We've sent a 6-digit verification code to"
+                                                destinationValue={pendingOtp}
+                                                otp={otp}
+                                                setOtp={setOtp}
+                                                onVerify={handleVerifyOtp}
+                                                onCancel={handleBack}
+                                                loading={formik.isSubmitting}
+                                                verifyLabel="Verify Code"
+                                                resendCountdown={0}
                                             />
                                         )}
                                     </>
@@ -207,21 +213,7 @@ export default function RootPage() {
                                 )}
                                 {formik.isSubmitting ? (
                                     <CircularLoading />
-                                ) : pendingOtp ? (
-                                    <Stack direction="row" spacing={1.25} className="x-login-actions">
-                                        <Button
-                                            className="x-btn x-btn-outline x-btn-back"
-                                            variant="outlined"
-                                            type="button"
-                                            onClick={handleBack}
-                                        >
-                                            Back
-                                        </Button>
-                                        <Button className="x-btn x-btn-primary" variant="contained" onClick={handleVerifyOtp}>
-                                            Verify OTP
-                                        </Button>
-                                    </Stack>
-                                ) : (
+                                ) : !pendingOtp ? (
                                     <Stack direction="row" spacing={1.25} className="x-login-actions">
                                         {loginStep === 2 && (
                                             <Button
@@ -237,7 +229,7 @@ export default function RootPage() {
                                             {loginStep === 1 ? "Continue" : "Log In"}
                                         </Button>
                                     </Stack>
-                                )}
+                                ) : null}
                             </Stack>
                         </form>
                         <Typography component="p" className="x-landing-footer">

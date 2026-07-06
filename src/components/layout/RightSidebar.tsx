@@ -3,8 +3,8 @@
 import { useContext } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { Avatar, Box, Button, IconButton, Stack, Typography } from "@mui/material";
-import { FaTimes } from "react-icons/fa";
+import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
+import { FaEllipsisH, FaTimes } from "react-icons/fa";
 
 import { AuthContext } from "@/context/AuthContext";
 import Search from "../misc/Search";
@@ -92,24 +92,24 @@ export default function RightSidebar() {
                     </IconButton>
                     <h1>Today&apos;s News</h1>
                     <Stack className="todays-news-list" spacing={0}>
-                        {NEWS_ITEMS.map((item, index) => (
+                        {NEWS_ITEMS.map((item) => (
                             <Box key={item.title} className="news-item">
-                                <Avatar
-                                    src={`https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=120&q=60&sig=${index}`}
-                                    alt=""
-                                    className="news-thumb"
-                                />
                                 <Box className="news-copy">
                                     <Typography className="news-kicker">{item.category} · Trending</Typography>
                                     <Typography className="news-headline">{item.title}</Typography>
                                     <Typography component="p" className="news-meta text-muted">
-                                        {item.time} <span className="middle-dot">·</span> {item.category}{" "}
-                                        <span className="middle-dot">·</span> {item.posts} posts
+                                        {item.posts} posts
                                     </Typography>
                                 </Box>
+                                <IconButton size="small" className="news-menu" aria-label="More options">
+                                    <FaEllipsisH size={14} />
+                                </IconButton>
                             </Box>
                         ))}
                     </Stack>
+                    <Box component="a" href="#" className="news-show-more">
+                        Show more
+                    </Box>
                 </div>
 
                 <div className="reminder football-widget">

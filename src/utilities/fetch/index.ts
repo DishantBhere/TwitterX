@@ -259,6 +259,7 @@ export const forgotPassword = async (
         newPassword?: string;
         resetToken?: string;
         userId?: string;
+        resend?: boolean;
     }
 ) => {
     const response = await fetch(`${HOST_URL}/api/auth/forgot-password`, {

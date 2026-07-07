@@ -17,6 +17,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
     const [pendingOtp, setPendingOtp] = useState<{
         username: string;
+        expiresAt?: number;
     } | null>(null);
     const [otp, setOtp] = useState("");
     const { t } = useTranslation();
@@ -49,6 +50,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
             if (response.requiresOtp) {
                 setPendingOtp({
                     username: response.username ?? values.identifier,
+                    expiresAt: response.expiresAt,
                 });
                 setOtp("");
                 setSnackbar({
@@ -123,11 +125,25 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                             title="Verify your identity"
                             subtitle="We've sent a 6-digit verification code to"
                             destinationValue={pendingOtp.username}
+                            expiresAt={pendingOtp.expiresAt}
                             otp={otp}
                             setOtp={setOtp}
                             onVerify={handleVerifyOtp}
                             loading={formik.isSubmitting}
                             verifyLabel="Verify Code"
+                            onResend={async () => {
+                                const response = await logIn(JSON.stringify(formik.values));
+                                if (!response.success) {
+                                    setSnackbar({ message: response.message, severity: "error", open: true });
+                                    return;
+                                }
+                                setPendingOtp({
+                                    username: response.username ?? formik.values.identifier,
+                                    expiresAt: response.expiresAt,
+                                });
+                                setOtp("");
+                                setSnackbar({ message: response.message ?? "New verification code sent.", severity: "success", open: true });
+                            }}
                         />
                     )}
                 </DialogContent>

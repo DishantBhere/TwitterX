@@ -17,6 +17,8 @@ import { getFullURL } from "@/utilities/misc/getFullURL";
 import { uploadFile } from "@/utilities/storage";
 import ProgressCircle from "../misc/ProgressCircle";
 import OtpVerificationCard from "@/components/auth/OtpVerificationCard";
+import CustomSnackbar from "../misc/CustomSnackbar";
+import { SnackbarProps } from "@/types/SnackbarProps";
 
 const MAX_AUDIO_SIZE_BYTES = 100 * 1024 * 1024;
 const MAX_AUDIO_DURATION_SECONDS = 300;
@@ -47,6 +49,8 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [isRecording, setIsRecording] = useState(false);
     const [recordingError, setRecordingError] = useState("");
     const [pendingAudioOtp, setPendingAudioOtp] = useState(false);
+    const [audioOtpExpiresAt, setAudioOtpExpiresAt] = useState(0);
+    const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
     const [isTweetLimitDialogOpen, setIsTweetLimitDialogOpen] = useState(false);
     const [count, setCount] = useState(0);
     const audioInputRef = useRef<HTMLInputElement | null>(null);
@@ -107,6 +111,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         setAudioOtpError("");
         setAudioOtpVerified(false);
         setPendingAudioOtp(false);
+        setAudioOtpExpiresAt(0);
         if (audioInputRef.current) audioInputRef.current.value = "";
     };
 
@@ -240,6 +245,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         }
 
         setPendingAudioOtp(true);
+        setAudioOtpExpiresAt(new Date(response.expiresAt).getTime());
         if (response.message) {
             setAudioOtpError("");
         }
@@ -579,17 +585,36 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                         title="Verify your identity"
                         subtitle="We've sent a 6-digit verification code to"
                         destinationValue={token.email ?? "your registered email"}
+                        expiresAt={audioOtpExpiresAt}
                         otp={audioOtp}
                         setOtp={setAudioOtp}
                         onVerify={handleVerifyAudioOtp}
                         onCancel={clearAudioSelection}
+                        onResend={async () => {
+                            setIsAudioOtpLoading(true);
+                            const response = await requestAudioOtp();
+                            setIsAudioOtpLoading(false);
+
+                            if (!response.success) {
+                                return setAudioOtpError(response.message ?? "Audio verification failed.");
+                            }
+
+                            setAudioOtp("");
+                            setAudioOtpError("");
+                            setAudioOtpVerified(false);
+                            setPendingAudioOtp(true);
+                            setAudioOtpExpiresAt(new Date(response.expiresAt).getTime());
+                            setSnackbar({ message: "New verification code sent.", severity: "success", open: true });
+                        }}
                         loading={isAudioOtpLoading}
                         error={audioOtpError}
                         verifyLabel="Verify Code"
+                        compact
                     />
                 )}
                 {audioOtpError && !pendingAudioOtp && <p className="audio-otp-error">{audioOtpError}</p>}
             </form>
+            {snackbar.open && <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />}
             <Dialog
                 className="dialog"
                 open={showGifPicker}

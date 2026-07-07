@@ -18,7 +18,9 @@ type OtpVerificationCardProps = {
     onCancel?: () => void;
     onResend?: () => void | Promise<void>;
     resendLabel?: string;
-    resendCountdown?: number;
+    expiresAt?: number;
+    expiresInLabel?: string;
+    expiredLabel?: string;
     loading?: boolean;
     error?: string;
     successMessage?: string;
@@ -27,9 +29,11 @@ type OtpVerificationCardProps = {
     verifyLabel?: string;
     cancelLabel?: string;
     resendPrefix?: string;
+    compact?: boolean;
 };
 
 const BOX_LENGTH = 6;
+const OTP_DURATION_SECONDS = 5 * 60;
 
 const formatCountdown = (seconds: number) => {
     const safeSeconds = Math.max(0, seconds);
@@ -54,7 +58,9 @@ export default function OtpVerificationCard({
     onCancel,
     onResend,
     resendLabel = "Resend code",
-    resendCountdown = 0,
+    expiresAt,
+    expiresInLabel = "OTP expires in",
+    expiredLabel = "OTP expired.",
     loading = false,
     error = "",
     successMessage = "",
@@ -63,12 +69,15 @@ export default function OtpVerificationCard({
     verifyLabel = "Verify Code",
     cancelLabel = "Cancel",
     resendPrefix = "Didn't receive the code?",
+    compact = false,
 }: OtpVerificationCardProps) {
     const [focusedIndex, setFocusedIndex] = useState(0);
     const [showDemoOtp, setShowDemoOtp] = useState(true);
+    const [remainingSeconds, setRemainingSeconds] = useState(OTP_DURATION_SECONDS);
     const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
     const digits = useMemo(() => otp.slice(0, BOX_LENGTH).split(""), [otp]);
+    const isExpired = remainingSeconds === 0;
 
     useEffect(() => {
         const nextIndex = Math.min(digits.length, BOX_LENGTH - 1);
@@ -92,6 +101,27 @@ export default function OtpVerificationCard({
 
         return () => window.clearTimeout(timer);
     }, [destinationType, demoOtp]);
+
+    useEffect(() => {
+        if (!expiresAt) {
+            setRemainingSeconds(OTP_DURATION_SECONDS);
+            return;
+        }
+
+        const tick = () => {
+            setRemainingSeconds(Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000)));
+        };
+
+        tick();
+        const timer = window.setInterval(tick, 1000);
+        return () => window.clearInterval(timer);
+    }, [expiresAt]);
+
+    useEffect(() => {
+        if (otp) return;
+        setFocusedIndex(0);
+        inputRefs.current[0]?.focus();
+    }, [otp]);
 
     const updateOtp = (nextValue: string) => {
         setOtp(nextValue.replace(/\D/g, "").slice(0, BOX_LENGTH));
@@ -175,16 +205,16 @@ export default function OtpVerificationCard({
                 sx={{
                     width: "min(100%, 520px)",
                     mx: "auto",
-                    borderRadius: "20px",
+                    borderRadius: compact ? "18px" : "20px",
                     border: "1px solid #2F3336",
                     bgcolor: "#16181C",
                     color: "#E7E9EA",
                     boxShadow: "0 18px 60px rgba(0,0,0,0.38)",
-                    p: { xs: 2.5, sm: 4 },
+                    p: compact ? { xs: 2, sm: 2.5 } : { xs: 2.5, sm: 4 },
                 }}
             >
-                <Stack spacing={3.25} alignItems="stretch">
-                    <Stack spacing={1.5}>
+                <Stack spacing={compact ? 2 : 3.25} alignItems="stretch">
+                    <Stack spacing={compact ? 1.1 : 1.5}>
                         <Stack direction="row" spacing={1.2} alignItems="center">
                             {icon && (
                                 <Box
@@ -203,10 +233,13 @@ export default function OtpVerificationCard({
                                 </Box>
                             )}
                             <Box sx={{ minWidth: 0 }}>
-                                <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: -0.02, lineHeight: 1.15, color: "#E7E9EA" }}>
+                                <Typography
+                                    variant={compact ? "h6" : "h5"}
+                                    sx={{ fontWeight: 800, letterSpacing: -0.02, lineHeight: 1.15, color: "#E7E9EA" }}
+                                >
                                     {title}
                                 </Typography>
-                                <Typography sx={{ color: "#71767B", mt: 0.75, lineHeight: 1.55 }}>
+                                <Typography sx={{ color: "#71767B", mt: 0.5, lineHeight: 1.45, fontSize: compact ? 13 : 15 }}>
                                     {subtitle}{" "}
                                     {destinationValue && (
                                         <Box component="span" sx={{ color: "#E7E9EA", fontWeight: 700 }}>
@@ -240,7 +273,7 @@ export default function OtpVerificationCard({
                     {destinationType === "phone" && process.env.NODE_ENV !== "production" && (
                         <Box
                             sx={{
-                                p: 1.5,
+                                p: compact ? 1.25 : 1.5,
                                 borderRadius: "12px",
                                 border: "1px solid rgba(29,155,240,0.25)",
                                 bgcolor: "rgba(29,155,240,0.08)",
@@ -250,18 +283,13 @@ export default function OtpVerificationCard({
                                 gap: 0.5,
                             }}
                         >
-                            <Typography sx={{ fontSize: 13, fontWeight: 800, color: "#E7E9EA" }}>⚠ Demo Mode</Typography>
+                            <Typography sx={{ fontSize: 13, fontWeight: 800, color: "#E7E9EA" }}>Demo Mode</Typography>
                             <Typography sx={{ fontSize: 13, color: "#E7E9EA" }}>
                                 SMS verification is not connected yet. For testing purposes, the generated OTP will be displayed
                                 temporarily.
                             </Typography>
                             {showDemoOtp && demoOtp && (
-                                <Stack
-                                    direction="row"
-                                    spacing={1}
-                                    alignItems="center"
-                                    sx={{ mt: 0.5, flexWrap: "wrap" }}
-                                >
+                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5, flexWrap: "wrap" }}>
                                     <Box
                                         sx={{
                                             px: 1,
@@ -292,14 +320,12 @@ export default function OtpVerificationCard({
                             )}
                         </Box>
                     )}
-                    <Box sx={{ pt: 0.5 }}>
-                        <Typography sx={{ mb: 1.5, color: "#71767B" }}>Enter the 6-digit code</Typography>
-                        <Stack
-                            direction="row"
-                            spacing={{ xs: 0.75, sm: 1 }}
-                            justifyContent="space-between"
-                            sx={{ width: "100%" }}
-                        >
+
+                    <Box sx={{ pt: compact ? 0 : 0.5 }}>
+                        <Typography sx={{ mb: compact ? 1 : 1.5, color: "#71767B", fontSize: compact ? 13 : 15 }}>
+                            Enter the 6-digit code
+                        </Typography>
+                        <Stack direction="row" spacing={{ xs: 0.65, sm: compact ? 0.75 : 1 }} justifyContent="space-between" sx={{ width: "100%" }}>
                             {Array.from({ length: BOX_LENGTH }).map((_, index) => (
                                 <motion.input
                                     key={index}
@@ -333,13 +359,13 @@ export default function OtpVerificationCard({
                                     transition={{ duration: 0.16 }}
                                     style={{
                                         width: "100%",
-                                        maxWidth: 56,
-                                        height: 56,
-                                        borderRadius: 12,
+                                        maxWidth: compact ? 52 : 56,
+                                        height: compact ? 52 : 56,
+                                        borderRadius: compact ? 10 : 12,
                                         border: "1px solid #38444D",
                                         outline: "none",
                                         textAlign: "center",
-                                        fontSize: 20,
+                                        fontSize: compact ? 18 : 20,
                                         fontWeight: 800,
                                         color: "#E7E9EA",
                                         background: "#0F1419",
@@ -350,64 +376,56 @@ export default function OtpVerificationCard({
                         </Stack>
                         <AnimatePresence mode="wait">
                             {error ? (
-                                <motion.div
-                                    key="error"
-                                    initial={{ opacity: 0, x: -12 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: 10 }}
-                                >
-                                    <Typography sx={{ mt: 1.25, color: "#f4212e", fontSize: 14, fontWeight: 600 }}>
-                                        {error}
-                                    </Typography>
+                                <motion.div key="error" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+                                    <Typography sx={{ mt: 1.25, color: "#f4212e", fontSize: 14, fontWeight: 600 }}>{error}</Typography>
                                 </motion.div>
                             ) : successMessage ? (
-                                <motion.div
-                                    key="success"
-                                    initial={{ opacity: 0, scale: 0.96 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.96 }}
-                                >
-                                    <Typography sx={{ mt: 1.25, color: "#00ba7c", fontSize: 14, fontWeight: 700 }}>
-                                        {successMessage}
-                                    </Typography>
+                                <motion.div key="success" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}>
+                                    <Typography sx={{ mt: 1.25, color: "#00ba7c", fontSize: 14, fontWeight: 700 }}>{successMessage}</Typography>
                                 </motion.div>
                             ) : null}
                         </AnimatePresence>
                     </Box>
 
-                    <Stack spacing={1.5}>
-                        <Typography sx={{ color: "#71767B" }}>
-                            {resendPrefix}{" "}
-                            {resendCountdown > 0 ? (
-                                <>
-                                    <Box component="span" sx={{ color: "#E7E9EA", fontWeight: 700 }}>
-                                        Resend in {formatCountdown(resendCountdown)}
-                                    </Box>
-                                </>
-                            ) : (
-                                <Box
-                                    component="button"
-                                    type="button"
-                                    onClick={onResend}
-                                    sx={{
-                                        p: 0,
-                                        border: 0,
-                                        background: "transparent",
-                                        color: "#1D9BF0",
-                                        fontWeight: 700,
-                                        cursor: onResend ? "pointer" : "default",
-                                    }}
-                                >
-                                    {resendLabel}
+                    <Stack spacing={1.1}>
+                        <Stack spacing={0.35}>
+                            <Typography sx={{ color: "#71767B", fontSize: compact ? 13 : 14 }}>
+                                {expiresInLabel}{" "}
+                                <Box component="span" sx={{ color: "#E7E9EA", fontWeight: 700 }}>
+                                    {formatCountdown(remainingSeconds)}
                                 </Box>
+                            </Typography>
+                            {isExpired ? (
+                                <Typography sx={{ color: "#f4212e", fontSize: 14, fontWeight: 700 }}>{expiredLabel}</Typography>
+                            ) : (
+                                <Typography sx={{ color: "#71767B", fontSize: compact ? 13 : 14 }}>
+                                    {resendPrefix}{" "}
+                                    <Box
+                                        component="button"
+                                        type="button"
+                                        onClick={onResend}
+                                        disabled={!onResend}
+                                        sx={{
+                                            p: 0,
+                                            border: 0,
+                                            background: "transparent",
+                                            color: "#1D9BF0",
+                                            fontWeight: 700,
+                                            cursor: onResend ? "pointer" : "default",
+                                            "&:disabled": { opacity: 0.7, cursor: "default" },
+                                        }}
+                                    >
+                                        {resendLabel}
+                                    </Box>
+                                </Typography>
                             )}
-                        </Typography>
+                        </Stack>
 
                         <Button
                             variant="contained"
                             fullWidth
                             onClick={onVerify}
-                            disabled={loading || otp.length !== BOX_LENGTH}
+                            disabled={loading || otp.length !== BOX_LENGTH || isExpired}
                             sx={{
                                 height: 48,
                                 borderRadius: "9999px",

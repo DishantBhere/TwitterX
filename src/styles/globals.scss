@@ -227,7 +227,7 @@ main {
 .root {
     display: grid;
     grid-template-columns: 50% 50%;
-    height: 100vh;
+    min-height: 100vh;
 
     .root-left {
         position: relative;
@@ -272,7 +272,9 @@ main {
     grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
     background-color: #000;
     color: #e7e9ea;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: clip;
+    overflow-y: auto;
 
     .x-landing-left,
     .x-landing-right {
@@ -284,6 +286,7 @@ main {
         align-items: center;
         justify-content: center;
         padding: clamp(2rem, 5vw, 4rem);
+        overflow-y: auto;
         background:
             radial-gradient(circle at top left, rgba(29, 155, 240, 0.14), transparent 35%),
             radial-gradient(circle at bottom right, rgba(29, 155, 240, 0.08), transparent 30%),
@@ -294,6 +297,7 @@ main {
         width: min(100%, 30rem);
         position: relative;
         z-index: 1;
+        padding-block: clamp(0.5rem, 2vh, 1.5rem);
     }
 
     .x-landing-brand {
@@ -438,10 +442,10 @@ main {
         align-items: center;
         justify-content: center;
         position: relative;
+        overflow: hidden;
         background:
             radial-gradient(circle at center, rgba(29, 155, 240, 0.08), transparent 42%),
             linear-gradient(135deg, #0a0a0a 0%, #000 55%, #050505 100%);
-        overflow: hidden;
     }
 
     .x-watermark {

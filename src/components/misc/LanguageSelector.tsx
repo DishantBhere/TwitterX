@@ -16,6 +16,7 @@ type PendingOtp = {
     deliveryMethod: "email" | "phone";
     destination: string;
     simulatedOtp: string;
+    expiresAt: number;
 };
 
 export default function LanguageSelector({
@@ -53,12 +54,13 @@ export default function LanguageSelector({
             });
         }
 
-        setPendingOtp({
-            language,
-            deliveryMethod: response.deliveryMethod,
-            destination: response.destination,
-            simulatedOtp: response.simulatedOtp,
-        });
+            setPendingOtp({
+                language,
+                deliveryMethod: response.deliveryMethod,
+                destination: response.destination,
+                simulatedOtp: response.simulatedOtp,
+                expiresAt: new Date(response.expiresAt).getTime(),
+            });
     };
 
     const handleVerify = async () => {
@@ -109,13 +111,34 @@ export default function LanguageSelector({
                     })}
                     destinationType={pendingOtp.deliveryMethod}
                     destinationValue={pendingOtp.destination}
+                    expiresAt={pendingOtp.expiresAt}
                     otp={otp}
                     setOtp={setOtp}
                     onVerify={handleVerify}
+                    onResend={async () => {
+                        setIsLoading(true);
+                        const response = await requestLanguageOtp(pendingOtp.language);
+                        setIsLoading(false);
+
+                        if (!response.success) {
+                            return setSnackbar({ message: response.message ?? t("settings.requestFailed"), severity: "error", open: true });
+                        }
+
+                        setPendingOtp({
+                            language: pendingOtp.language,
+                            deliveryMethod: response.deliveryMethod,
+                            destination: response.destination,
+                            simulatedOtp: response.simulatedOtp,
+                            expiresAt: new Date(response.expiresAt).getTime(),
+                        });
+                        setOtp("");
+                        setSnackbar({ message: "New verification code sent.", severity: "success", open: true });
+                    }}
                     loading={isLoading}
                     verifyLabel={t("actions.verify")}
                     successMessage=""
                     demoOtp={pendingOtp.deliveryMethod === "phone" && process.env.NODE_ENV !== "production" ? pendingOtp.simulatedOtp : undefined}
+                    compact
                 />
             )}
             {snackbar.open && (

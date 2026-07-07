@@ -7,14 +7,32 @@ type PendingForgotPassword = {
     otp: string;
     expiresAt: number;
     resetToken: string;
+    identifier: string;
+    requestedAt: number;
 };
 
 const globalForForgotPasswordOtp = globalThis as typeof globalThis & {
     forgotPasswordOtpStore?: Map<string, PendingForgotPassword>;
+    forgotPasswordDailyRequestStore?: Map<string, number>;
 };
 
 const forgotPasswordOtpStore = globalForForgotPasswordOtp.forgotPasswordOtpStore ?? new Map<string, PendingForgotPassword>();
 globalForForgotPasswordOtp.forgotPasswordOtpStore = forgotPasswordOtpStore;
+
+const forgotPasswordDailyRequestStore =
+    globalForForgotPasswordOtp.forgotPasswordDailyRequestStore ?? new Map<string, number>();
+globalForForgotPasswordOtp.forgotPasswordDailyRequestStore = forgotPasswordDailyRequestStore;
+
+const isSameCalendarDay = (firstTimestamp: number, secondTimestamp: number) => {
+    const firstDate = new Date(firstTimestamp);
+    const secondDate = new Date(secondTimestamp);
+
+    return (
+        firstDate.getFullYear() === secondDate.getFullYear() &&
+        firstDate.getMonth() === secondDate.getMonth() &&
+        firstDate.getDate() === secondDate.getDate()
+    );
+};
 
 export const generateForgotPasswordOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -23,18 +41,46 @@ export const generateForgotPasswordToken = () =>
         .toString("hex")
         .slice(0, 48);
 
-export const saveForgotPasswordOtp = (key: string) => {
-    const otp = generateForgotPasswordOtp();
+export const saveForgotPasswordOtp = (key: string, userId: string, options?: { otp?: string }) => {
+    const otp = options?.otp ?? generateForgotPasswordOtp();
     const resetToken = generateForgotPasswordToken();
+    const requestedAt = Date.now();
 
     forgotPasswordOtpStore.set(key, {
-        userId: key,
+        userId,
         otp,
-        expiresAt: Date.now() + OTP_TTL_MS,
+        expiresAt: requestedAt + OTP_TTL_MS,
         resetToken,
+        identifier: key,
+        requestedAt,
     });
 
     return { otp, expiresAt: new Date(Date.now() + OTP_TTL_MS), resetToken };
+};
+
+export const canRequestForgotPasswordOtp = (key: string) => {
+    const firstRequestedAt = forgotPasswordDailyRequestStore.get(key);
+    if (!firstRequestedAt) return { success: true as const };
+
+    const now = Date.now();
+    if (isSameCalendarDay(firstRequestedAt, now)) {
+        return { success: false as const, message: "You can use this option only one time per day." };
+    }
+
+    forgotPasswordDailyRequestStore.delete(key);
+    return { success: true as const };
+};
+
+export const recordForgotPasswordDailyRequest = (key: string) => {
+    const existing = forgotPasswordDailyRequestStore.get(key);
+    if (existing && isSameCalendarDay(existing, Date.now())) return;
+    forgotPasswordDailyRequestStore.set(key, Date.now());
+};
+
+export const getForgotPasswordDailyRequestAt = (key: string) => forgotPasswordDailyRequestStore.get(key);
+
+export const removeForgotPasswordOtp = (key: string) => {
+    forgotPasswordOtpStore.delete(key);
 };
 
 export const verifyForgotPasswordOtp = (key: string, otp: string) => {

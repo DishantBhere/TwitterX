@@ -10,12 +10,12 @@ import {
     verifyForgotPasswordOtp,
 } from "@/utilities/auth/forgot-password-otp";
 
-const isToday = (date: Date) => {
-    const now = new Date();
-    return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate();
-};
-
 const normalizeIdentifier = (value: unknown) => (typeof value === "string" ? value.trim() : "");
+
+const isSameCalendarDay = (first: Date, second: Date) =>
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate();
 
 const makePassword = (length = 12) => {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     const otp = normalizeIdentifier(body.otp);
     const newPassword = normalizeIdentifier(body.newPassword);
     const resetToken = normalizeIdentifier(body.resetToken);
+    const resend = Boolean(body.resend);
 
     if (!identifier) {
         return NextResponse.json({ success: false, message: "Email or phone is required." });
@@ -53,36 +54,50 @@ export async function POST(request: NextRequest) {
 
         if (action === "request") {
             const isDevelopment = process.env.NODE_ENV === "development";
+            const deliveryMethod = identifier.includes("@") ? "email" : "phone";
+            const demoOtp = isDevelopment && deliveryMethod === "phone" ? "123456" : undefined;
 
-            if (!isDevelopment && user.lastPasswordResetAt && isToday(user.lastPasswordResetAt)) {
-                return NextResponse.json({
-                    success: false,
-                    message: "You can use this option only one time per day.",
+            if (!resend) {
+                if (user.lastPasswordResetAt && isSameCalendarDay(user.lastPasswordResetAt, new Date())) {
+                    return NextResponse.json({ success: false, message: "You can use this option only one time per day." });
+                }
+            }
+
+            if (!user.email && !user.phone) {
+                return NextResponse.json({ success: false, message: "No registered email or phone was found for this account." });
+            }
+
+            const { otp: resetOtp, expiresAt } = saveForgotPasswordOtp(identifier, user.id, { otp: demoOtp });
+
+            const destination = deliveryMethod === "phone" ? user.phone : user.email;
+            if (!destination) {
+                return NextResponse.json({ success: false, message: "No registered destination was found for this account." });
+            }
+
+            if (deliveryMethod === "email") {
+                await sendEmail({
+                    to: destination,
+                    subject: "Twitter Clone - Password Reset OTP",
+                    html: `
+                        <h2>Twitter Clone</h2>
+                        <h3>Password Reset Verification</h3>
+                        <p>Your 6-digit OTP is:</p>
+                        <h1>${resetOtp}</h1>
+                        <p>This OTP expires according to the existing verification flow.</p>
+                    `,
                 });
             }
-
-            if (!user.email) {
-                return NextResponse.json({ success: false, message: "No registered email was found for this account." });
-            }
-
-            const { otp: resetOtp, expiresAt } = saveForgotPasswordOtp(user.id);
-
-            await sendEmail({
-                to: user.email,
-                subject: "Twitter Clone - Password Reset OTP",
-                html: `
-                    <h2>Twitter Clone</h2>
-                    <h3>Password Reset Verification</h3>
-                    <p>Your 6-digit OTP is:</p>
-                    <h1>${resetOtp}</h1>
-                    <p>This OTP expires according to the existing verification flow.</p>
-                `,
-            });
 
             return NextResponse.json({
                 success: true,
                 requiresOtp: true,
-                message: "A verification code has been sent to your registered email.",
+                deliveryMethod,
+                destination,
+                simulatedOtp: isDevelopment ? resetOtp : undefined,
+                message:
+                    deliveryMethod === "phone"
+                        ? "A verification code has been sent to your registered phone number."
+                        : "A verification code has been sent to your registered email.",
                 expiresAt,
             });
         }
@@ -92,14 +107,10 @@ export async function POST(request: NextRequest) {
                 return NextResponse.json({ success: false, message: "Enter the 6-digit OTP." });
             }
 
-            const verification = verifyForgotPasswordOtp(user.id, otp);
+            const verification = verifyForgotPasswordOtp(identifier, otp);
             if (!verification.success || !verification.pending) {
                 return NextResponse.json(verification);
             }
-
-            console.log("[forgot-password] verified userId:", verification.pending.userId);
-            console.log("[forgot-password] verified email:", user.email);
-            console.log("[forgot-password] verified username:", user.username);
 
             return NextResponse.json({
                 success: true,
@@ -109,7 +120,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (action === "reset") {
-            const pending = getForgotPasswordPending(body.userId);
+            const pending = getForgotPasswordPending(identifier);
 
             if (!resetToken) {
                 return NextResponse.json({ success: false, message: "Reset session is invalid." });
@@ -117,28 +128,21 @@ export async function POST(request: NextRequest) {
             if (!newPassword) {
                 return NextResponse.json({ success: false, message: "New password is required." });
             }
-            if (!body.userId || !pending) {
+            if (!pending) {
                 return NextResponse.json({ success: false, message: "Reset session is invalid." });
             }
 
             const currentUser = await prisma.user.findUnique({
                 where: {
-                    id: body.userId,
+                    id: pending.userId,
                 },
             });
 
-            console.log("[forgot-password] reset userId:", body.userId);
-            console.log("[forgot-password] reset email:", currentUser?.email);
-            console.log("[forgot-password] reset username:", currentUser?.username);
-            console.log("[forgot-password] old password hash:", currentUser?.password);
-            console.log("[forgot-password] hashPassword() called:", true);
-
             const hashedPassword = await hashPassword(newPassword);
-            console.log("[forgot-password] new password hash before update:", hashedPassword);
 
-            const updateResult = await prisma.user.update({
+            await prisma.user.update({
                 where: {
-                    id: body.userId,
+                    id: pending.userId,
                 },
                 data: {
                     password: hashedPassword,
@@ -146,19 +150,13 @@ export async function POST(request: NextRequest) {
                 },
             });
 
-            console.log("[forgot-password] prisma.user.update() result:", updateResult);
-
             const rereadUser = await prisma.user.findUnique({
                 where: {
-                    id: body.userId,
+                    id: pending.userId,
                 },
             });
 
-            console.log("[forgot-password] reread password hash after update:", rereadUser?.password);
-            console.log("[forgot-password] saved hash changed:", currentUser?.password !== rereadUser?.password);
-            console.log("[forgot-password] comparePasswords(newPassword, savedHash):", await comparePasswords(newPassword, rereadUser?.password ?? ""));
-
-            const tokenCheck = consumeForgotPasswordToken(body.userId, resetToken);
+            const tokenCheck = consumeForgotPasswordToken(identifier, resetToken);
             if (!tokenCheck.success) {
                 return NextResponse.json(tokenCheck);
             }

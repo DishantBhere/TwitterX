@@ -19,6 +19,7 @@ export default function RootPage() {
     const [isSignUpOpen, setIsSignUpOpen] = useState(false);
     const [loginStep, setLoginStep] = useState<1 | 2>(1);
     const [pendingOtp, setPendingOtp] = useState<string | null>(null);
+    const [pendingOtpExpiresAt, setPendingOtpExpiresAt] = useState<number>(0);
     const [otp, setOtp] = useState("");
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
     const router = useRouter();
@@ -68,6 +69,7 @@ export default function RootPage() {
 
             if (response.requiresOtp) {
                 setPendingOtp(response.username ?? values.identifier);
+                setPendingOtpExpiresAt(new Date(response.expiresAt).getTime());
                 setOtp("");
                 setSnackbar({
                     message: response.message ?? "A verification code has been sent to your registered email.",
@@ -77,10 +79,11 @@ export default function RootPage() {
                 return;
             }
 
-            setPendingOtp(null);
-            setOtp("");
-            setLoginStep(1);
-            resetForm();
+                            setPendingOtp(null);
+                            setPendingOtpExpiresAt(0);
+                            setOtp("");
+                            setLoginStep(1);
+                            resetForm();
             router.push("/explore");
         },
     });
@@ -95,6 +98,7 @@ export default function RootPage() {
         }
 
         setPendingOtp(null);
+        setPendingOtpExpiresAt(0);
         setOtp("");
         setLoginStep(1);
         formik.resetForm();
@@ -104,6 +108,7 @@ export default function RootPage() {
     const handleBack = () => {
         setLoginStep(1);
         setPendingOtp(null);
+        setPendingOtpExpiresAt(0);
         setOtp("");
         formik.setFieldValue("password", "");
     };
@@ -188,16 +193,31 @@ export default function RootPage() {
                                             <OtpVerificationCard
                                                 title="Verify your identity"
                                                 subtitle="We've sent a 6-digit verification code to"
-                                                destinationValue={pendingOtp}
-                                                otp={otp}
-                                                setOtp={setOtp}
-                                                onVerify={handleVerifyOtp}
-                                                onCancel={handleBack}
-                                                loading={formik.isSubmitting}
-                                                verifyLabel="Verify Code"
-                                                resendCountdown={0}
-                                            />
-                                        )}
+                                            destinationValue={pendingOtp}
+                                            expiresAt={pendingOtpExpiresAt}
+                                            otp={otp}
+                                            setOtp={setOtp}
+                                            onVerify={handleVerifyOtp}
+                                            onCancel={handleBack}
+                                            onResend={async () => {
+                                                const response = await logIn(JSON.stringify(formik.values));
+                                                if (!response.success) {
+                                                    setSnackbar({ message: response.message, severity: "error", open: true });
+                                                    return;
+                                                }
+                                                setPendingOtp(response.username ?? formik.values.identifier);
+                                                setPendingOtpExpiresAt(new Date(response.expiresAt).getTime());
+                                                setOtp("");
+                                                setSnackbar({
+                                                    message: response.message ?? "New verification code sent.",
+                                                    severity: "success",
+                                                    open: true,
+                                                });
+                                            }}
+                                            loading={formik.isSubmitting}
+                                            verifyLabel="Verify Code"
+                                        />
+                                    )}
                                     </>
                                 )}
                                 {loginStep === 2 && (

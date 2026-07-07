@@ -1,9 +1,22 @@
-"use client";
+﻿"use client";
 
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import { DEFAULT_LANGUAGE, supportedLanguages } from "@/utilities/language";
+
+const PREFERRED_LANGUAGE_STORAGE_KEY = "preferredLanguage";
+
+const getInitialLanguage = () => {
+    if (typeof window === "undefined") return DEFAULT_LANGUAGE;
+
+    const storedLanguage = window.localStorage.getItem(PREFERRED_LANGUAGE_STORAGE_KEY);
+    if (storedLanguage && supportedLanguages.includes(storedLanguage as (typeof supportedLanguages)[number])) {
+        return storedLanguage as (typeof supportedLanguages)[number];
+    }
+
+    return DEFAULT_LANGUAGE;
+};
 
 export const resources = {
     en: {
@@ -40,6 +53,7 @@ export const resources = {
                 verify: "Verify",
                 sendOtp: "Send OTP",
                 resendOtp: "Resend OTP",
+                back: "Back",
             },
             settings: {
                 title: "Settings",
@@ -56,6 +70,7 @@ export const resources = {
                 requestFailed: "Could not start language verification.",
                 verifyFailed: "OTP verification failed.",
                 alreadySelected: "This language is already selected.",
+                resendSuccess: "A new verification code has been sent.",
             },
             profile: {
                 editProfile: "Edit profile",
@@ -128,6 +143,29 @@ export const resources = {
                 loggingOut: "Logging out...",
                 logoutTitle: "Log out of Twitter?",
                 logoutHelp: "You can always log back in at any time.",
+                forgotPasswordTitle: "Reset password.",
+                forgotPasswordSubtitle: "Secure your account in a few steps.",
+                forgotPasswordDivider: "forgot password",
+                forgotPasswordRequired: "Email or phone is required.",
+                emailOrPhone: "Email or Phone",
+                enterEmailOrPhone: "Enter email or phone",
+                verifyIdentity: "Verify your identity",
+                verifyIdentitySubtitle: "We've sent a 6-digit verification code to your registered {{method}}.",
+                otpRequired: "OTP is required.",
+                enterOtp: "Enter the 6-digit OTP.",
+                otpExpired: "OTP expired.",
+                otpExpiresIn: "OTP expires in",
+                newPassword: "New Password",
+                confirmPassword: "Confirm Password",
+                newPasswordRequired: "New password is required.",
+                confirmPasswordRequired: "Confirm your password.",
+                passwordsDoNotMatch: "Passwords do not match.",
+                passwordLength: "Password should be 12 characters long.",
+                generatePassword: "Generate Password",
+                generatedPasswordReady: "Generated password ready to use.",
+                savePassword: "Save Password",
+                passwordUpdated: "Password updated successfully.",
+                newOtpSent: "A new OTP has been sent.",
             },
             sidebar: {
                 dontMiss: "Don't miss what's happening",
@@ -150,14 +188,14 @@ export const resources = {
     es: {
         translation: {
             nav: { home: "Inicio", explore: "Explorar", notifications: "Notificaciones", messages: "Mensajes", profile: "Perfil", editProfile: "Editar perfil", settings: "Configuracion", logout: "Cerrar sesion" },
-            actions: { save: "Guardar", close: "Cerrar", submit: "Enviar", cancel: "Cancelar", delete: "Eliminar", create: "Crear", login: "Iniciar sesion", signup: "Registrarse", signin: "Iniciar sesion", createAccount: "Crear cuenta", tweet: "Tweet", follow: "Seguir", following: "Siguiendo", unfollow: "Dejar de seguir", reply: "Responder", retweet: "Retweet", like: "Me gusta", share: "Compartir", verify: "Verificar", sendOtp: "Enviar OTP", resendOtp: "Reenviar OTP" },
-            settings: { title: "Configuracion", colorTheme: "Tema de color", lightsOut: "(Luces apagadas)", defaultTheme: "(Predeterminado)", language: "Idioma", preferredLanguage: "Idioma preferido", otpTitle: "Verificar cambio de idioma", otpSent: "Se envio un OTP de 6 digitos a tu {{method}} registrado: {{destination}}.", simulatedOtp: "OTP simulado: {{otp}}", otpPlaceholder: "Introduce OTP", changed: "Idioma actualizado correctamente.", requestFailed: "No se pudo iniciar la verificacion de idioma.", verifyFailed: "La verificacion OTP fallo.", alreadySelected: "Este idioma ya esta seleccionado." },
+            actions: { save: "Guardar", close: "Cerrar", submit: "Enviar", cancel: "Cancelar", delete: "Eliminar", create: "Crear", login: "Iniciar sesion", signup: "Registrarse", signin: "Iniciar sesion", createAccount: "Crear cuenta", tweet: "Tweet", follow: "Seguir", following: "Siguiendo", unfollow: "Dejar de seguir", reply: "Responder", retweet: "Retweet", like: "Me gusta", share: "Compartir", verify: "Verificar", sendOtp: "Enviar OTP", resendOtp: "Reenviar OTP", back: "Atrás" },
+            settings: { title: "Configuracion", colorTheme: "Tema de color", lightsOut: "(Luces apagadas)", defaultTheme: "(Predeterminado)", language: "Idioma", preferredLanguage: "Idioma preferido", otpTitle: "Verificar cambio de idioma", otpSent: "Se envio un OTP de 6 digitos a tu {{method}} registrado: {{destination}}.", simulatedOtp: "OTP simulado: {{otp}}", otpPlaceholder: "Introduce OTP", changed: "Idioma actualizado correctamente.", requestFailed: "No se pudo iniciar la verificacion de idioma.", verifyFailed: "La verificacion OTP fallo.", alreadySelected: "Este idioma ya esta seleccionado.", resendSuccess: "Se envio un nuevo codigo de verificacion." },
             profile: { editProfile: "Editar perfil", name: "Nombre", description: "Descripcion", location: "Ubicacion", website: "Sitio web", email: "Correo", phone: "Telefono", enableBrowserNotifications: "Activar notificaciones del navegador", updated: "Tu perfil se actualizo correctamente.", updateFailed: "Algo salio mal al actualizar el perfil. Intentalo de nuevo.", twitterBlue: "Twitter Blue?", alreadyBlue: "Ya tienes estado Blue.", thanks: "Gracias por participar.", wantBlue: "Quieres Twitter Blue?", blueDescription: "Con Twitter Blue tendras un pequeno pajaro junto a tu nombre, eso es todo.", blueCodeInfo: "Puedes obtener el codigo desde", here: "aqui", enterCode: "Introduce tu codigo", invalidBlue: "Codigo blue invalido. Intentalo de nuevo.", blueFailed: "Algo salio mal al obtener Blue. Intentalo de nuevo.", blueSuccess: "Obtuviste Blue correctamente. Felicidades!", tweets: "Tweets", replies: "Respuestas", media: "Multimedia", likes: "Me gusta" },
             home: { title: "Inicio", whatsHappening: "Que esta pasando?", tweetRequired: "El tweet no puede estar vacio.", tweetMax: "El tweet debe tener maximo 280 caracteres." },
             notifications: { title: "Notificaciones", nothing: "Aun no hay notificaciones." },
             messages: { title: "Mensajes", newMessage: "Nuevo mensaje", searchPeople: "Buscar personas", messagePlaceholder: "Inicia un nuevo mensaje", deleteConversation: "Eliminar conversacion?" },
             search: { placeholder: "Buscar en Twitter", title: "Buscar", results: "Resultados de busqueda" },
-            auth: { hero: "Mira lo que esta pasando en el mundo ahora mismo", join: "Unete a Twitter hoy.", loginTitle: "Inicia sesion en Twitter", signupTitle: "Crea tu cuenta", username: "Usuario", password: "Contrasena", email: "Correo", phone: "Telefono", name: "Nombre", loginInfo: "Tu informacion de inicio de sesion", publicName: "Tu nombre publico", testAccount: "Cuenta de prueba", testTooltip: "Puedes iniciar sesion con una cuenta de prueba para obtener privilegios completos.", exploreWithoutLogin: "Explorar sin iniciar sesion", loginFailed: "Usuario o contrasena incorrectos.", genericFailed: "Algo salio mal. Intentalo de nuevo." },
+            auth: { hero: "Mira lo que esta pasando en el mundo ahora mismo", join: "Unete a Twitter hoy.", loginTitle: "Inicia sesion en Twitter", signupTitle: "Crea tu cuenta", username: "Usuario", password: "Contrasena", email: "Correo", phone: "Telefono", name: "Nombre", loginInfo: "Tu informacion de inicio de sesion", publicName: "Tu nombre publico", testAccount: "Cuenta de prueba", testTooltip: "Puedes iniciar sesion con una cuenta de prueba para obtener privilegios completos.", exploreWithoutLogin: "Explorar sin iniciar sesion", loginFailed: "Usuario o contrasena incorrectos.", genericFailed: "Algo salio mal. Intentalo de nuevo.", forgotPasswordTitle: "Restablecer contraseña.", forgotPasswordSubtitle: "Protege tu cuenta en unos pocos pasos.", forgotPasswordDivider: "olvidaste tu contraseña", forgotPasswordRequired: "Se requiere correo o telefono.", emailOrPhone: "Correo o telefono", enterEmailOrPhone: "Ingresa correo o telefono", verifyIdentity: "Verifica tu identidad", verifyIdentitySubtitle: "Hemos enviado un codigo OTP de 6 digitos a tu {{method}} registrado.", otpRequired: "Se requiere OTP.", enterOtp: "Ingresa el OTP de 6 digitos.", otpExpired: "OTP expirado.", otpExpiresIn: "OTP expira en", newPassword: "Nueva contraseña", confirmPassword: "Confirmar contraseña", newPasswordRequired: "Se requiere nueva contraseña.", confirmPasswordRequired: "Confirma tu contraseña.", passwordsDoNotMatch: "Las contraseñas no coinciden.", passwordLength: "La contraseña debe tener 12 caracteres.", generatePassword: "Generar contraseña", generatedPasswordReady: "Contraseña generada lista para usar.", savePassword: "Guardar contraseña", passwordUpdated: "Contraseña actualizada correctamente.", newOtpSent: "Se ha enviado un nuevo OTP." },
             sidebar: { dontMiss: "No te pierdas lo que pasa", firstToKnow: "La gente en Twitter es la primera en saberlo.", whoToFollow: "A quien seguir", completeProfile: "Completa tu perfil" },
             tweet: { deleteTweet: "Eliminar Tweet?", deleteWarning: "Esto no se puede deshacer y se eliminara de tu perfil, la cronologia de tus seguidores y los resultados de busqueda.", youRetweeted: "Retweeteaste.", retweeted: "retweeteo." },
             misc: { nothingToShow: "Nada que mostrar", loading: "Cargando" },
@@ -165,31 +203,31 @@ export const resources = {
     },
     hi: {
         translation: {
-            nav: { home: "होम", explore: "एक्सप्लोर", notifications: "सूचनाएं", messages: "संदेश", profile: "प्रोफाइल", editProfile: "प्रोफाइल संपादित करें", settings: "सेटिंग्स", logout: "लॉग आउट" },
-            actions: { save: "सेव", close: "बंद करें", submit: "सबमिट", cancel: "रद्द करें", delete: "हटाएं", create: "बनाएं", login: "लॉग इन", signup: "साइन अप", signin: "साइन इन", createAccount: "खाता बनाएं", tweet: "ट्वीट", follow: "फॉलो", following: "फॉलो कर रहे हैं", unfollow: "अनफॉलो", reply: "जवाब", retweet: "रीट्वीट", like: "लाइक", share: "शेयर", verify: "सत्यापित करें", sendOtp: "OTP भेजें", resendOtp: "OTP फिर भेजें" },
-            settings: { title: "सेटिंग्स", colorTheme: "रंग थीम", lightsOut: "(लाइट्स आउट)", defaultTheme: "(डिफॉल्ट)", language: "भाषा", preferredLanguage: "पसंदीदा भाषा", otpTitle: "भाषा बदलाव सत्यापित करें", otpSent: "6 अंकों का OTP आपके पंजीकृत {{method}} पर भेजा गया: {{destination}}.", simulatedOtp: "सिम्युलेटेड OTP: {{otp}}", otpPlaceholder: "OTP दर्ज करें", changed: "भाषा सफलतापूर्वक अपडेट हुई.", requestFailed: "भाषा सत्यापन शुरू नहीं हो सका.", verifyFailed: "OTP सत्यापन विफल हुआ.", alreadySelected: "यह भाषा पहले से चुनी गई है." },
-            profile: { editProfile: "प्रोफाइल संपादित करें", name: "नाम", description: "विवरण", location: "स्थान", website: "वेबसाइट", email: "ईमेल", phone: "फोन", enableBrowserNotifications: "ब्राउजर सूचनाएं चालू करें", updated: "आपकी प्रोफाइल सफलतापूर्वक अपडेट हुई.", updateFailed: "प्रोफाइल अपडेट करते समय कुछ गलत हुआ.", twitterBlue: "Twitter Blue?", alreadyBlue: "आपके पास पहले से Blue स्टेटस है.", thanks: "भाग लेने के लिए धन्यवाद.", wantBlue: "Twitter Blue चाहिए?", blueDescription: "Twitter Blue के साथ आपके नाम के पास छोटा ट्विटर पक्षी होगा.", blueCodeInfo: "आप कोड यहां से ले सकते हैं", here: "यहां", enterCode: "अपना कोड दर्ज करें", invalidBlue: "अमान्य blue कोड.", blueFailed: "Blue पाने में कुछ गलत हुआ.", blueSuccess: "आपको Blue मिल गया. बधाई!", tweets: "ट्वीट्स", replies: "जवाब", media: "मीडिया", likes: "लाइक्स" },
+            nav: { home: "होम", explore: "एक्सप्लोर", notifications: "सूचनाएँ", messages: "संदेश", profile: "प्रोफ़ाइल", editProfile: "प्रोफ़ाइल संपादित करें", settings: "सेटिंग्स", logout: "लॉग आउट" },
+            actions: { save: "सेव", close: "बंद करें", submit: "सबमिट", cancel: "रद्द करें", delete: "हटाएँ", create: "बनाएँ", login: "लॉग इन", signup: "साइन अप", signin: "साइन इन", createAccount: "खाता बनाएँ", tweet: "ट्वीट", follow: "फ़ॉलो", following: "फ़ॉलो कर रहे हैं", unfollow: "अनफ़ॉलो", reply: "जवाब", retweet: "रीट्वीट", like: "लाइक", share: "शेयर", verify: "सत्यापित करें", sendOtp: "OTP भेजें", resendOtp: "OTP फिर भेजें", back: "वापस" },
+            settings: { title: "सेटिंग्स", colorTheme: "रंग थीम", lightsOut: "(लाइट्स आउट)", defaultTheme: "(डिफ़ॉल्ट)", language: "भाषा", preferredLanguage: "पसंदीदा भाषा", otpTitle: "भाषा बदलाव सत्यापित करें", otpSent: "6 अंकों का OTP आपके पंजीकृत {{method}} पर भेजा गया: {{destination}}.", simulatedOtp: "सिम्युलेटेड OTP: {{otp}}", otpPlaceholder: "OTP दर्ज करें", changed: "भाषा सफलतापूर्वक अपडेट हुई.", requestFailed: "भाषा सत्यापन शुरू नहीं हो सका.", verifyFailed: "OTP सत्यापन विफल हुआ.", alreadySelected: "यह भाषा पहले से चुनी गई है.", resendSuccess: "नया प्रमाणिकरण कोड भेजा गया है." },
+            profile: { editProfile: "प्रोफ़ाइल संपादित करें", name: "नाम", description: "विवरण", location: "स्थान", website: "वेबसाइट", email: "ईमेल", phone: "फ़ोन", enableBrowserNotifications: "ब्राउज़र सूचनाएँ चालू करें", updated: "आपकी प्रोफ़ाइल सफलतापूर्वक अपडेट हुई.", updateFailed: "प्रोफ़ाइल अपडेट करते समय कुछ गलत हुआ.", twitterBlue: "Twitter Blue?", alreadyBlue: "आपके पास पहले से Blue स्टेटस है.", thanks: "भाग लेने के लिए धन्यवाद.", wantBlue: "Twitter Blue चाहिए?", blueDescription: "Twitter Blue के साथ आपके नाम के पास छोटा ट्विटर पक्षी होगा.", blueCodeInfo: "आप कोड यहाँ से ले सकते हैं", here: "यहाँ", enterCode: "अपना कोड दर्ज करें", invalidBlue: "अमान्य blue कोड.", blueFailed: "Blue पाने में कुछ गलत हुआ.", blueSuccess: "आपको Blue मिल गया. बधाई!", tweets: "ट्वीट्स", replies: "जवाब", media: "मीडिया", likes: "लाइक्स" },
             home: { title: "होम", whatsHappening: "क्या हो रहा है?", tweetRequired: "ट्वीट खाली नहीं हो सकता.", tweetMax: "ट्वीट अधिकतम 280 अक्षरों का होना चाहिए." },
-            notifications: { title: "सूचनाएं", nothing: "अभी कोई सूचना नहीं." },
-            messages: { title: "संदेश", newMessage: "नया संदेश", searchPeople: "लोग खोजें", messagePlaceholder: "नया संदेश शुरू करें", deleteConversation: "बातचीत हटाएं?" },
+            notifications: { title: "सूचनाएँ", nothing: "अभी कोई सूचना नहीं." },
+            messages: { title: "संदेश", newMessage: "नया संदेश", searchPeople: "लोग खोजें", messagePlaceholder: "नया संदेश शुरू करें", deleteConversation: "बातचीत हटाएँ?" },
             search: { placeholder: "Twitter खोजें", title: "खोज", results: "खोज परिणाम" },
-            auth: { hero: "दुनिया में अभी क्या हो रहा है देखें", join: "आज ही Twitter से जुड़ें.", loginTitle: "Twitter में साइन इन करें", signupTitle: "अपना खाता बनाएं", username: "यूजरनेम", password: "पासवर्ड", email: "ईमेल", phone: "फोन", name: "नाम", loginInfo: "आपकी लॉगिन जानकारी", publicName: "आपका सार्वजनिक नाम", testAccount: "टेस्ट खाता", testTooltip: "आप टेस्ट खाते से लॉग इन कर सकते हैं.", exploreWithoutLogin: "साइन इन किए बिना एक्सप्लोर करें", loginFailed: "यूजरनेम या पासवर्ड सही नहीं है.", genericFailed: "कुछ गलत हुआ. फिर कोशिश करें." },
-            sidebar: { dontMiss: "जो हो रहा है उसे मिस न करें", firstToKnow: "Twitter पर लोग सबसे पहले जानते हैं.", whoToFollow: "किसे फॉलो करें", completeProfile: "अपनी प्रोफाइल पूरी करें" },
-            tweet: { deleteTweet: "ट्वीट हटाएं?", deleteWarning: "यह वापस नहीं होगा और आपके प्रोफाइल, टाइमलाइन और खोज परिणामों से हट जाएगा.", youRetweeted: "आपने रीट्वीट किया.", retweeted: "ने रीट्वीट किया." },
+            auth: { hero: "दुनिया में अभी क्या हो रहा है देखें", join: "आज ही Twitter से जुड़ें.", loginTitle: "Twitter में साइन इन करें", signupTitle: "अपना खाता बनाएँ", username: "यूज़रनेम", password: "पासवर्ड", email: "ईमेल", phone: "फ़ोन", name: "नाम", loginInfo: "आपकी लॉगिन जानकारी", publicName: "आपका सार्वजनिक नाम", testAccount: "टेस्ट खाता", testTooltip: "आप टेस्ट खाते से लॉग इन कर सकते हैं.", exploreWithoutLogin: "साइन इन किए बिना एक्सप्लोर करें", loginFailed: "यूज़रनेम या पासवर्ड सही नहीं है.", genericFailed: "कुछ गलत हुआ. फिर कोशिश करें.", forgotPasswordTitle: "पासवर्ड रीसेट करें.", forgotPasswordSubtitle: "कुछ कदमों में अपने खाते की रक्षा करें.", forgotPasswordDivider: "पासवर्ड भूल गए", forgotPasswordRequired: "ईमेल या फ़ोन आवश्यक है.", emailOrPhone: "ईमेल या फ़ोन", enterEmailOrPhone: "ईमेल या फ़ोन दर्ज करें", verifyIdentity: "अपनी पहचान स्पष्ट करें", verifyIdentitySubtitle: "हमने आपके पंजीकृत {{method}} पर 6-अंकीय वेरिफ़िकेशन कोड भेजा है.", otpRequired: "OTP आवश्यक है.", enterOtp: "6-अंकीय OTP दर्ज करें.", otpExpired: "OTP समाप्त हो गया है.", otpExpiresIn: "OTP समाप्त होने में वक्त", newPassword: "नया पासवर्ड", confirmPassword: "पासवर्ड फिर से दर्ज करें", newPasswordRequired: "नया पासवर्ड आवश्यक है.", confirmPasswordRequired: "अपना पासवर्ड पुनः दर्ज करें.", passwordsDoNotMatch: "पासवर्ड मेल नहीं खाते.", passwordLength: "पासवर्ड 12 अक्षरों का होना चाहिए.", generatePassword: "पासवर्ड जेनरेट करें", generatedPasswordReady: "जेनरेट किया गया पासवर्ड तैयार है.", savePassword: "पासवर्ड सेव करें", passwordUpdated: "पासवर्ड सफलतापूर्वक अपडेट हुआ.", newOtpSent: "नया OTP भेज दिया गया है." },
+            sidebar: { dontMiss: "जो हो रहा है उसे मिस न करें", firstToKnow: "Twitter पर लोग सबसे पहले जानते हैं.", whoToFollow: "किसे फ़ॉलो करें", completeProfile: "अपनी प्रोफ़ाइल पूरी करें" },
+            tweet: { deleteTweet: "ट्वीट हटाएँ?", deleteWarning: "यह वापस नहीं होगा और आपके प्रोफ़ाइल, टाइमलाइन और खोज परिणामों से हट जाएगा.", youRetweeted: "आपने रीट्वीट किया.", retweeted: "ने रीट्वीट किया." },
             misc: { nothingToShow: "दिखाने के लिए कुछ नहीं", loading: "लोड हो रहा है" },
         },
     },
     pt: {
         translation: {
             nav: { home: "Inicio", explore: "Explorar", notifications: "Notificacoes", messages: "Mensagens", profile: "Perfil", editProfile: "Editar perfil", settings: "Configuracoes", logout: "Sair" },
-            actions: { save: "Salvar", close: "Fechar", submit: "Enviar", cancel: "Cancelar", delete: "Excluir", create: "Criar", login: "Entrar", signup: "Cadastrar", signin: "Entrar", createAccount: "Criar conta", tweet: "Tweet", follow: "Seguir", following: "Seguindo", unfollow: "Deixar de seguir", reply: "Responder", retweet: "Retweetar", like: "Curtir", share: "Compartilhar", verify: "Verificar", sendOtp: "Enviar OTP", resendOtp: "Reenviar OTP" },
-            settings: { title: "Configuracoes", colorTheme: "Tema de cor", lightsOut: "(Luzes apagadas)", defaultTheme: "(Padrao)", language: "Idioma", preferredLanguage: "Idioma preferido", otpTitle: "Verificar alteracao de idioma", otpSent: "Um OTP de 6 digitos foi enviado para seu {{method}} registrado: {{destination}}.", simulatedOtp: "OTP simulado: {{otp}}", otpPlaceholder: "Digite o OTP", changed: "Idioma atualizado com sucesso.", requestFailed: "Nao foi possivel iniciar a verificacao.", verifyFailed: "Falha na verificacao do OTP.", alreadySelected: "Este idioma ja esta selecionado." },
+            actions: { save: "Salvar", close: "Fechar", submit: "Enviar", cancel: "Cancelar", delete: "Excluir", create: "Criar", login: "Entrar", signup: "Cadastrar", signin: "Entrar", createAccount: "Criar conta", tweet: "Tweet", follow: "Seguir", following: "Seguindo", unfollow: "Deixar de seguir", reply: "Responder", retweet: "Retweetar", like: "Curtir", share: "Compartilhar", verify: "Verificar", sendOtp: "Enviar OTP", resendOtp: "Reenviar OTP", back: "Voltar" },
+            settings: { title: "Configuracoes", colorTheme: "Tema de cor", lightsOut: "(Luzes apagadas)", defaultTheme: "(Padrao)", language: "Idioma", preferredLanguage: "Idioma preferido", otpTitle: "Verificar alteracao de idioma", otpSent: "Um OTP de 6 digitos foi enviado para seu {{method}} registrado: {{destination}}.", simulatedOtp: "OTP simulado: {{otp}}", otpPlaceholder: "Digite o OTP", changed: "Idioma atualizado com sucesso.", requestFailed: "Nao foi possivel iniciar a verificacao.", verifyFailed: "Falha na verificacao do OTP.", alreadySelected: "Este idioma ja esta selecionado.", resendSuccess: "Um novo codigo de verificacao foi enviado." },
             profile: { editProfile: "Editar perfil", name: "Nome", description: "Descricao", location: "Localizacao", website: "Site", email: "Email", phone: "Telefone", enableBrowserNotifications: "Ativar notificacoes do navegador", updated: "Seu perfil foi atualizado com sucesso.", updateFailed: "Algo deu errado ao atualizar o perfil.", twitterBlue: "Twitter Blue?", alreadyBlue: "Voce ja tem status Blue.", thanks: "Obrigado por participar.", wantBlue: "Quer Twitter Blue?", blueDescription: "Com Twitter Blue, voce tera um pequeno passaro ao lado do nome.", blueCodeInfo: "Voce pode obter o codigo em", here: "aqui", enterCode: "Digite seu codigo", invalidBlue: "Codigo blue invalido.", blueFailed: "Algo deu errado ao obter Blue.", blueSuccess: "Voce conseguiu Blue. Parabens!", tweets: "Tweets", replies: "Respostas", media: "Midia", likes: "Curtidas" },
             home: { title: "Inicio", whatsHappening: "O que esta acontecendo?", tweetRequired: "O tweet nao pode ficar vazio.", tweetMax: "O tweet deve ter no maximo 280 caracteres." },
             notifications: { title: "Notificacoes", nothing: "Ainda sem notificacoes." },
             messages: { title: "Mensagens", newMessage: "Nova mensagem", searchPeople: "Buscar pessoas", messagePlaceholder: "Comece uma nova mensagem", deleteConversation: "Excluir conversa?" },
             search: { placeholder: "Buscar no Twitter", title: "Buscar", results: "Resultados da busca" },
-            auth: { hero: "Veja o que esta acontecendo no mundo agora", join: "Entre no Twitter hoje.", loginTitle: "Entrar no Twitter", signupTitle: "Crie sua conta", username: "Usuario", password: "Senha", email: "Email", phone: "Telefone", name: "Nome", loginInfo: "Suas informacoes de login", publicName: "Seu nome publico", testAccount: "Conta de teste", testTooltip: "Voce pode entrar com uma conta de teste.", exploreWithoutLogin: "Explorar sem entrar", loginFailed: "Usuario ou senha incorretos.", genericFailed: "Algo deu errado. Tente novamente." },
+            auth: { hero: "Veja o que esta acontecendo no mundo agora", join: "Entre no Twitter hoje.", loginTitle: "Entrar no Twitter", signupTitle: "Crie sua conta", username: "Usuario", password: "Senha", email: "Email", phone: "Telefone", name: "Nome", loginInfo: "Suas informacoes de login", publicName: "Seu nome publico", testAccount: "Conta de teste", testTooltip: "Voce pode entrar com uma conta de teste.", exploreWithoutLogin: "Explorar sem entrar", loginFailed: "Usuario ou senha incorretos.", genericFailed: "Algo deu errado. Tente novamente.", forgotPasswordTitle: "Redefinir senha.", forgotPasswordSubtitle: "Proteja sua conta em alguns passos.", forgotPasswordDivider: "senha esquecida", forgotPasswordRequired: "Email ou telefone e obrigatorio.", emailOrPhone: "Email ou telefone", enterEmailOrPhone: "Digite email ou telefone", verifyIdentity: "Verifique sua identidade", verifyIdentitySubtitle: "Enviamos um codigo de verificacao de 6 digitos para o seu {{method}} registrado.", otpRequired: "OTP e obrigatorio.", enterOtp: "Digite o OTP de 6 digitos.", otpExpired: "OTP expirou.", otpExpiresIn: "OTP expira em", newPassword: "Nova senha", confirmPassword: "Confirmar senha", newPasswordRequired: "Nova senha e obrigatoria.", confirmPasswordRequired: "Confirme sua senha.", passwordsDoNotMatch: "As senhas nao coincidem.", passwordLength: "A senha deve ter 12 caracteres.", generatePassword: "Gerar senha", generatedPasswordReady: "Senha gerada pronta para uso.", savePassword: "Salvar senha", passwordUpdated: "Senha atualizada com sucesso.", newOtpSent: "Um novo OTP foi enviado." },
             sidebar: { dontMiss: "Nao perca o que esta acontecendo", firstToKnow: "As pessoas no Twitter sabem primeiro.", whoToFollow: "Quem seguir", completeProfile: "Complete seu perfil" },
             tweet: { deleteTweet: "Excluir Tweet?", deleteWarning: "Isso nao pode ser desfeito e sera removido do seu perfil, timeline e resultados de busca.", youRetweeted: "Voce retweetou.", retweeted: "retweetou." },
             misc: { nothingToShow: "Nada para mostrar", loading: "Carregando" },
@@ -198,16 +236,16 @@ export const resources = {
     zh: {
         translation: {
             nav: { home: "主页", explore: "探索", notifications: "通知", messages: "消息", profile: "个人资料", editProfile: "编辑资料", settings: "设置", logout: "退出登录" },
-            actions: { save: "保存", close: "关闭", submit: "提交", cancel: "取消", delete: "删除", create: "创建", login: "登录", signup: "注册", signin: "登录", createAccount: "创建账号", tweet: "发推", follow: "关注", following: "已关注", unfollow: "取消关注", reply: "回复", retweet: "转推", like: "喜欢", share: "分享", verify: "验证", sendOtp: "发送 OTP", resendOtp: "重新发送 OTP" },
-            settings: { title: "设置", colorTheme: "颜色主题", lightsOut: "（熄灯）", defaultTheme: "（默认）", language: "语言", preferredLanguage: "首选语言", otpTitle: "验证语言更改", otpSent: "6 位 OTP 已发送到你注册的 {{method}}：{{destination}}。", simulatedOtp: "模拟 OTP：{{otp}}", otpPlaceholder: "输入 OTP", changed: "语言已成功更新。", requestFailed: "无法开始语言验证。", verifyFailed: "OTP 验证失败。", alreadySelected: "已选择此语言。" },
-            profile: { editProfile: "编辑资料", name: "姓名", description: "简介", location: "位置", website: "网站", email: "邮箱", phone: "电话", enableBrowserNotifications: "启用浏览器通知", updated: "你的资料已成功更新。", updateFailed: "更新资料时出错，请重试。", twitterBlue: "Twitter Blue?", alreadyBlue: "你已经拥有 Blue 状态。", thanks: "感谢参与。", wantBlue: "想要 Twitter Blue?", blueDescription: "使用 Twitter Blue，你的名字旁会有一个小 Twitter 图标。", blueCodeInfo: "你可以从这里获取代码", here: "这里", enterCode: "输入你的代码", invalidBlue: "Blue 代码无效。", blueFailed: "获取 Blue 时出错。", blueSuccess: "你已成功获得 Blue，恭喜！", tweets: "推文", replies: "回复", media: "媒体", likes: "喜欢" },
+            actions: { save: "保存", close: "关闭", submit: "提交", cancel: "取消", delete: "删除", create: "创建", login: "登录", signup: "注册", signin: "登录", createAccount: "创建账号", tweet: "发推", follow: "关注", following: "已关注", unfollow: "取消关注", reply: "回复", retweet: "转推", like: "喜欢", share: "分享", verify: "验证", sendOtp: "发送 OTP", resendOtp: "重新发送 OTP", back: "返回" },
+            settings: { title: "设置", colorTheme: "颜色主题", lightsOut: "（熄灯）", defaultTheme: "（默认）", language: "语言", preferredLanguage: "首选语言", otpTitle: "验证语言更改", otpSent: "6 位 OTP 已发送到你注册的 {{method}}：{{destination}}。", simulatedOtp: "模拟 OTP：{{otp}}", otpPlaceholder: "输入 OTP", changed: "语言已成功更新。", requestFailed: "无法开始语言验证。", verifyFailed: "OTP 验证失败。", alreadySelected: "已选择此语言。", resendSuccess: "已发送新的验证码。" },
+            profile: { editProfile: "编辑资料", name: "姓名", description: "简介", location: "位置", website: "网站", email: "邮箱", phone: "电话", enableBrowserNotifications: "启用浏览器通知", updated: "你的资料已成功更新。", updateFailed: "更新资料时出错，请重试。", twitterBlue: "Twitter Blue?", alreadyBlue: "你已经拥有 Blue 状态。", thanks: "感谢参与。", wantBlue: "想要 Twitter Blue 吗？", blueDescription: "使用 Twitter Blue 后，你的名字旁边会有一个小鸟图标。", blueCodeInfo: "你可以从这里获取代码", here: "这里", enterCode: "输入你的代码", invalidBlue: "无效的 Blue 代码。", blueFailed: "获取 Blue 时出错。", blueSuccess: "你已成功获得 Blue，恭喜！", tweets: "推文", replies: "回复", media: "媒体", likes: "喜欢" },
             home: { title: "主页", whatsHappening: "有什么新鲜事？", tweetRequired: "推文不能为空。", tweetMax: "推文最多 280 个字符。" },
             notifications: { title: "通知", nothing: "还没有通知。" },
             messages: { title: "消息", newMessage: "新消息", searchPeople: "搜索用户", messagePlaceholder: "开始新消息", deleteConversation: "删除对话？" },
             search: { placeholder: "搜索 Twitter", title: "搜索", results: "搜索结果" },
-            auth: { hero: "看看世界现在正在发生什么", join: "今天就加入 Twitter。", loginTitle: "登录 Twitter", signupTitle: "创建你的账号", username: "用户名", password: "密码", email: "邮箱", phone: "电话", name: "姓名", loginInfo: "你的登录信息", publicName: "你的公开名称", testAccount: "测试账号", testTooltip: "你可以使用测试账号登录。", exploreWithoutLogin: "不登录直接探索", loginFailed: "用户名或密码不正确。", genericFailed: "出了点问题，请重试。" },
+            auth: { hero: "看看世界现在正在发生什么", join: "今天就加入 Twitter。", loginTitle: "登录 Twitter", signupTitle: "创建你的账号", username: "用户名", password: "密码", email: "邮箱", phone: "电话", name: "姓名", loginInfo: "你的登录信息", publicName: "你的公开名称", testAccount: "测试账号", testTooltip: "你可以使用测试账号登录。", exploreWithoutLogin: "不登录直接探索", loginFailed: "用户名或密码不正确。", genericFailed: "出了点问题，请重试。", forgotPasswordTitle: "重置密码。", forgotPasswordSubtitle: "用几个步骤保护你的账号。", forgotPasswordDivider: "密码提示", forgotPasswordRequired: "需要邮箱或电话。", emailOrPhone: "邮箱或电话", enterEmailOrPhone: "输入邮箱或电话", verifyIdentity: "验证你的身份", verifyIdentitySubtitle: "我们已将 6 位验证码发送到你登记的 {{method}}。", otpRequired: "需要 OTP。", enterOtp: "输入 6 位 OTP。", otpExpired: "OTP 已失效。", otpExpiresIn: "OTP 将在", newPassword: "新密码", confirmPassword: "确认密码", newPasswordRequired: "需要新密码。", confirmPasswordRequired: "请确认你的密码。", passwordsDoNotMatch: "两次输入的密码不一致。", passwordLength: "密码应为 12 位字符。", generatePassword: "生成密码", generatedPasswordReady: "生成的密码已可使用。", savePassword: "保存密码", passwordUpdated: "密码已成功更新。", newOtpSent: "新的 OTP 已发送。" },
             sidebar: { dontMiss: "不要错过正在发生的事", firstToKnow: "Twitter 上的人总是最先知道。", whoToFollow: "推荐关注", completeProfile: "完善资料" },
-            tweet: { deleteTweet: "删除推文？", deleteWarning: "此操作无法撤销，并会从你的资料、关注者时间线和搜索结果中移除。", youRetweeted: "你转推了。", retweeted: "转推了。" },
+            tweet: { deleteTweet: "删除推文？", deleteWarning: "此操作无法撤销，并会从你的资料、关注者时间线和搜索结果中移除。", youRetweeted: "你转推了。", retweeted: "已转推。" },
             misc: { nothingToShow: "暂无内容", loading: "加载中" },
         },
     },
@@ -221,7 +259,7 @@ export const resources = {
             notifications: { title: "Notifications", nothing: "Aucune notification pour le moment." },
             messages: { title: "Messages", newMessage: "Nouveau message", searchPeople: "Rechercher des personnes", messagePlaceholder: "Commencer un nouveau message", deleteConversation: "Supprimer la conversation?" },
             search: { placeholder: "Rechercher sur Twitter", title: "Recherche", results: "Resultats de recherche" },
-            auth: { hero: "Voyez ce qui se passe dans le monde maintenant", join: "Rejoignez Twitter aujourd'hui.", loginTitle: "Se connecter a Twitter", signupTitle: "Creez votre compte", username: "Nom d'utilisateur", password: "Mot de passe", email: "Email", phone: "Telephone", name: "Nom", loginInfo: "Vos informations de connexion", publicName: "Votre nom public", testAccount: "Compte test", testTooltip: "Vous pouvez vous connecter avec un compte test.", exploreWithoutLogin: "Explorer sans se connecter", loginFailed: "Nom d'utilisateur ou mot de passe incorrect.", genericFailed: "Une erreur est survenue. Reessayez." },
+            auth: { hero: "Voyez ce qui se passe dans le monde maintenant", join: "Rejoignez Twitter aujourd'hui.", loginTitle: "Se connecter a Twitter", signupTitle: "Creez votre compte", username: "Nom d'utilisateur", password: "Mot de passe", email: "Email", phone: "Telephone", name: "Nom", loginInfo: "Vos informations de connexion", publicName: "Votre nom public", testAccount: "Compte test", testTooltip: "Vous pouvez vous connecter avec un compte test.", exploreWithoutLogin: "Explorer sans se connecter", loginFailed: "Nom d'utilisateur ou mot de passe incorrect.", genericFailed: "Une erreur est survenue. Reessayez.", forgotPasswordTitle: "Reinitialiser le mot de passe.", forgotPasswordSubtitle: "Protegez votre compte en quelques etapes.", forgotPasswordDivider: "mot de passe oublie", forgotPasswordRequired: "Email ou telephone requis.", emailOrPhone: "Email ou telephone", enterEmailOrPhone: "Saisir email ou telephone", verifyIdentity: "Verifiez votre identite", verifyIdentitySubtitle: "Nous avons envoye un code de verification a 6 chiffres a votre {{method}} enregistre.", otpRequired: "OTP requis.", enterOtp: "Saisir le code a 6 chiffres.", otpExpired: "OTP expire.", otpExpiresIn: "OTP expire dans", newPassword: "Nouveau mot de passe", confirmPassword: "Confirmer le mot de passe", newPasswordRequired: "Nouveau mot de passe requis.", confirmPasswordRequired: "Confirmez votre mot de passe.", passwordsDoNotMatch: "Les mots de passe ne correspondent pas.", passwordLength: "Le mot de passe doit contenir 12 caracteres.", generatePassword: "Generer un mot de passe", generatedPasswordReady: "Mot de passe genere pret a l'emploi.", savePassword: "Enregistrer le mot de passe", passwordUpdated: "Mot de passe mis a jour avec succes.", newOtpSent: "Un nouvel OTP a ete envoye." },
             sidebar: { dontMiss: "Ne manquez pas ce qui se passe", firstToKnow: "Les personnes sur Twitter sont les premieres informees.", whoToFollow: "Suggestions", completeProfile: "Completez votre profil" },
             tweet: { deleteTweet: "Supprimer le Tweet?", deleteWarning: "Cette action est definitive et supprimera le tweet de votre profil, des fils de vos abonnes et des resultats de recherche.", youRetweeted: "Vous avez retweete.", retweeted: "a retweete." },
             misc: { nothingToShow: "Rien a afficher", loading: "Chargement" },
@@ -232,7 +270,7 @@ export const resources = {
 if (!i18n.isInitialized) {
     i18n.use(initReactI18next).init({
         resources,
-        lng: DEFAULT_LANGUAGE,
+        lng: getInitialLanguage(),
         fallbackLng: DEFAULT_LANGUAGE,
         supportedLngs: supportedLanguages,
         interpolation: {
@@ -245,3 +283,4 @@ if (!i18n.isInitialized) {
 }
 
 export default i18n;
+

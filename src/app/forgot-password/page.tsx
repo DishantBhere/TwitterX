@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Box, Button, Divider, Link, Stack, TextField, Typography } from "@mui/material";
 import { FaArrowLeft, FaXTwitter } from "react-icons/fa6";
 import * as yup from "yup";
+import { useTranslation } from "react-i18next";
 
 import CircularLoading from "@/components/misc/CircularLoading";
 import CustomSnackbar from "@/components/misc/CustomSnackbar";
@@ -36,32 +37,33 @@ export default function ForgotPasswordPage() {
     const [generatedPassword, setGeneratedPassword] = useState("");
     const [isBusy, setIsBusy] = useState(false);
     const [otpRequestedAt, setOtpRequestedAt] = useState(0);
+    const { t } = useTranslation();
     const router = useRouter();
 
     const validationSchema = useMemo(
         () =>
             yup.object({
-                identifier: yup.string().required("Email or phone is required."),
+                identifier: yup.string().required(t("auth.forgotPasswordRequired")),
                 otp:
                     step >= 2
-                        ? yup.string().matches(/^\d{6}$/, "Enter the 6-digit OTP.").required("OTP is required.")
+                        ? yup.string().matches(/^\d{6}$/, t("auth.enterOtp")).required(t("auth.otpRequired"))
                         : yup.string(),
                 password:
                     step === 3
                         ? yup
                               .string()
-                              .min(12, "Password should be 12 characters long.")
-                              .required("New password is required.")
+                              .min(12, t("auth.passwordLength"))
+                              .required(t("auth.newPasswordRequired"))
                         : yup.string(),
                 confirmPassword:
                     step === 3
                         ? yup
                               .string()
-                              .oneOf([yup.ref("password")], "Passwords do not match.")
-                              .required("Confirm your password.")
+                              .oneOf([yup.ref("password")], t("auth.passwordsDoNotMatch"))
+                              .required(t("auth.confirmPasswordRequired"))
                         : yup.string(),
             }),
-        [step]
+        [step, t]
     );
 
     const formik = useFormik({
@@ -82,7 +84,7 @@ export default function ForgotPasswordPage() {
                 setIsBusy(false);
 
                 if (!response.success) {
-                    setSnackbar({ message: response.message || "Something went wrong. Please try again.", severity: "error", open: true });
+                    setSnackbar({ message: response.message || t("auth.genericFailed"), severity: "error", open: true });
                     return;
                 }
 
@@ -102,7 +104,7 @@ export default function ForgotPasswordPage() {
                 setIsBusy(false);
 
                 if (!response.success) {
-                    setSnackbar({ message: response.message || "Something went wrong. Please try again.", severity: "error", open: true });
+                    setSnackbar({ message: response.message || t("auth.genericFailed"), severity: "error", open: true });
                     return;
                 }
 
@@ -125,11 +127,11 @@ export default function ForgotPasswordPage() {
             setIsBusy(false);
 
             if (!response.success) {
-                setSnackbar({ message: response.message || "Something went wrong. Please try again.", severity: "error", open: true });
+                setSnackbar({ message: response.message || t("auth.genericFailed"), severity: "error", open: true });
                 return;
             }
 
-            setSnackbar({ message: "Password updated successfully.", severity: "success", open: true });
+            setSnackbar({ message: t("auth.passwordUpdated"), severity: "success", open: true });
             router.push("/");
         },
     });
@@ -167,13 +169,13 @@ export default function ForgotPasswordPage() {
         });
 
         if (!response.success) {
-            setSnackbar({ message: response.message || "Something went wrong. Please try again.", severity: "error", open: true });
+            setSnackbar({ message: response.message || t("auth.genericFailed"), severity: "error", open: true });
             return;
         }
 
         formik.setFieldValue("otp", "");
         setOtpRequestedAt(Date.now());
-        setSnackbar({ message: "A new OTP has been sent.", severity: "success", open: true });
+        setSnackbar({ message: t("auth.newOtpSent"), severity: "success", open: true });
     };
 
     const destinationMethod = isEmail(formik.values.identifier) ? "email" : "phone";
@@ -186,13 +188,13 @@ export default function ForgotPasswordPage() {
                         <FaXTwitter />
                     </Box>
                     <Typography component="h1" className="x-landing-title">
-                        Reset password.
+                        {t("auth.forgotPasswordTitle")}
                     </Typography>
                     <Typography component="h2" className="x-landing-subtitle">
-                        Secure your account in a few steps.
+                        {t("auth.forgotPasswordSubtitle")}
                     </Typography>
                     <Divider className="x-divider">
-                        <span>forgot password</span>
+                        <span>{t("auth.forgotPasswordDivider")}</span>
                     </Divider>
                     <form className="x-landing-form" onSubmit={formik.handleSubmit}>
                         <Stack spacing={1.5}>
@@ -200,8 +202,8 @@ export default function ForgotPasswordPage() {
                                 <TextField
                                     fullWidth
                                     name="identifier"
-                                    label="Email or Phone"
-                                    placeholder="Enter email or phone"
+                                    label={t("auth.emailOrPhone")}
+                                    placeholder={t("auth.enterEmailOrPhone")}
                                     variant="outlined"
                                     size="medium"
                                     value={formik.values.identifier}
@@ -214,8 +216,8 @@ export default function ForgotPasswordPage() {
                             )}
                             {step >= 2 && (
                                 <OtpVerificationCard
-                                    title="Verify your identity"
-                                    subtitle={`We've sent a 6-digit verification code to your registered ${destinationMethod}.`}
+                                    title={t("auth.verifyIdentity")}
+                                    subtitle={t("auth.verifyIdentitySubtitle", { method: t(`auth.${destinationMethod}`) })}
                                     destinationValue={formik.values.identifier}
                                     destinationType={destinationMethod}
                                     otp={formik.values.otp}
@@ -223,11 +225,11 @@ export default function ForgotPasswordPage() {
                                     onVerify={formik.handleSubmit}
                                     onResend={handleResendOtp}
                                     loading={isBusy}
-                                    verifyLabel="Verify Code"
-                                    cancelLabel="Cancel"
+                                    verifyLabel={t("actions.verify")}
+                                    cancelLabel={t("actions.cancel")}
                                     onCancel={handleBack}
-                                    expiredLabel="OTP expired."
-                                    expiresInLabel="OTP expires in"
+                                    expiredLabel={t("auth.otpExpired")}
+                                    expiresInLabel={t("auth.otpExpiresIn")}
                                     expiresAt={otpRequestedAt ? otpRequestedAt + OTP_DURATION_SECONDS * 1000 : undefined}
                                     demoOtp={destinationMethod === "phone" && process.env.NODE_ENV !== "production" ? "123456" : undefined}
                                     compact
@@ -238,7 +240,7 @@ export default function ForgotPasswordPage() {
                                     <TextField
                                         fullWidth
                                         name="password"
-                                        label="New Password"
+                                        label={t("auth.newPassword")}
                                         type="password"
                                         variant="outlined"
                                         size="medium"
@@ -252,7 +254,7 @@ export default function ForgotPasswordPage() {
                                     <TextField
                                         fullWidth
                                         name="confirmPassword"
-                                        label="Confirm Password"
+                                        label={t("auth.confirmPassword")}
                                         type="password"
                                         variant="outlined"
                                         size="medium"
@@ -263,11 +265,11 @@ export default function ForgotPasswordPage() {
                                         helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
                                     />
                                     <Link component="button" type="button" className="x-forgot-link" underline="hover" onClick={handleGeneratePassword}>
-                                        Generate Password
+                                        {t("auth.generatePassword")}
                                     </Link>
                                     {generatedPassword && (
                                         <Typography className="x-generated-password">
-                                            Generated password ready to use.
+                                            {t("auth.generatedPasswordReady")}
                                         </Typography>
                                     )}
                                 </>
@@ -276,17 +278,17 @@ export default function ForgotPasswordPage() {
                                 <Stack direction="row" spacing={1.25} className="x-login-actions">
                                     <Button className="x-btn x-btn-outline x-btn-back" variant="outlined" type="button" onClick={handleBack}>
                                         <FaArrowLeft />
-                                        Back
+                                        {t("actions.back")}
                                     </Button>
                                     {isBusy ? (
                                         <CircularLoading />
                                     ) : step === 1 ? (
                                         <Button className="x-btn x-btn-primary" variant="contained" type="submit">
-                                            Send OTP
+                                            {t("actions.sendOtp")}
                                         </Button>
                                     ) : (
                                         <Button className="x-btn x-btn-primary" variant="contained" type="submit">
-                                            Save Password
+                                            {t("auth.savePassword")}
                                         </Button>
                                     )}
                                 </Stack>

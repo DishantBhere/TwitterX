@@ -6,6 +6,7 @@ import { verifyJwtToken } from "@/utilities/auth";
 import { isSupportedLanguage, languageLabels } from "@/utilities/language";
 import { saveLanguageOtp } from "@/utilities/language/otp";
 import { UserProps } from "@/types/UserProps";
+import { sendEmail } from "@/utilities/email/sendEmail";
 
 export async function POST(request: NextRequest) {
     const { language } = await request.json();
@@ -43,9 +44,28 @@ export async function POST(request: NextRequest) {
 
     const { otp, expiresAt } = saveLanguageOtp(user.id, language);
 
-    console.info(
-        `Simulated language OTP for ${languageLabels[language]} sent to ${sendToEmail ? "email" : "phone"} ${destination}: ${otp}`
-    );
+    if (sendToEmail) {
+        try {
+            await sendEmail({
+                to: destination,
+                subject: "Twitter Clone - Language Verification OTP",
+                html: `
+                    <h2>Twitter Clone</h2>
+                    <h3>Language Verification</h3>
+                    <p>Your 6-digit OTP is:</p>
+                    <h1>${otp}</h1>
+                    <p>This OTP expires according to the existing verification flow.</p>
+                `,
+            });
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Unable to send language verification email.";
+            return NextResponse.json({ success: false, message });
+        }
+    } else {
+        console.info(
+            `Simulated language OTP for ${languageLabels[language]} sent to ${sendToEmail ? "email" : "phone"} ${destination}: ${otp}`
+        );
+    }
 
     return NextResponse.json({
         success: true,

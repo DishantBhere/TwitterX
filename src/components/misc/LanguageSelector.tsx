@@ -54,13 +54,13 @@ export default function LanguageSelector({
             });
         }
 
-            setPendingOtp({
-                language,
-                deliveryMethod: response.deliveryMethod,
-                destination: response.destination,
-                simulatedOtp: response.simulatedOtp,
-                expiresAt: new Date(response.expiresAt).getTime(),
-            });
+        setPendingOtp({
+            language,
+            deliveryMethod: response.deliveryMethod,
+            destination: response.destination,
+            simulatedOtp: response.simulatedOtp,
+            expiresAt: new Date(response.expiresAt).getTime(),
+        });
     };
 
     const handleVerify = async () => {
@@ -115,6 +115,11 @@ export default function LanguageSelector({
                     otp={otp}
                     setOtp={setOtp}
                     onVerify={handleVerify}
+                    onCancel={() => {
+                        setSelectedLanguage(currentLanguage as SupportedLanguage);
+                        setPendingOtp(null);
+                        setOtp("");
+                    }}
                     onResend={async () => {
                         setIsLoading(true);
                         const response = await requestLanguageOtp(pendingOtp.language);
@@ -132,7 +137,7 @@ export default function LanguageSelector({
                             expiresAt: new Date(response.expiresAt).getTime(),
                         });
                         setOtp("");
-                        setSnackbar({ message: "New verification code sent.", severity: "success", open: true });
+                        setSnackbar({ message: t("settings.resendSuccess"), severity: "success", open: true });
                     }}
                     loading={isLoading}
                     verifyLabel={t("actions.verify")}

@@ -449,7 +449,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             <form onSubmit={formik.handleSubmit} className="x-composer-form">
                 <div className="input x-composer-input">
                     <TextField
-                        placeholder="What's happening?"
+                        placeholder={t("home.whatsHappening")}
                         multiline
                         hiddenLabel
                         minRows={1}

@@ -122,6 +122,12 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
                             otp={otp}
                             setOtp={setOtp}
                             onVerify={handleVerifySignupOtp}
+                            onCancel={() => {
+                                setPendingSignup(null);
+                                setOtp("");
+                                formik.resetForm();
+                                handleSignUpClose();
+                            }}
                             loading={formik.isSubmitting}
                             verifyLabel="Verify Code"
                         />

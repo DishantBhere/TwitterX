@@ -129,6 +129,11 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                             otp={otp}
                             setOtp={setOtp}
                             onVerify={handleVerifyOtp}
+                            onCancel={() => {
+                                setPendingOtp(null);
+                                setOtp("");
+                                formik.setFieldValue("password", "");
+                            }}
                             loading={formik.isSubmitting}
                             verifyLabel="Verify Code"
                             onResend={async () => {

@@ -8,6 +8,7 @@ import {
     CardActions,
     CardContent,
     Chip,
+    Alert,
     Dialog,
     DialogActions,
     DialogContent,
@@ -21,6 +22,7 @@ import {
     Stack,
     Switch,
     TextField,
+    Snackbar,
     Typography,
 } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
@@ -53,6 +55,7 @@ export default function SettingsPage() {
     const { t } = useTranslation();
     const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
     const [paymentMessage, setPaymentMessage] = useState("");
+    const [paymentToastOpen, setPaymentToastOpen] = useState(false);
     const [activatedSubscription, setActivatedSubscription] = useState<{
         plan: SubscriptionPlan;
         email: string;
@@ -103,12 +106,14 @@ export default function SettingsPage() {
 
         if (plan === "FREE") {
             setPaymentMessage("Free plan does not require payment.");
+            setPaymentToastOpen(true);
             setSelectedPlan("FREE");
             return;
         }
 
         if (token.subscriptionPlan === plan) {
             setPaymentMessage(`You are already on the ${plan} plan.`);
+            setPaymentToastOpen(true);
             setSelectedPlan(plan);
             return;
         }
@@ -118,6 +123,7 @@ export default function SettingsPage() {
             const scriptLoaded = await loadRazorpayScript();
             if (!scriptLoaded) {
                 setPaymentMessage("Unable to load Razorpay checkout.");
+                setPaymentToastOpen(true);
                 setSelectedPlan(plan);
                 return;
             }
@@ -176,6 +182,7 @@ export default function SettingsPage() {
             setSelectedPlan(plan);
             setActivatedSubscription(null);
             setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
+            setPaymentToastOpen(true);
         } finally {
             setIsCheckoutLoading(false);
         }
@@ -711,32 +718,151 @@ export default function SettingsPage() {
                 </Stack>
             </Stack>
 
-            <Dialog open={!!activatedSubscription} onClose={() => setActivatedSubscription(null)} fullWidth maxWidth="xs">
-                <DialogTitle sx={{ pb: 1 }}>
-                    <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>
-                        Subscription Activated
-                    </Typography>
+            <Dialog
+                open={!!activatedSubscription}
+                onClose={() => setActivatedSubscription(null)}
+                fullWidth
+                maxWidth="xs"
+                PaperProps={{
+                    sx: {
+                        borderRadius: "24px",
+                        overflow: "hidden",
+                        color: "#f7f9f9",
+                        background: "linear-gradient(180deg, rgba(15,20,25,0.98), rgba(15,20,25,0.92))",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        boxShadow: "0 24px 70px rgba(0,0,0,0.5)",
+                        backdropFilter: "blur(24px)",
+                    },
+                }}
+                BackdropProps={{
+                    sx: {
+                        backgroundColor: "rgba(3,8,20,0.65)",
+                        backdropFilter: "blur(10px)",
+                    },
+                }}
+            >
+                <DialogTitle sx={{ px: 3, pt: 3, pb: 1.5 }}>
+                    <Stack spacing={1.5} alignItems="center" textAlign="center">
+                        <Stack
+                            sx={{
+                                width: 68,
+                                height: 68,
+                                borderRadius: "22px",
+                                display: "grid",
+                                placeItems: "center",
+                                background: "linear-gradient(135deg, rgba(19,206,102,0.24), rgba(29,155,240,0.18))",
+                                boxShadow: "0 12px 32px rgba(19,206,102,0.18)",
+                                color: "#13ce66",
+                                fontSize: 34,
+                            }}
+                        >
+                            ✓
+                        </Stack>
+                        <Typography variant="h6" component="div" sx={{ fontWeight: 800, letterSpacing: "-0.02em" }}>
+                            Subscription Activated!
+                        </Typography>
+                    </Stack>
                 </DialogTitle>
-                <DialogContent>
-                    <Stack spacing={1.25} sx={{ pt: 1 }}>
-                        <Typography variant="body1">
-                            Your {activatedSubscription?.plan} subscription has been activated successfully.
+                <DialogContent sx={{ px: 3, pb: 1.5 }}>
+                    <Stack spacing={2}>
+                        <Stack
+                            spacing={1.5}
+                            sx={{
+                                borderRadius: "20px",
+                                p: 2,
+                                background: "rgba(255,255,255,0.04)",
+                                border: "1px solid rgba(255,255,255,0.08)",
+                            }}
+                        >
+                            <Stack direction="row" justifyContent="space-between" gap={2}>
+                                <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.72)" }}>
+                                    Plan Name
+                                </Typography>
+                                <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                                    {activatedSubscription?.plan}
+                                </Typography>
+                            </Stack>
+                            <Stack direction="row" justifyContent="space-between" gap={2}>
+                                <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.72)" }}>
+                                    Invoice sent to
+                                </Typography>
+                                <Typography variant="body1" sx={{ fontWeight: 700, wordBreak: "break-word", textAlign: "right" }}>
+                                    {activatedSubscription?.email || token?.email || ""}
+                                </Typography>
+                            </Stack>
+                        </Stack>
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                textAlign: "center",
+                                color: "rgba(255,255,255,0.9)",
+                                fontWeight: 500,
+                            }}
+                        >
+                            Enjoy all Premium features.
                         </Typography>
-                        <Typography variant="body1">
-                            Your invoice has been emailed to:
-                        </Typography>
-                        <Typography variant="body1" sx={{ fontWeight: 700 }}>
-                            {activatedSubscription?.email || token?.email || ""}
-                        </Typography>
-                        <Typography variant="body1">Enjoy TwitterX Premium!</Typography>
                     </Stack>
                 </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 3 }}>
-                    <Button variant="contained" onClick={() => setActivatedSubscription(null)}>
+                <DialogActions sx={{ px: 3, pb: 3, gap: 1.5 }}>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={() => setActivatedSubscription(null)}
+                        sx={{
+                            borderRadius: "999px",
+                            py: 1.15,
+                            fontWeight: 800,
+                            textTransform: "none",
+                            background: "linear-gradient(135deg, #4f7cff 0%, #7c4dff 100%)",
+                            boxShadow: "0 14px 32px rgba(95,103,255,0.28)",
+                            "&:hover": {
+                                background: "linear-gradient(135deg, #3f6df2 0%, #6c3eff 100%)",
+                            },
+                        }}
+                    >
+                        Continue
+                    </Button>
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={() => setActivatedSubscription(null)}
+                        sx={{
+                            borderRadius: "999px",
+                            py: 1.15,
+                            fontWeight: 800,
+                            textTransform: "none",
+                            borderColor: "rgba(255,255,255,0.16)",
+                            color: "#f7f9f9",
+                            "&:hover": {
+                                borderColor: "rgba(255,255,255,0.28)",
+                                backgroundColor: "rgba(255,255,255,0.06)",
+                            },
+                        }}
+                    >
                         Close
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                open={paymentToastOpen && Boolean(paymentMessage)}
+                autoHideDuration={4200}
+                onClose={() => setPaymentToastOpen(false)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                TransitionProps={{ appear: true }}
+            >
+                <Alert
+                    onClose={() => setPaymentToastOpen(false)}
+                    severity="error"
+                    variant="filled"
+                    sx={{
+                        borderRadius: "18px",
+                        alignItems: "center",
+                        boxShadow: "0 18px 50px rgba(0,0,0,0.28)",
+                    }}
+                >
+                    {paymentMessage}
+                </Alert>
+            </Snackbar>
         </main>
     );
 }

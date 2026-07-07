@@ -18,6 +18,21 @@ const makeReceipt = (userId: string, plan: SubscriptionPlan) => {
     return `sub_${plan}_${shortUserId}_${timestamp}`.slice(0, 40);
 };
 
+const isWithinPaymentWindow = () => {
+    const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    }).formatToParts(new Date());
+
+    const hour = Number(parts.find((part) => part.type === "hour")?.value);
+    const minute = Number(parts.find((part) => part.type === "minute")?.value);
+    const minutesSinceMidnight = hour * 60 + minute;
+
+    return minutesSinceMidnight >= 10 * 60 && minutesSinceMidnight < 11 * 60;
+};
+
 export async function POST(request: NextRequest) {
     const { plan } = await request.json();
 
@@ -30,6 +45,13 @@ export async function POST(request: NextRequest) {
 
     if (!verifiedToken) {
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
+    }
+
+    if (!isWithinPaymentWindow()) {
+        return NextResponse.json({
+            success: false,
+            message: "Payments are available only between 10:00 AM and 11:00 AM IST.",
+        });
     }
 
     const keyId = process.env.RAZORPAY_KEY_ID;

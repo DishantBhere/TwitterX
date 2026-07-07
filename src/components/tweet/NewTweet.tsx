@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { Avatar, Dialog, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
+import { Avatar, Dialog, DialogContent, DialogContentText, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { RiEmotionHappyLine, RiFileGifLine, RiImage2Line, RiMic2Line, RiMusic2Line, RiStopCircleLine } from "react-icons/ri";
+import {
+    RiEmotionHappyLine,
+    RiFileGifLine,
+    RiImage2Line,
+    RiMic2Line,
+    RiMusic2Line,
+    RiStopCircleLine,
+    RiVipCrown2Line,
+} from "react-icons/ri";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useTranslation } from "react-i18next";
@@ -660,27 +668,103 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                     )}
                 </DialogContent>
             </Dialog>
-            <Dialog className="dialog" open={isTweetLimitDialogOpen} onClose={() => setIsTweetLimitDialogOpen(false)} fullWidth maxWidth="xs">
-                <DialogTitle className="title">Tweet Limit Reached</DialogTitle>
-                <DialogContent>
-                    <DialogContentText className="text-muted">
-                        You have reached the maximum tweets allowed for your current subscription plan. Upgrade your subscription to continue
-                        tweeting.
+            <Dialog
+                className="dialog"
+                open={isTweetLimitDialogOpen}
+                onClose={() => setIsTweetLimitDialogOpen(false)}
+                fullWidth
+                maxWidth="xs"
+                PaperProps={{
+                    sx: {
+                        borderRadius: "24px",
+                        overflow: "hidden",
+                        color: "#f7f9f9",
+                        background: "linear-gradient(180deg, rgba(15,20,25,0.98), rgba(15,20,25,0.92))",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        boxShadow: "0 24px 70px rgba(0,0,0,0.5)",
+                        backdropFilter: "blur(24px)",
+                    },
+                }}
+                BackdropProps={{
+                    sx: {
+                        backgroundColor: "rgba(3,8,20,0.65)",
+                        backdropFilter: "blur(10px)",
+                    },
+                }}
+            >
+                <DialogTitle sx={{ px: 3, pt: 3, pb: 1.5 }}>
+                    <Stack spacing={1.5} alignItems="center" textAlign="center">
+                        <Stack
+                            sx={{
+                                width: 72,
+                                height: 72,
+                                borderRadius: "24px",
+                                display: "grid",
+                                placeItems: "center",
+                                background: "linear-gradient(135deg, rgba(29,155,240,0.22), rgba(124,77,255,0.22))",
+                                boxShadow: "0 14px 34px rgba(95,103,255,0.2)",
+                                color: "#7c5cff",
+                                fontSize: 34,
+                            }}
+                        >
+                            <RiVipCrown2Line />
+                        </Stack>
+                        <Typography variant="h6" component="div" sx={{ fontWeight: 800, letterSpacing: "-0.02em" }}>
+                            Tweet Limit Reached
+                        </Typography>
+                    </Stack>
+                </DialogTitle>
+                <DialogContent sx={{ px: 3, pb: 1.5 }}>
+                    <DialogContentText
+                        sx={{
+                            color: "rgba(255,255,255,0.82)",
+                            textAlign: "center",
+                            fontSize: "0.98rem",
+                            lineHeight: 1.6,
+                        }}
+                    >
+                        You have reached the maximum tweets allowed for your current subscription plan.
                     </DialogContentText>
                 </DialogContent>
-                <div className="button-group" style={{ padding: "0 24px 24px" }}>
+                <div style={{ padding: "0 24px 24px", display: "grid", gap: 12 }}>
                     <button
-                        className="btn btn-dark"
+                        className="btn"
                         onClick={() => {
                             setIsTweetLimitDialogOpen(false);
                             router.push("/settings");
                         }}
                         autoFocus
+                        style={{
+                            width: "100%",
+                            border: "none",
+                            borderRadius: "999px",
+                            padding: "13px 18px",
+                            fontWeight: 800,
+                            color: "#fff",
+                            background: "linear-gradient(135deg, #4f7cff 0%, #7c4dff 100%)",
+                            boxShadow: "0 14px 32px rgba(95,103,255,0.28)",
+                            cursor: "pointer",
+                            transition: "transform 180ms ease, box-shadow 180ms ease, filter 180ms ease",
+                        }}
                     >
                         Upgrade Plan
                     </button>
-                    <button className="btn btn-white" onClick={() => setIsTweetLimitDialogOpen(false)}>
-                        Cancel
+                    <button
+                        className="btn"
+                        onClick={() => setIsTweetLimitDialogOpen(false)}
+                        style={{
+                            width: "100%",
+                            border: "1px solid rgba(255,255,255,0.16)",
+                            borderRadius: "999px",
+                            padding: "13px 18px",
+                            fontWeight: 800,
+                            color: "#f7f9f9",
+                            background: "rgba(255,255,255,0.02)",
+                            cursor: "pointer",
+                            transition: "transform 180ms ease, box-shadow 180ms ease, background 180ms ease",
+                        }}
+                    >
+                        Maybe Later
                     </button>
                 </div>
             </Dialog>

@@ -76,8 +76,10 @@ export default function LanguageSelector({
             return setSnackbar({ message: response.message ?? t("settings.verifyFailed"), severity: "error", open: true });
         }
 
-        await i18n.changeLanguage(response.preferredLanguage);
-        localStorage.setItem("preferredLanguage", response.preferredLanguage);
+        const nextLanguage = pendingOtp.language;
+        setSelectedLanguage(nextLanguage);
+        localStorage.setItem("preferredLanguage", nextLanguage);
+        void i18n.changeLanguage(nextLanguage);
         await refreshToken();
         console.log("STEP 3 - Refresh finished");
         setPendingOtp(null);

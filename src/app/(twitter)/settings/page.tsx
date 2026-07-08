@@ -74,10 +74,10 @@ export default function SettingsPage() {
     const loginHistory: LoginHistoryProps[] = data?.loginHistory ?? [];
     const subscriptionPlans = useMemo(
         () => [
-            { key: "FREE" as const, name: "Free", price: "₹0/month", tweets: "1 tweet" },
-            { key: "BRONZE" as const, name: "Bronze", price: "₹100/month", tweets: "3 tweets" },
-            { key: "SILVER" as const, name: "Silver", price: "₹300/month", tweets: "5 tweets" },
-            { key: "GOLD" as const, name: "Gold", price: "₹1000/month", tweets: "Unlimited tweets" },
+            { key: "FREE" as const, name: t("settings.free"), price: "₹0/month", tweets: "1 tweet" },
+            { key: "BRONZE" as const, name: t("settings.bronze"), price: "₹100/month", tweets: "3 tweets" },
+            { key: "SILVER" as const, name: t("settings.silver"), price: "₹300/month", tweets: "5 tweets" },
+            { key: "GOLD" as const, name: t("settings.gold"), price: "₹1000/month", tweets: "Unlimited tweets" },
         ],
         []
     );
@@ -191,7 +191,7 @@ export default function SettingsPage() {
     // ---- UI-only helpers (no logic/state impact beyond navigation) ----
 
     const currentPlanName =
-        subscriptionPlans.find((p) => p.key === token?.subscriptionPlan)?.name ?? "Free";
+        subscriptionPlans.find((p) => p.key === token?.subscriptionPlan)?.name ?? t("settings.free");
 
     type Row = { key: SettingsSection; title: string; subtitle: string; visible: boolean };
 
@@ -205,19 +205,19 @@ export default function SettingsPage() {
         {
             key: "language",
             title: t("settings.language"),
-            subtitle: "Manage the language Twitter displays to you",
+                        subtitle: t("settings.languageDescription"),
             visible: !!token,
         },
         {
             key: "subscription",
-            title: "Premium",
-            subtitle: `Current plan: ${currentPlanName}`,
+            title: t("settings.premium"),
+            subtitle: `${t("settings.currentPlan")} ${currentPlanName}`,
             visible: !!token,
         },
         {
             key: "loginHistory",
-            title: "Login History",
-            subtitle: "See your recent account activity",
+            title: t("settings.loginHistory"),
+            subtitle: t("settings.loginHistorySubtitle"),
             visible: !!token,
         },
     ];
@@ -229,8 +229,8 @@ export default function SettingsPage() {
     const sectionTitles: Record<SettingsSection, string> = {
         theme: t("settings.colorTheme"),
         language: t("settings.language"),
-        subscription: "Premium",
-        loginHistory: "Login History",
+        subscription: t("settings.premium"),
+        loginHistory: t("settings.loginHistory"),
     };
 
     const renderRow = (row: Row) => (
@@ -328,8 +328,8 @@ export default function SettingsPage() {
 
     const renderLanguagePanel = () => (
         <Stack spacing={2} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
-            <Typography variant="body2" color="text.secondary">
-                Manage which language Twitter displays to you.
+                <Typography variant="body2" color="text.secondary">
+                {t("settings.languageDescription")}
             </Typography>
             <Stack
                 sx={{
@@ -634,7 +634,7 @@ export default function SettingsPage() {
                     </Typography>
 
                     <TextField
-                        placeholder="Search settings"
+                        placeholder={t("settings.searchSettings")}
                         size="small"
                         value={searchQuery}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
@@ -657,14 +657,14 @@ export default function SettingsPage() {
 
                     <List sx={{ py: 0 }}>
                         <ListSubheader sx={{ fontWeight: 700, lineHeight: 2.4, backgroundColor: "transparent" }}>
-                            Accessibility, display, and languages
+                            {t("settings.accessibilityDisplayLanguages")}
                         </ListSubheader>
                         {filteredRows.filter((r) => r.key === "theme" || r.key === "language").map(renderRow)}
 
                         {filteredRows.some((r) => r.key === "subscription") && (
                             <>
                                 <ListSubheader sx={{ fontWeight: 700, lineHeight: 2.4, backgroundColor: "transparent" }}>
-                                    Premium
+                                    {t("settings.premium")}
                                 </ListSubheader>
                                 {filteredRows.filter((r) => r.key === "subscription").map(renderRow)}
                             </>
@@ -673,7 +673,7 @@ export default function SettingsPage() {
                         {filteredRows.some((r) => r.key === "loginHistory") && (
                             <>
                                 <ListSubheader sx={{ fontWeight: 700, lineHeight: 2.4, backgroundColor: "transparent" }}>
-                                    Security and account access
+                                    {t("settings.securityAccountAccess")}
                                 </ListSubheader>
                                 {filteredRows.filter((r) => r.key === "loginHistory").map(renderRow)}
                             </>
@@ -866,3 +866,4 @@ export default function SettingsPage() {
         </main>
     );
 }
+

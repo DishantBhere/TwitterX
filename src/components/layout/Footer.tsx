@@ -2,11 +2,13 @@
 
 import { useContext } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 import { AuthContext } from "@/context/AuthContext";
 
 export default function Footer() {
     const { token, isPending } = useContext(AuthContext);
+    const { t } = useTranslation();
 
     if (isPending) return null;
 
@@ -14,15 +16,15 @@ export default function Footer() {
         return (
             <footer className="footer">
                 <div className="footer-div">
-                    <h1>Don’t miss what’s happening</h1>
-                    <p>People on Twitter are the first to know.</p>
+                    <h1>{t("sidebar.dontMiss")}</h1>
+                    <p>{t("sidebar.firstToKnow")}</p>
                 </div>
                 <div>
                     <Link href="/" className="btn ">
-                        Log In
+                        {t("actions.login")}
                     </Link>
                     <Link href="/" className="btn btn-light">
-                        Sign Up
+                        {t("actions.signup")}
                     </Link>
                 </div>
             </footer>

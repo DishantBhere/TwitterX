@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AiOutlineClose } from "react-icons/ai";
@@ -6,6 +7,7 @@ import { getRandomThreeUsers } from "@/utilities/fetch";
 import User from "../user/User";
 
 export default function WhoToFollow() {
+    const { t } = useTranslation();
     const [isEnabled, setIsEnabled] = useState(true);
     const [isOpen, setIsOpen] = useState(true);
 
@@ -27,7 +29,7 @@ export default function WhoToFollow() {
             {isOpen && data && data.users && data.users.length > 0 && (
                 <div className="who-to-follow">
                     <h1>
-                        Who to follow
+                        {t("sidebar.whoToFollow")}
                         <button className="btn-close icon-hoverable right-sidebar-close" onClick={handleClose}>
                             <AiOutlineClose />
                         </button>

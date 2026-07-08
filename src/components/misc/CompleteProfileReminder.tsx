@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Tooltip } from "@mui/material";
 import { AiOutlineClose } from "react-icons/ai";
@@ -6,6 +7,7 @@ import { UserProps } from "@/types/UserProps";
 import Link from "next/link";
 
 export default function CompleteProfileReminder({ token }: { token: UserProps }) {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(true);
 
     const handleClose = () => {
@@ -23,22 +25,19 @@ export default function CompleteProfileReminder({ token }: { token: UserProps })
                     !token.headerUrl) && (
                     <div className="complete-reminder">
                         <h1>
-                            Complete your profile
+                            {t("sidebar.completeProfile")}
                             <button className="btn-close icon-hoverable right-sidebar-close" onClick={handleClose}>
                                 <AiOutlineClose />
                             </button>
                         </h1>
-                        <p>
-                            Complete your Twitter profile to make the most of your presence! Here are a few things you have
-                            not filled out yet:
-                        </p>
+                        <p>{t("profile.completeProfileDescription")}</p>
                         <ol>
                             {!token.name && (
                                 <Tooltip
                                     title="Don't forget to add your name to your profile! Let others know who you are and personalize your Twitter experience. Take a moment to fill in your name now and make meaningful connections."
                                     placement="top"
                                 >
-                                    <li>Add your name:</li>
+                                    <li>{t("profile.checklistAddName")}</li>
                                 </Tooltip>
                             )}
                             {!token.description && (
@@ -46,17 +45,17 @@ export default function CompleteProfileReminder({ token }: { token: UserProps })
                                     title="Share a brief description about yourself or what you tweet about."
                                     placement="top"
                                 >
-                                    <li>Write a bio:</li>
+                                    <li>{t("profile.checklistWriteBio")}</li>
                                 </Tooltip>
                             )}
                             {!token.photoUrl && (
                                 <Tooltip title="Let others see the face behind your tweets." placement="top">
-                                    <li>Add a profile picture:</li>
+                                    <li>{t("profile.checklistAddProfilePicture")}</li>
                                 </Tooltip>
                             )}
                             {!token.headerUrl && (
                                 <Tooltip title="Make your profile visually appealing and unique." placement="top">
-                                    <li>Customize your header image:</li>
+                                    <li>{t("profile.checklistCustomizeHeaderImage")}</li>
                                 </Tooltip>
                             )}
                             {!token.location && (
@@ -64,7 +63,7 @@ export default function CompleteProfileReminder({ token }: { token: UserProps })
                                     title="Let others know where you're tweeting from and connect with users in your area. Take a moment to update your location and make your Twitter experience more engaging."
                                     placement="top"
                                 >
-                                    <li>Your location</li>
+                                    <li>{t("profile.checklistLocation")}</li>
                                 </Tooltip>
                             )}
                             {!token.website && (
@@ -72,12 +71,12 @@ export default function CompleteProfileReminder({ token }: { token: UserProps })
                                     title="Showcase your personal blog, portfolio, or any other online presence."
                                     placement="top"
                                 >
-                                    <li>Include your website:</li>
+                                    <li>{t("profile.checklistIncludeWebsite")}</li>
                                 </Tooltip>
                             )}
                         </ol>
                         <Link href={`/${token.username}/edit`} className="btn btn-dark">
-                            Edit Profile
+                            {t("profile.editProfile")}
                         </Link>
                     </div>
                 )}

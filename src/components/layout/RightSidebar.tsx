@@ -50,8 +50,8 @@ export default function RightSidebar() {
                 <Search />
 
                 <div className="reminder">
-                    <h1>Subscribe to Premium</h1>
-                    <p>Get rid of ads, see your analytics, boost your replies and unlock 20+ features.</p>
+                    <h1>{t("sidebar.subscribePremium")}</h1>
+                    <p>{t("sidebar.subscribePremiumDescription")}</p>
                     <Button
                         component={Link}
                         href="/settings"
@@ -71,7 +71,7 @@ export default function RightSidebar() {
                             },
                         }}
                     >
-                        Subscribe
+                        {t("actions.subscribe")}
                     </Button>
                 </div>
 
@@ -90,7 +90,7 @@ export default function RightSidebar() {
                     >
                         <FaTimes size={14} />
                     </IconButton>
-                    <h1>Today&apos;s News</h1>
+                    <h1>{t("sidebar.todaysNews")}</h1>
                     <Stack className="todays-news-list" spacing={0}>
                         {NEWS_ITEMS.map((item) => (
                             <Box key={item.title} className="news-item">
@@ -108,12 +108,12 @@ export default function RightSidebar() {
                         ))}
                     </Stack>
                     <Box component="a" href="#" className="news-show-more">
-                        Show more
+                        {t("actions.showMore")}
                     </Box>
                 </div>
 
                 <div className="reminder football-widget">
-                    <h1>Football</h1>
+                    <h1>{t("sidebar.football")}</h1>
                     <Stack className="football-list" spacing={0}>
                         <Box className="football-match football-match-group">
                             <Box className="football-teams">
@@ -177,7 +177,7 @@ export default function RightSidebar() {
                         </Box>
                     </Stack>
                     <Button className="football-more-btn" variant="text">
-                        Show more
+                        {t("actions.showMore")}
                     </Button>
                 </div>
 

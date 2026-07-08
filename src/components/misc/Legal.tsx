@@ -1,32 +1,34 @@
+import { useTranslation } from "react-i18next";
 import { FaGithub } from "react-icons/fa";
 
 export default function Legal() {
+    const { t } = useTranslation();
     return (
         <footer className="legal">
             <ul className="legal-links">
                 <li>
                     <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
-                        Terms of Service
+                        {t("legal.termsOfService")}
                     </a>
                 </li>
                 <li>
                     <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
-                        Privacy Policy
+                        {t("legal.privacyPolicy")}
                     </a>
                 </li>
                 <li>
                     <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
-                        Cookie Policy
+                        {t("legal.cookiePolicy")}
                     </a>
                 </li>
                 <li>
                     <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
-                        Imprint
+                        {t("legal.imprint")}
                     </a>
                 </li>
                 <li>
                     <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
-                        Accessibility
+                        {t("legal.accessibility")}
                     </a>
                 </li>
             </ul>

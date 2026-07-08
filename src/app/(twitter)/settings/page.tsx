@@ -161,24 +161,6 @@ function LoginHistorySessionRow({ entry, isCurrent }: { entry: LoginHistoryProps
                             <span style={{ color: "#71767b" }}>Last active</span>
                             <span style={{ color: "#e7e9ea", textAlign: "right" }}>{formatDateExtended(entry.loginTime)}</span>
                         </div>
-                        {!isCurrent && (
-                            <button
-                                type="button"
-                                style={{
-                                    marginTop: 4,
-                                    alignSelf: "flex-start",
-                                    border: 0,
-                                    padding: 0,
-                                    background: "transparent",
-                                    color: "#f91880",
-                                    fontSize: 13,
-                                    fontWeight: 700,
-                                    cursor: "pointer",
-                                }}
-                            >
-                                Log out of this session
-                            </button>
-                        )}
                     </div>
                 </div>
             </Collapse>
@@ -669,10 +651,10 @@ export default function SettingsPage() {
             <Stack sx={{ px: { xs: 0, md: 0 }, py: 0, bgcolor: "#000", color: "#fff", minHeight: "100%" }}>
                 <Box sx={{ px: 2, pt: 2.5, pb: 1.5, borderBottom: "1px solid #2f3336" }}>
                     <Typography sx={{ fontSize: "1.25rem", fontWeight: 800, color: "#e7e9ea", lineHeight: 1.2 }}>
-                        Login Activity
+                        {t("settings.loginActivity")}
                     </Typography>
                     <Typography sx={{ mt: 0.75, fontSize: "0.8125rem", color: "#71767b", lineHeight: 1.5 }}>
-                        Devices and locations currently signed in to your account.
+                        {t("settings.loginActivityDescription")}
                     </Typography>
                 </Box>
 
@@ -689,7 +671,7 @@ export default function SettingsPage() {
                         {currentSession && (
                             <Box sx={{ px: 2, pt: 2.5 }}>
                                 <Typography sx={{ mb: 1.25, fontSize: "0.8125rem", fontWeight: 700, color: "#71767b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                                    Current Session
+                                    {t("settings.currentSession")}
                                 </Typography>
                                 <Box sx={{ border: "1px solid #2f3336", borderRadius: "16px", overflow: "hidden" }}>
                                     <LoginHistorySessionRow entry={currentSession} isCurrent />
@@ -701,7 +683,7 @@ export default function SettingsPage() {
                             <Box sx={{ px: 2, pt: 2.5 }}>
                                 <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.25 }}>
                                     <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#71767b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                                        Other Sessions
+                                        {t("settings.otherSessions")}
                                     </Typography>
                                 </Stack>
                                 <Box sx={{ border: "1px solid #2f3336", borderRadius: "16px", overflow: "hidden" }}>

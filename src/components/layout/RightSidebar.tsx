@@ -50,7 +50,7 @@ export default function RightSidebar() {
                 <Search />
 
                 <div className="reminder">
-                    <h1>{t("sidebar.subscribePremium")}</h1>
+                    <h1>{t("settings.premium")}</h1>
                     <p>{t("sidebar.subscribePremiumDescription")}</p>
                     <Button
                         component={Link}
@@ -95,10 +95,13 @@ export default function RightSidebar() {
                         {NEWS_ITEMS.map((item) => (
                             <Box key={item.title} className="news-item">
                                 <Box className="news-copy">
-                                    <Typography className="news-kicker">{item.category} · Trending</Typography>
+                                    <Typography className="news-kicker">
+                                        {t(`sidebar.newsCategories.${item.category.toLowerCase()}`)} ·{" "}
+                                        {t("sidebar.trending")}
+                                    </Typography>
                                     <Typography className="news-headline">{item.title}</Typography>
                                     <Typography component="p" className="news-meta text-muted">
-                                        {item.posts} posts
+                                        {item.posts} {t("sidebar.posts")}
                                     </Typography>
                                 </Box>
                                 <IconButton size="small" className="news-menu" aria-label="More options">
@@ -121,13 +124,13 @@ export default function RightSidebar() {
                                     <span className="team-flag" aria-hidden="true">
                                         🇦🇷
                                     </span>
-                                    <Typography className="team-name">Argentina</Typography>
+                                    <Typography className="team-name">{t("sidebar.teams.argentina")}</Typography>
                                 </Box>
                                 <Box className="football-team">
                                     <span className="team-flag" aria-hidden="true">
                                         🇨🇻
                                     </span>
-                                    <Typography className="team-name">Cape Verde</Typography>
+                                    <Typography className="team-name">{t("sidebar.teams.capeVerde")}</Typography>
                                 </Box>
                             </Box>
                             <Box className="football-meta">
@@ -141,13 +144,13 @@ export default function RightSidebar() {
                                     <span className="team-flag" aria-hidden="true">
                                         🇧🇷
                                     </span>
-                                    <Typography className="team-name">Brazil</Typography>
+                                    <Typography className="team-name">{t("sidebar.teams.brazil")}</Typography>
                                 </Box>
                                 <Box className="football-team">
                                     <span className="team-flag" aria-hidden="true">
                                         🇫🇷
                                     </span>
-                                    <Typography className="team-name">France</Typography>
+                                    <Typography className="team-name">{t("sidebar.teams.france")}</Typography>
                                 </Box>
                             </Box>
                             <Box className="football-meta">
@@ -161,13 +164,13 @@ export default function RightSidebar() {
                                     <span className="team-flag" aria-hidden="true">
                                         🇪🇸
                                     </span>
-                                    <Typography className="team-name">Spain</Typography>
+                                    <Typography className="team-name">{t("sidebar.teams.spain")}</Typography>
                                 </Box>
                                 <Box className="football-team">
                                     <span className="team-flag" aria-hidden="true">
                                         🇵🇹
                                     </span>
-                                    <Typography className="team-name">Portugal</Typography>
+                                    <Typography className="team-name">{t("sidebar.teams.portugal")}</Typography>
                                 </Box>
                             </Box>
                             <Box className="football-meta">

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -8,6 +9,7 @@ import CustomSnackbar from "../misc/CustomSnackbar";
 import { SnackbarProps } from "@/types/SnackbarProps";
 
 export default function Follow({ profile }: { profile: UserProps }) {
+    const { t } = useTranslation();
     const [isFollowed, setIsFollowed] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -127,7 +129,7 @@ export default function Follow({ profile }: { profile: UserProps }) {
         return () => clearTimeout(timer);
     }, [isButtonDisabled]);
 
-    const conditionalText = isFollowed ? (isHovered ? "Unfollow" : "Following") : "Follow";
+    const conditionalText = isFollowed ? (isHovered ? t("actions.unfollow") : t("actions.following")) : t("actions.follow");
     const conditionalClass = isFollowed ? (isHovered ? "btn btn-danger-outline" : "btn btn-white") : "btn btn-dark";
 
     return (

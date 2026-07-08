@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Box, Button, Divider, Link, Stack, TextField, Typography } from "@mui/material";
 import { FaApple, FaGoogle, FaPhone, FaXTwitter } from "react-icons/fa6";
 import * as yup from "yup";
+import { useTranslation } from "react-i18next";
 
 import SignUpDialog from "@/components/dialog/SignUpDialog";
 import CustomSnackbar from "@/components/misc/CustomSnackbar";
@@ -22,6 +23,7 @@ export default function RootPage() {
     const [pendingOtpExpiresAt, setPendingOtpExpiresAt] = useState<number>(0);
     const [otp, setOtp] = useState("");
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
+    const { t } = useTranslation();
     const router = useRouter();
 
     const handleSignUpClick = () => {
@@ -139,31 +141,31 @@ export default function RootPage() {
                             <FaXTwitter />
                         </Box>
                         <Typography component="h1" className="x-landing-title">
-                            Happening now.
+                            {t("auth.hero")}
                         </Typography>
                         <Typography component="h2" className="x-landing-subtitle">
-                            Join today.
+                            {t("auth.join")}
                         </Typography>
                         <Stack spacing={1.5} className="x-landing-actions">
                             <Button className="x-btn x-btn-outline" variant="outlined" onClick={handleGoogleLogin}>
                                 <FaGoogle />
-                                Continue with Google
+                                {t("auth.continueWithGoogle")}
                             </Button>
                             <Button className="x-btn x-btn-outline" variant="outlined" onClick={handleAppleSoon}>
                                 <FaApple />
-                                Continue with Apple
+                                {t("auth.continueWithApple")}
                             </Button>
                         </Stack>
                         <Divider className="x-divider">
-                            <span>or</span>
+                            <span>{t("auth.or")}</span>
                         </Divider>
                         <form className="x-landing-form" onSubmit={formik.handleSubmit}>
                             <Stack spacing={1.5}>
                                 <TextField
                                     fullWidth
                                     name="identifier"
-                                    label="Email or Username"
-                                    placeholder="Enter email or username"
+                                    label={t("auth.emailOrUsername")}
+                                    placeholder={t("auth.enterEmailOrUsername")}
                                     variant="outlined"
                                     size="medium"
                                     value={formik.values.identifier}
@@ -246,14 +248,14 @@ export default function RootPage() {
                                             </Button>
                                         )}
                                         <Button className="x-btn x-btn-primary" variant="contained" type="submit">
-                                            {loginStep === 1 ? "Continue" : "Log In"}
+                                            {loginStep === 1 ? t("actions.continue") : t("actions.login")}
                                         </Button>
                                     </Stack>
                                 ) : null}
                             </Stack>
                         </form>
                         <Typography component="p" className="x-landing-footer">
-                            By signing up, you agree to the Terms of Service and Privacy Policy, including Cookie Use.
+                            {t("auth.terms")}
                         </Typography>
                     </Stack>
                 </Box>

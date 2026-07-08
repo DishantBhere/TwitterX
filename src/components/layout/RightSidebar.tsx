@@ -14,19 +14,19 @@ import Legal from "../misc/Legal";
 
 const NEWS_ITEMS = [
     {
-        title: "4K Re-Release of Telugu Film Arya Starring Allu Arjun Scheduled for July 23",
+        titleKey: "sidebar.news.item1.title",
         time: "6 hours ago",
         category: "Entertainment",
         posts: "4,664",
     },
     {
-        title: "National Film Awards Announcement Delayed, Fans Keep Waiting",
+        titleKey: "sidebar.news.item2.title",
         time: "2 days ago",
         category: "Entertainment",
         posts: "38.6K",
     },
     {
-        title: "Morocco Faces Canada in FIFA World Cup 2026 Round of 16 Match in Houston, Texas",
+        titleKey: "sidebar.news.item3.title",
         time: "5 hours ago",
         category: "Sports",
         posts: "39.3K",
@@ -93,13 +93,13 @@ export default function RightSidebar() {
                     <h1>{t("sidebar.todaysNews")}</h1>
                     <Stack className="todays-news-list" spacing={0}>
                         {NEWS_ITEMS.map((item) => (
-                            <Box key={item.title} className="news-item">
+                            <Box key={item.titleKey} className="news-item">
                                 <Box className="news-copy">
                                     <Typography className="news-kicker">
                                         {t(`sidebar.newsCategories.${item.category.toLowerCase()}`)} ·{" "}
                                         {t("sidebar.trending")}
                                     </Typography>
-                                    <Typography className="news-headline">{item.title}</Typography>
+                                    <Typography className="news-headline">{t(item.titleKey)}</Typography>
                                     <Typography component="p" className="news-meta text-muted">
                                         {item.posts} {t("sidebar.posts")}
                                     </Typography>
@@ -121,15 +121,23 @@ export default function RightSidebar() {
                         <Box className="football-match football-match-group">
                             <Box className="football-teams">
                                 <Box className="football-team">
-                                    <span className="team-flag" aria-hidden="true">
-                                        🇦🇷
-                                    </span>
+                                    <img
+                                        src="https://flagcdn.com/ar.svg"
+                                        alt="Argentina"
+                                        width={18}
+                                        height={18}
+                                        className="team-flag"
+                                    />
                                     <Typography className="team-name">{t("sidebar.teams.argentina")}</Typography>
                                 </Box>
                                 <Box className="football-team">
-                                    <span className="team-flag" aria-hidden="true">
-                                        🇨🇻
-                                    </span>
+                                    <img
+                                        src="https://flagcdn.com/cv.svg"
+                                        alt="Cape Verde"
+                                        width={18}
+                                        height={18}
+                                        className="team-flag"
+                                    />
                                     <Typography className="team-name">{t("sidebar.teams.capeVerde")}</Typography>
                                 </Box>
                             </Box>
@@ -141,15 +149,23 @@ export default function RightSidebar() {
                         <Box className="football-match">
                             <Box className="football-teams">
                                 <Box className="football-team">
-                                    <span className="team-flag" aria-hidden="true">
-                                        🇧🇷
-                                    </span>
+                                    <img
+                                        src="https://flagcdn.com/br.svg"
+                                        alt="Brazil"
+                                        width={18}
+                                        height={18}
+                                        className="team-flag"
+                                    />
                                     <Typography className="team-name">{t("sidebar.teams.brazil")}</Typography>
                                 </Box>
                                 <Box className="football-team">
-                                    <span className="team-flag" aria-hidden="true">
-                                        🇫🇷
-                                    </span>
+                                    <img
+                                        src="https://flagcdn.com/fr.svg"
+                                        alt="France"
+                                        width={18}
+                                        height={18}
+                                        className="team-flag"
+                                    />
                                     <Typography className="team-name">{t("sidebar.teams.france")}</Typography>
                                 </Box>
                             </Box>
@@ -161,15 +177,23 @@ export default function RightSidebar() {
                         <Box className="football-match">
                             <Box className="football-teams">
                                 <Box className="football-team">
-                                    <span className="team-flag" aria-hidden="true">
-                                        🇪🇸
-                                    </span>
+                                    <img
+                                        src="https://flagcdn.com/es.svg"
+                                        alt="Spain"
+                                        width={18}
+                                        height={18}
+                                        className="team-flag"
+                                    />
                                     <Typography className="team-name">{t("sidebar.teams.spain")}</Typography>
                                 </Box>
                                 <Box className="football-team">
-                                    <span className="team-flag" aria-hidden="true">
-                                        🇵🇹
-                                    </span>
+                                    <img
+                                        src="https://flagcdn.com/pt.svg"
+                                        alt="Portugal"
+                                        width={18}
+                                        height={18}
+                                        className="team-flag"
+                                    />
                                     <Typography className="team-name">{t("sidebar.teams.portugal")}</Typography>
                                 </Box>
                             </Box>

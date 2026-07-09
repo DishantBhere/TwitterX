@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     if (!isWithinPaymentWindow()) {
         return NextResponse.json({
             success: false,
-            message: "Payments are available only between 10:00 AM and 11:00 AM IST.",
+            message: "PAYMENT_WINDOW_RESTRICTED",
         });
     }
 

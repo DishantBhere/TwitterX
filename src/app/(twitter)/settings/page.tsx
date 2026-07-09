@@ -228,7 +228,7 @@ export default function SettingsPage() {
         }
 
         if (token.subscriptionPlan === plan) {
-            setPaymentMessage(`You are already on the ${plan} plan.`);
+            setPaymentMessage(t("settings.alreadyOnPlan", { plan }));
             setPaymentToastOpen(true);
             setSelectedPlan(plan);
             return;
@@ -244,9 +244,9 @@ export default function SettingsPage() {
                 return;
             }
 
-            const response = await createSubscriptionOrder(plan);
-            const planName = subscriptionPlans.find((item) => item.key === plan)?.name ?? plan;
-            const options = {
+                const response = await createSubscriptionOrder(plan);
+                const planName = subscriptionPlans.find((item) => item.key === plan)?.name ?? plan;
+                const options = {
                 key: response.keyId,
                 amount: response.order.amount,
                 currency: response.order.currency,
@@ -287,17 +287,23 @@ export default function SettingsPage() {
                 },
             };
 
-            setSelectedPlan(plan);
-            const Razorpay = window.Razorpay;
-            if (!Razorpay) {
-                throw new Error("Razorpay checkout is unavailable.");
-            }
+                setSelectedPlan(plan);
+                const Razorpay = window.Razorpay;
+                if (!Razorpay) {
+                    throw new Error("Razorpay checkout is unavailable.");
+                }
             const razorpay = new Razorpay(options);
             razorpay.open();
         } catch (error) {
             setSelectedPlan(plan);
             setActivatedSubscription(null);
-            setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
+            setPaymentMessage(
+                error instanceof Error && error.message === "PAYMENT_WINDOW_RESTRICTED"
+                    ? t("settings.paymentWindowRestricted")
+                    : error instanceof Error
+                      ? error.message
+                      : "Something went wrong."
+            );
             setPaymentToastOpen(true);
         } finally {
             setIsCheckoutLoading(false);

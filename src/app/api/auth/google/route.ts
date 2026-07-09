@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
         const name = getDisplayName(googleUser.user_metadata?.full_name ?? googleUser.user_metadata?.name, email);
         const userAgent = request.headers.get("user-agent") || "";
         const forwardedFor = request.headers.get("x-forwarded-for") || "";
-        const loginContext = getLoginContext(userAgent, forwardedFor, request.ip);
+        const realIp = request.headers.get("x-real-ip") || "";
+        const loginContext = getLoginContext(userAgent, forwardedFor, realIp, request.ip);
 
         let appUser = await prisma.user.findFirst({
             where: {

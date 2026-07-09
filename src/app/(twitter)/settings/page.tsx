@@ -153,14 +153,18 @@ function LoginHistorySessionRow({ entry, isCurrent }: { entry: LoginHistoryProps
             <Collapse in={open} timeout={220} unmountOnExit>
                 <div style={{ padding: "0 16px 16px 56px" }}>
                     <div style={{ borderTop: "1px solid #2f3336", paddingTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
-                            <span style={{ color: "#71767b" }}>Signed in</span>
-                            <span style={{ color: "#e7e9ea", textAlign: "right" }}>{formatDateExtended(entry.loginTime)}</span>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
-                            <span style={{ color: "#71767b" }}>Last active</span>
-                            <span style={{ color: "#e7e9ea", textAlign: "right" }}>{formatDateExtended(entry.loginTime)}</span>
-                        </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
+                        <span style={{ color: "#71767b" }}>Signed in</span>
+                        <span style={{ color: "#e7e9ea", textAlign: "right" }}>{formatDateExtended(entry.loginTime)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
+                        <span style={{ color: "#71767b" }}>IP address</span>
+                        <span style={{ color: "#e7e9ea", textAlign: "right", wordBreak: "break-word" }}>{entry.ipAddress}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
+                        <span style={{ color: "#71767b" }}>Last active</span>
+                        <span style={{ color: "#e7e9ea", textAlign: "right" }}>{formatDateExtended(entry.loginTime)}</span>
+                    </div>
                     </div>
                 </div>
             </Collapse>

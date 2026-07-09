@@ -5,6 +5,13 @@ export type LoginContext = {
     ipAddress: string;
 };
 
+export const getClientIpAddress = (forwardedFor: string, realIp: string, requestIp?: string | null) => {
+    const forwardedIp = forwardedFor.split(",")[0]?.trim();
+    const resolvedIp = forwardedIp || realIp.trim() || requestIp || "localhost";
+
+    return resolvedIp === "::1" ? "localhost" : resolvedIp;
+};
+
 export const detectBrowser = (ua: string) => {
     if (/Edg\//i.test(ua)) return "Edge";
     if (/Firefox\//i.test(ua)) return "Firefox";
@@ -29,11 +36,16 @@ export const detectDeviceType = (ua: string, operatingSystem: string) => {
     return "Desktop";
 };
 
-export const getLoginContext = (userAgent: string, forwardedFor: string, requestIp?: string | null): LoginContext => {
+export const getLoginContext = (
+    userAgent: string,
+    forwardedFor: string,
+    realIp: string,
+    requestIp?: string | null
+): LoginContext => {
     const browser = detectBrowser(userAgent);
     const operatingSystem = detectOperatingSystem(userAgent);
     const deviceType = detectDeviceType(userAgent, operatingSystem);
-    const ipAddress = forwardedFor.split(",")[0]?.trim() || requestIp || "unknown";
+    const ipAddress = getClientIpAddress(forwardedFor, realIp, requestIp);
 
     return {
         browser,
@@ -42,4 +54,3 @@ export const getLoginContext = (userAgent: string, forwardedFor: string, request
         ipAddress,
     };
 };
-

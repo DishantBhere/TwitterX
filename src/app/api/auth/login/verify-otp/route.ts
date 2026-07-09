@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/prisma/client";
 import { createUserToken } from "@/utilities/auth/jwt";
 import { verifyLoginOtp } from "@/utilities/auth/login-otp";
+import { getClientIpAddress } from "@/utilities/auth/shared";
 
 export async function POST(request: NextRequest) {
     const { username, otp } = await request.json();
@@ -29,6 +30,11 @@ export async function POST(request: NextRequest) {
         }
 
         const pendingLogin = verification.pending;
+        const ipAddress = getClientIpAddress(
+            request.headers.get("x-forwarded-for") || "",
+            request.headers.get("x-real-ip") || "",
+            request.ip
+        );
 
         await prisma.loginHistory.create({
             data: {
@@ -36,7 +42,7 @@ export async function POST(request: NextRequest) {
                 browser: pendingLogin.browser,
                 operatingSystem: pendingLogin.operatingSystem,
                 deviceType: pendingLogin.deviceType,
-                ipAddress: pendingLogin.ipAddress,
+                ipAddress,
                 loginTime: new Date(),
             },
         });

@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
         const { browser, operatingSystem, deviceType, ipAddress } = getLoginContext(
             request.headers.get("user-agent") || "",
             request.headers.get("x-forwarded-for") || "",
+            request.headers.get("x-real-ip") || "",
             request.ip
         );
 

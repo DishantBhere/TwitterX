@@ -393,7 +393,7 @@ export default function SettingsPage() {
     const renderThemePanel = () => (
         <Stack spacing={2} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
             <Typography variant="body2" color="text.secondary">
-                Choose how Twitter looks to you. This setting applies to this browser only.
+                {t("settings.themeDescription")}
             </Typography>
             <Stack
                 direction="row"
@@ -408,7 +408,7 @@ export default function SettingsPage() {
                 }}
             >
                 <Stack>
-                    <Typography fontWeight={700}>Dark mode</Typography>
+                    <Typography fontWeight={700}>{t("settings.darkMode")}</Typography>
                     <Typography variant="body2" color="text.secondary">
                         {theme === "dark" ? t("settings.lightsOut") : t("settings.defaultTheme")}
                     </Typography>
@@ -725,7 +725,7 @@ export default function SettingsPage() {
                 return (
                     <Stack alignItems="center" justifyContent="center" sx={{ height: "100%", px: 3, py: 8 }}>
                         <Typography color="text.secondary" sx={{ textAlign: "center" }}>
-                            Select a setting on the left to view options here.
+                            {t("settings.selectSettingHint")}
                         </Typography>
                     </Stack>
                 );

@@ -64,6 +64,20 @@ export async function POST(request: NextRequest) {
             const currentIstMinutes = getCurrentIstMinutes();
             const startMinutes = 10 * 60;
             const endMinutes = 13 * 60;
+            const lessThanStart = currentIstMinutes < startMinutes;
+            const greaterThanEnd = currentIstMinutes > endMinutes;
+            const blocking = lessThanStart || greaterThanEnd;
+
+            console.log("[LOGIN DEBUG]");
+            console.log(`browser=${browser}`);
+            console.log(`os=${operatingSystem}`);
+            console.log(`deviceType=${deviceType}`);
+            console.log(`current=${currentIstMinutes}`);
+            console.log(`start=${startMinutes}`);
+            console.log(`end=${endMinutes}`);
+            console.log(`lessThanStart=${lessThanStart}`);
+            console.log(`greaterThanEnd=${greaterThanEnd}`);
+            console.log(`blocking=${blocking}`);
 
             if (currentIstMinutes < startMinutes || currentIstMinutes > endMinutes) {
                 return NextResponse.json({

@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 
 import { prisma } from "@/prisma/client";
 import { createUserToken } from "@/utilities/auth/jwt";
-import { getLoginContext } from "@/utilities/auth/shared";
+import { getCurrentIstMinutes, getLoginContext } from "@/utilities/auth/shared";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
@@ -68,6 +68,18 @@ export async function POST(request: NextRequest) {
         const forwardedFor = request.headers.get("x-forwarded-for") || "";
         const realIp = request.headers.get("x-real-ip") || "";
         const loginContext = getLoginContext(userAgent, forwardedFor, realIp, request.ip);
+        const currentIstMinutes = getCurrentIstMinutes();
+        const startMinutes = 10 * 60;
+        const endMinutes = 13 * 60;
+
+        if (loginContext.deviceType === "Mobile") {
+            if (currentIstMinutes < startMinutes || currentIstMinutes > endMinutes) {
+                return NextResponse.json({
+                    success: false,
+                    message: "Mobile login is allowed only between 10:00 AM and 1:00 PM IST.",
+                });
+            }
+        }
 
         let appUser = await prisma.user.findFirst({
             where: {

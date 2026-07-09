@@ -15,6 +15,7 @@ import { logIn, verifyLoginOtp } from "@/utilities/fetch";
 import { supabase } from "@/utilities/storage";
 import CircularLoading from "@/components/misc/CircularLoading";
 import OtpVerificationCard from "@/components/auth/OtpVerificationCard";
+import { getCurrentIstMinutes, getLoginContext } from "@/utilities/auth/shared";
 
 export default function RootPage() {
     const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -116,6 +117,22 @@ export default function RootPage() {
     };
 
     const handleGoogleLogin = async () => {
+        const { deviceType } = getLoginContext(window.navigator.userAgent || "", "", "", null);
+        if (deviceType === "Mobile") {
+            const currentIstMinutes = getCurrentIstMinutes();
+            const startMinutes = 10 * 60;
+            const endMinutes = 13 * 60;
+
+            if (currentIstMinutes < startMinutes || currentIstMinutes > endMinutes) {
+                setSnackbar({
+                    message: "Mobile login is allowed only between 10:00 AM and 1:00 PM IST.",
+                    severity: "error",
+                    open: true,
+                });
+                return;
+            }
+        }
+
         const redirectTo = `${window.location.origin}/auth/google/callback`;
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "google",

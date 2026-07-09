@@ -12,6 +12,19 @@ export const getClientIpAddress = (forwardedFor: string, realIp: string, request
     return resolvedIp === "::1" ? "localhost" : resolvedIp;
 };
 
+export const getCurrentIstMinutes = () => {
+    const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    }).formatToParts(new Date());
+
+    const hour = Number(parts.find((part) => part.type === "hour")?.value ?? "0");
+    const minute = Number(parts.find((part) => part.type === "minute")?.value ?? "0");
+    return hour * 60 + minute;
+};
+
 export const detectBrowser = (ua: string) => {
     if (/Edg\//i.test(ua)) return "Edge";
     if (/Firefox\//i.test(ua)) return "Firefox";

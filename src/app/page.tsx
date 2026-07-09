@@ -125,7 +125,7 @@ export default function RootPage() {
 
             if (currentIstMinutes < startMinutes || currentIstMinutes > endMinutes) {
                 setSnackbar({
-                    message: "Mobile login is allowed only between 10:00 AM and 1:00 PM IST.",
+                    message: t("settings.mobileLoginRestricted"),
                     severity: "error",
                     open: true,
                 });

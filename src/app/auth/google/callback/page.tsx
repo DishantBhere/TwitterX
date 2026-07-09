@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Box, CircularProgress, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { supabase } from "@/utilities/storage";
 import CustomSnackbar from "@/components/misc/CustomSnackbar";
@@ -14,6 +15,11 @@ export default function GoogleAuthCallbackPage() {
     const hasHandledCallback = useRef(false);
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { t } = useTranslation();
+    const mapMobileLoginRestrictionMessage = (message?: string) =>
+        message === "Mobile login is allowed only between 10:00 AM and 1:00 PM IST."
+            ? t("settings.mobileLoginRestricted")
+            : message ?? "";
 
     useEffect(() => {
         if (hasHandledCallback.current) return;
@@ -53,8 +59,9 @@ export default function GoogleAuthCallbackPage() {
 
             const payload = await response.json();
             if (!payload?.success) {
-                setMessage(payload?.message ?? "Google login failed.");
-                setSnackbar({ message: payload?.message ?? "Google login failed.", severity: "error", open: true });
+                const nextMessage = mapMobileLoginRestrictionMessage(payload?.message ?? "Google login failed.");
+                setMessage(nextMessage);
+                setSnackbar({ message: nextMessage, severity: "error", open: true });
                 return;
             }
 

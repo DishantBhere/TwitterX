@@ -23,6 +23,10 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
     const { t } = useTranslation();
 
     const router = useRouter();
+    const mapMobileLoginRestrictionMessage = (message?: string) =>
+        message === "Mobile login is allowed only between 10:00 AM and 1:00 PM IST."
+            ? t("settings.mobileLoginRestricted")
+            : message ?? "";
 
     const validationSchema = yup.object({
         identifier: yup
@@ -44,7 +48,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
         onSubmit: async (values, { resetForm }) => {
             const response = await logIn(JSON.stringify(values));
             if (!response.success) {
-                setSnackbar({ message: response.message, severity: "error", open: true });
+                setSnackbar({ message: mapMobileLoginRestrictionMessage(response.message), severity: "error", open: true });
                 return;
             }
             if (response.requiresOtp) {
@@ -74,7 +78,7 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
         formik.setSubmitting(false);
 
         if (!response.success) {
-            return setSnackbar({ message: response.message, severity: "error", open: true });
+            return setSnackbar({ message: mapMobileLoginRestrictionMessage(response.message), severity: "error", open: true });
         }
 
         setPendingOtp(null);
@@ -139,7 +143,11 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                             onResend={async () => {
                                 const response = await logIn(JSON.stringify(formik.values));
                                 if (!response.success) {
-                                    setSnackbar({ message: response.message, severity: "error", open: true });
+                                    setSnackbar({
+                                        message: mapMobileLoginRestrictionMessage(response.message),
+                                        severity: "error",
+                                        open: true,
+                                    });
                                     return;
                                 }
                                 setPendingOtp({

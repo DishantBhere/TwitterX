@@ -16,7 +16,7 @@ export default function UserTweets({ params: { username } }: { params: { usernam
 
     if (!isLoading && !data.tweets) return NotFound();
 
-    if (data && data.tweets.length === 0) return NothingToShow();
+    if (data && data.tweets.length === 0) return <NothingToShow />;
 
     return <>{isLoading ? <CircularLoading /> : <Tweets tweets={data.tweets} />}</>;
 }

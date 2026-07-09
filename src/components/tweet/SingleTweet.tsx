@@ -69,6 +69,7 @@ export default function SingleTweet({ tweet, token }: { tweet: TweetProps; token
     const handlePreviewClose = () => {
         setIsPreviewOpen(false);
     };
+    const isGif = tweet.photoUrl?.toLowerCase().endsWith(".gif");
     const handleConfirmationClick = () => {
         handleAnchorClose();
         setIsConfirmationOpen(true);
@@ -140,15 +141,19 @@ export default function SingleTweet({ tweet, token }: { tweet: TweetProps; token
                     {tweet.photoUrl && (
                         <>
                             <div className="tweet-image">
-                                <Image
-                                    onClick={handleImageClick}
-                                    src={getFullURL(tweet.photoUrl)}
-                                    alt="tweet image"
-                                    placeholder="blur"
-                                    blurDataURL={shimmer(500, 500)}
-                                    height={500}
-                                    width={500}
-                                />
+                                {isGif ? (
+                                    <img onClick={handleImageClick} src={getFullURL(tweet.photoUrl)} alt="tweet image" />
+                                ) : (
+                                    <Image
+                                        onClick={handleImageClick}
+                                        src={getFullURL(tweet.photoUrl)}
+                                        alt="tweet image"
+                                        placeholder="blur"
+                                        blurDataURL={shimmer(500, 500)}
+                                        height={500}
+                                        width={500}
+                                    />
+                                )}
                             </div>
                             <PreviewDialog
                                 open={isPreviewOpen}

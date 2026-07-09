@@ -6,6 +6,8 @@ import { PreviewDialogProps } from "@/types/DialogProps";
 import { getFullURL } from "@/utilities/misc/getFullURL";
 
 export default function PreviewDialog({ open, handlePreviewClose, url }: PreviewDialogProps) {
+    const isGif = url.toLowerCase().endsWith(".gif");
+
     return (
         <Modal className="preview-dialog" open={open}>
             <div>
@@ -13,12 +15,16 @@ export default function PreviewDialog({ open, handlePreviewClose, url }: Preview
                     <AiOutlineClose />
                 </button>
                 <div className="image-wrapper">
-                    <Image
-                        src={url === "/assets/header.jpg" || url === "/assets/egg.jpg" ? url : getFullURL(url)}
-                        alt=""
-                        fill
-                        priority={false}
-                    />
+                    {isGif ? (
+                        <img src={getFullURL(url)} alt="" />
+                    ) : (
+                        <Image
+                            src={url === "/assets/header.jpg" || url === "/assets/egg.jpg" ? url : getFullURL(url)}
+                            alt=""
+                            fill
+                            priority={false}
+                        />
+                    )}
                 </div>
             </div>
         </Modal>

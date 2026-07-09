@@ -61,6 +61,7 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
     const handlePreviewClose = () => {
         setIsPreviewOpen(false);
     };
+    const isGif = displayedTweet.photoUrl?.toLowerCase().endsWith(".gif");
     const handlePopoverOpen = (e: React.MouseEvent<HTMLElement>, type: "default" | "mention" | "retweet" = "default") => {
         if (type === "mention") {
             setHoveredProfile(displayedTweet.repliedTo.author.username);
@@ -211,15 +212,19 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                 {displayedTweet.photoUrl && (
                     <div onClick={handlePropagation}>
                         <div className="tweet-image x-tweet-image">
-                            <Image
-                                onClick={handleImageClick}
-                                src={getFullURL(displayedTweet.photoUrl)}
-                                alt="tweet image"
-                                placeholder="blur"
-                                blurDataURL={shimmer(500, 500)}
-                                height={500}
-                                width={500}
-                            />
+                            {isGif ? (
+                                <img onClick={handleImageClick} src={getFullURL(displayedTweet.photoUrl)} alt="tweet image" />
+                            ) : (
+                                <Image
+                                    onClick={handleImageClick}
+                                    src={getFullURL(displayedTweet.photoUrl)}
+                                    alt="tweet image"
+                                    placeholder="blur"
+                                    blurDataURL={shimmer(500, 500)}
+                                    height={500}
+                                    width={500}
+                                />
+                            )}
                         </div>
                         <PreviewDialog
                             open={isPreviewOpen}

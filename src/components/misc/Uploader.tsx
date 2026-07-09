@@ -4,6 +4,7 @@ import Image from "next/image";
 
 export default function Uploader({ handlePhotoChange }: { handlePhotoChange: (file: File) => void }) {
     const [preview, setPreview] = useState<File | null>(null);
+    const isGif = preview?.type === "image/gif" || preview?.name.toLowerCase().endsWith(".gif");
 
     const onDrop = async (acceptedFiles: File[]) => {
         const file = acceptedFiles[0];
@@ -13,7 +14,8 @@ export default function Uploader({ handlePhotoChange }: { handlePhotoChange: (fi
 
     const { getRootProps, getInputProps } = useDropzone({
         accept: {
-            "image/*": [],
+            "image/*": [".gif"],
+            "image/gif": [".gif"],
         },
         maxFiles: 1,
         maxSize: 1024 * 1024,
@@ -29,7 +31,11 @@ export default function Uploader({ handlePhotoChange }: { handlePhotoChange: (fi
                 <p>Drag and drop an image file here, or click to select one</p>
             </div>
             {preview && (
-                <Image className="preview" src={URL.createObjectURL(preview)} width={250} height={250} alt="preview" />
+                isGif ? (
+                    <img className="preview" src={URL.createObjectURL(preview)} alt="preview" />
+                ) : (
+                    <Image className="preview" src={URL.createObjectURL(preview)} width={250} height={250} alt="preview" />
+                )
             )}
         </div>
     );

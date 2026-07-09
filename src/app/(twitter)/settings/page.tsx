@@ -192,10 +192,10 @@ export default function SettingsPage() {
 
     const loginHistory: LoginHistoryProps[] = data?.loginHistory ?? [];
     const subscriptionPlans = [
-        { key: "FREE" as const, name: t("settings.free"), price: "\u20B90/month", tweets: "1 tweet" },
-        { key: "BRONZE" as const, name: t("settings.bronze"), price: "\u20B9100/month", tweets: "3 tweets" },
-        { key: "SILVER" as const, name: t("settings.silver"), price: "\u20B9300/month", tweets: "5 tweets" },
-        { key: "GOLD" as const, name: t("settings.gold"), price: "\u20B91000/month", tweets: "Unlimited tweets" },
+        { key: "FREE" as const, name: t("settings.free"), price: "\u20B90/month", tweets: t("settings.subscriptionCardOneTweet") },
+        { key: "BRONZE" as const, name: t("settings.bronze"), price: "\u20B9100/month", tweets: t("settings.subscriptionCardThreeTweets") },
+        { key: "SILVER" as const, name: t("settings.silver"), price: "\u20B9300/month", tweets: t("settings.subscriptionCardFiveTweets") },
+        { key: "GOLD" as const, name: t("settings.gold"), price: "\u20B91000/month", tweets: t("settings.subscriptionCardUnlimitedTweets") },
     ];
     const loadRazorpayScript = () => {
         return new Promise<boolean>((resolve) => {
@@ -466,7 +466,7 @@ export default function SettingsPage() {
     const renderSubscriptionPanel = () => (
         <Stack spacing={2.5} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
             <Typography variant="body2" color="text.secondary">
-                Upgrade your account to unlock more daily tweets and premium perks.
+                {t("settings.subscriptionCardDescription")}
             </Typography>
             <Grid container spacing={2}>
                 {subscriptionPlans.map((plan) => {
@@ -627,7 +627,7 @@ export default function SettingsPage() {
                                             },
                                         }}
                                     >
-                                        Choose Plan
+                                        {t("settings.choosePlan")}
                                     </Button>
                                 </CardActions>
                             </Card>

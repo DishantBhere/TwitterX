@@ -32,26 +32,8 @@ export async function DELETE(request: NextRequest, { params: { tweetId } }: { pa
             return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
         }
 
-        await prisma.tweet.update({
+        await prisma.tweet.delete({
             where: { id: tweetId },
-            data: {
-                likedBy: { set: [] },
-                retweetedBy: { set: [] },
-            },
-        });
-
-        await prisma.tweet.deleteMany({
-            where: {
-                OR: [{ repliedToId: tweetId }, { retweetOfId: tweetId }],
-            },
-        });
-
-        await prisma.notification.deleteMany({
-            where: {
-                content: {
-                    contains: tweetId,
-                },
-            },
         });
 
         if (tweet.photoUrl) {
@@ -60,10 +42,6 @@ export async function DELETE(request: NextRequest, { params: { tweetId } }: { pa
         if (tweet.audioUrl) {
             await deleteFile(tweet.audioUrl);
         }
-
-        await prisma.tweet.delete({
-            where: { id: tweetId },
-        });
 
         return NextResponse.json({ success: true });
     } catch (error: unknown) {

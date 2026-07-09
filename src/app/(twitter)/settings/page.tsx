@@ -192,10 +192,10 @@ export default function SettingsPage() {
 
     const loginHistory: LoginHistoryProps[] = data?.loginHistory ?? [];
     const subscriptionPlans = [
-        { key: "FREE" as const, name: t("settings.free"), price: "\u20B90/month", tweets: t("settings.subscriptionCardOneTweet") },
-        { key: "BRONZE" as const, name: t("settings.bronze"), price: "\u20B9100/month", tweets: t("settings.subscriptionCardThreeTweets") },
-        { key: "SILVER" as const, name: t("settings.silver"), price: "\u20B9300/month", tweets: t("settings.subscriptionCardFiveTweets") },
-        { key: "GOLD" as const, name: t("settings.gold"), price: "\u20B91000/month", tweets: t("settings.subscriptionCardUnlimitedTweets") },
+        { key: "FREE" as const, name: t("settings.free"), price: `\u20B90${t("settings.month")}`, tweets: t("settings.subscriptionCardOneTweet") },
+        { key: "BRONZE" as const, name: t("settings.bronze"), price: `\u20B9100${t("settings.month")}`, tweets: t("settings.subscriptionCardThreeTweets") },
+        { key: "SILVER" as const, name: t("settings.silver"), price: `\u20B9300${t("settings.month")}`, tweets: t("settings.subscriptionCardFiveTweets") },
+        { key: "GOLD" as const, name: t("settings.gold"), price: `\u20B91000${t("settings.month")}`, tweets: t("settings.subscriptionCardUnlimitedTweets") },
     ];
     const loadRazorpayScript = () => {
         return new Promise<boolean>((resolve) => {

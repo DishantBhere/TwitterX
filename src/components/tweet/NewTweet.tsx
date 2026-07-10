@@ -105,6 +105,10 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         setGifError("");
     };
 
+    const clearPhotoSelection = () => {
+        setPhotoFile(null);
+    };
+
     const clearGifSelection = () => {
         setGifFile(null);
         setGifPreviewUrl("");
@@ -562,7 +566,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                         />
                     </div>
                 )}
-                {showDropzone && <Uploader handlePhotoChange={handlePhotoChange} />}
+                {showDropzone && <Uploader handlePhotoChange={handlePhotoChange} handlePhotoRemove={clearPhotoSelection} />}
                 {gifFile && gifPreviewUrl && (
                     <div className="composer-gif-preview">
                         <img src={gifPreviewUrl} alt="Selected GIF" />

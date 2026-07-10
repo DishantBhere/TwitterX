@@ -149,7 +149,7 @@ export default function LanguageSelector({
                     loading={isLoading}
                     verifyLabel={t("actions.verify")}
                     successMessage=""
-                    demoOtp={pendingOtp.deliveryMethod === "phone" && process.env.NODE_ENV !== "production" ? pendingOtp.simulatedOtp : undefined}
+                    demoOtp={pendingOtp.deliveryMethod === "phone" ? pendingOtp.simulatedOtp : undefined}
                     compact
                 />
             )}

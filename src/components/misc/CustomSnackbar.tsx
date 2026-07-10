@@ -31,7 +31,12 @@ export default function CustomSnackbar({
             onClose={handleClose}
             anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
-            <Alert onClose={handleClose} severity={severity} sx={{ width: "100%", fontSize: "0.66rem" }}>
+            <Alert
+                onClose={handleClose}
+                severity={severity}
+                icon={severity === "success" ? <span style={{ fontSize: 16, lineHeight: 1 }}>✓</span> : undefined}
+                sx={{ width: "100%", fontSize: "0.66rem" }}
+            >
                 {message}
             </Alert>
         </Snackbar>

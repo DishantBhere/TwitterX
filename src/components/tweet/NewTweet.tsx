@@ -509,6 +509,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 {showDropzone && <Uploader handlePhotoChange={handlePhotoChange} handlePhotoRemove={clearPhotoSelection} />}
                 {gifFile && gifPreviewUrl && (
                     <div className="composer-gif-preview">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={gifPreviewUrl} alt="Selected GIF" />
                         <button type="button" className="composer-gif-remove" onClick={clearGifSelection}>
                             Remove

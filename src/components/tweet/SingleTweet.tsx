@@ -144,6 +144,7 @@ export default function SingleTweet({ tweet, token }: { tweet: TweetProps; token
                         <>
                             <div className="tweet-image">
                                 {isGif ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
                                     <img onClick={handleImageClick} src={getFullURL(tweet.photoUrl)} alt="tweet image" />
                                 ) : (
                                     <Image

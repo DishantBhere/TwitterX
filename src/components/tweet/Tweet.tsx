@@ -209,10 +209,11 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                 </div>
                 {displayedTweet.photoUrl && (
                     <div onClick={handlePropagation}>
-                        <div className="tweet-image x-tweet-image">
-                            {isGif ? (
-                                <img onClick={handleImageClick} src={getFullURL(displayedTweet.photoUrl)} alt="tweet image" />
-                            ) : (
+                            <div className="tweet-image x-tweet-image">
+                                {isGif ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img onClick={handleImageClick} src={getFullURL(displayedTweet.photoUrl)} alt="tweet image" />
+                                ) : (
                                 <Image
                                     onClick={handleImageClick}
                                     src={getFullURL(displayedTweet.photoUrl)}

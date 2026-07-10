@@ -16,6 +16,7 @@ export default function PreviewDialog({ open, handlePreviewClose, url }: Preview
                 </button>
                 <div className="image-wrapper">
                     {isGif ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={getFullURL(url)} alt="" />
                     ) : (
                         <Image

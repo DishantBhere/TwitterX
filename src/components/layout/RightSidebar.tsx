@@ -1,6 +1,7 @@
 "use client";
 
 import { useContext } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
@@ -121,7 +122,7 @@ export default function RightSidebar() {
                         <Box className="football-match football-match-group">
                             <Box className="football-teams">
                                 <Box className="football-team">
-                                    <img
+                                    <Image
                                         src="https://flagcdn.com/ar.svg"
                                         alt="Argentina"
                                         width={18}
@@ -131,7 +132,7 @@ export default function RightSidebar() {
                                     <Typography className="team-name">{t("sidebar.teams.argentina")}</Typography>
                                 </Box>
                                 <Box className="football-team">
-                                    <img
+                                    <Image
                                         src="https://flagcdn.com/cv.svg"
                                         alt="Cape Verde"
                                         width={18}
@@ -149,7 +150,7 @@ export default function RightSidebar() {
                         <Box className="football-match">
                             <Box className="football-teams">
                                 <Box className="football-team">
-                                    <img
+                                    <Image
                                         src="https://flagcdn.com/br.svg"
                                         alt="Brazil"
                                         width={18}
@@ -159,7 +160,7 @@ export default function RightSidebar() {
                                     <Typography className="team-name">{t("sidebar.teams.brazil")}</Typography>
                                 </Box>
                                 <Box className="football-team">
-                                    <img
+                                    <Image
                                         src="https://flagcdn.com/fr.svg"
                                         alt="France"
                                         width={18}
@@ -177,7 +178,7 @@ export default function RightSidebar() {
                         <Box className="football-match">
                             <Box className="football-teams">
                                 <Box className="football-team">
-                                    <img
+                                    <Image
                                         src="https://flagcdn.com/es.svg"
                                         alt="Spain"
                                         width={18}
@@ -187,7 +188,7 @@ export default function RightSidebar() {
                                     <Typography className="team-name">{t("sidebar.teams.spain")}</Typography>
                                 </Box>
                                 <Box className="football-team">
-                                    <img
+                                    <Image
                                         src="https://flagcdn.com/pt.svg"
                                         alt="Portugal"
                                         width={18}

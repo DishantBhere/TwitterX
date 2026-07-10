@@ -57,6 +57,7 @@ export default function Uploader({
                         </button>
                     </div>
                     {isGif ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img className="preview x-image-preview" src={URL.createObjectURL(preview)} alt="preview" />
                     ) : (
                         <Image className="preview x-image-preview" src={URL.createObjectURL(preview)} width={250} height={250} alt="preview" />

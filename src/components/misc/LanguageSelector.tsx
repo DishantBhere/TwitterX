@@ -55,13 +55,15 @@ export default function LanguageSelector({
             });
         }
 
-        setPendingOtp({
+        const nextPendingOtp = {
             language,
             deliveryMethod: response.deliveryMethod,
             destination: response.destination,
             simulatedOtp: response.simulatedOtp,
             expiresAt: new Date(response.expiresAt).getTime(),
-        });
+        };
+        console.log("PENDING OTP TO SET", nextPendingOtp);
+        setPendingOtp(nextPendingOtp);
     };
 
     const handleVerify = async () => {
@@ -105,6 +107,7 @@ export default function LanguageSelector({
                     ))}
                 </Select>
             </FormControl>
+            {console.log("PENDING OTP BEFORE RENDER", pendingOtp)}
             {pendingOtp && (
                 <OtpVerificationCard
                     title={t("settings.otpTitle")}

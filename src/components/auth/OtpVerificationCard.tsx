@@ -194,6 +194,9 @@ export default function OtpVerificationCard({
         requestAnimationFrame(() => focusIndex(Math.min(pasted.length, BOX_LENGTH - 1)));
     };
 
+    console.log("OTP CARD demoOtp", demoOtp);
+    console.log("OTP CARD showDemoOtp", showDemoOtp);
+
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.98, y: 12 }}

@@ -30,7 +30,6 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [hoveredProfile, setHoveredProfile] = useState("");
     const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false);
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
@@ -86,22 +85,16 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
         setIsDeleteMenuOpen(false);
         setAnchorEl(null);
     };
-    const handleDeleteDialogOpen = () => {
-        handleDeleteMenuClose();
-        setIsDeleteDialogOpen(true);
-    };
     const mutation = useMutation({
         mutationFn: (jsonId: string) => deleteTweet(tweet.id, tweet.author.username, jsonId),
         onSuccess: () => {
             setIsDeleting(false);
-            setIsDeleteDialogOpen(false);
             setIsDeleted(true);
             setSnackbar({ message: "Tweet deleted.", severity: "success", open: true });
             queryClient.invalidateQueries({ queryKey: ["tweets"] });
         },
         onError: () => {
             setIsDeleting(false);
-            setIsDeleteDialogOpen(false);
             setIsDeleted(false);
             setSnackbar({ message: "Could not delete tweet. Please try again.", severity: "error", open: true });
         },
@@ -113,7 +106,6 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
         }
 
         setIsDeleting(true);
-        setIsDeleteDialogOpen(false);
         setIsDeleted(true);
         mutation.mutate(JSON.stringify(token.id));
     };
@@ -152,7 +144,13 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                                 <RxDotsHorizontal />
                             </button>
                             <Menu anchorEl={anchorEl} open={isDeleteMenuOpen} onClose={handleDeleteMenuClose} anchorOrigin={{ vertical: "bottom", horizontal: "right" }} transformOrigin={{ vertical: "top", horizontal: "right" }}>
-                                <MenuItem onClick={handleDeleteDialogOpen} sx={{ color: "#f4212e", gap: 1, py: 1.25 }}>
+                                <MenuItem
+                                    onClick={() => {
+                                        handleDeleteMenuClose();
+                                        router.push(`/${displayedTweet.author.username}/tweets/${displayedTweet.id}`);
+                                    }}
+                                    sx={{ color: "#f4212e", gap: 1, py: 1.25 }}
+                                >
                                     <span style={{ display: "inline-flex", alignItems: "center" }}>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M3 6h18" />
@@ -273,22 +271,6 @@ export default function Tweet({ tweet }: { tweet: TweetProps }) {
                         <RetweetIcon /> {`${tweet.author.name ? tweet.author.name : tweet.author.username} retweeted.`}
                     </Link>
                 ))}
-            <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} maxWidth="sm" fullWidth>
-                <DialogTitle sx={{ fontWeight: 700, fontSize: 24, pb: 0.5 }}>Delete post?</DialogTitle>
-                <DialogContent>
-                    <DialogContentText sx={{ color: "rgb(83, 100, 113)", fontSize: 15, lineHeight: 1.5 }}>
-                        This can’t be undone and it will be removed from your profile, timelines, bookmarks and search results.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
-                    <button className="btn btn-white x-delete-cancel" onClick={() => setIsDeleteDialogOpen(false)}>
-                        Cancel
-                    </button>
-                    <button className="btn btn-danger x-delete-confirm" onClick={handleDeleteConfirm} disabled={isDeleting}>
-                        {isDeleting ? "Deleting..." : "Delete"}
-                    </button>
-                </DialogActions>
-            </Dialog>
             <Popover
                 sx={{
                     pointerEvents: "none",

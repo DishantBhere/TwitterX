@@ -40,14 +40,9 @@ const SUBSCRIPTION_LIMIT_MESSAGES = [
 export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [showPicker, setShowPicker] = useState(false);
     const [showDropzone, setShowDropzone] = useState(false);
-    const [showGifPicker, setShowGifPicker] = useState(false);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [gifFile, setGifFile] = useState<File | null>(null);
     const [gifPreviewUrl, setGifPreviewUrl] = useState("");
-    const [gifResults, setGifResults] = useState<Array<{ title: string; previewUrl: string; gifUrl: string }>>([]);
-    const [gifQuery, setGifQuery] = useState("");
-    const [gifLoading, setGifLoading] = useState(false);
-    const [gifError, setGifError] = useState("");
     const [audioFile, setAudioFile] = useState<File | null>(null);
     const [audioPreviewUrl, setAudioPreviewUrl] = useState("");
     const [audioOtp, setAudioOtp] = useState("");
@@ -62,6 +57,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const [isTweetLimitDialogOpen, setIsTweetLimitDialogOpen] = useState(false);
     const [count, setCount] = useState(0);
     const audioInputRef = useRef<HTMLInputElement | null>(null);
+    const gifInputRef = useRef<HTMLInputElement | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const recordedChunksRef = useRef<Blob[]>([]);
     const recordingStreamRef = useRef<MediaStream | null>(null);
@@ -102,7 +98,6 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         setPhotoFile(file);
         setGifFile(null);
         setGifPreviewUrl("");
-        setGifError("");
     };
 
     const clearPhotoSelection = () => {
@@ -112,9 +107,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
     const clearGifSelection = () => {
         setGifFile(null);
         setGifPreviewUrl("");
-        setGifError("");
-        setGifResults([]);
-        setGifQuery("");
+        if (gifInputRef.current) gifInputRef.current.value = "";
     };
 
     const clearAudioSelection = () => {
@@ -127,62 +120,12 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         if (audioInputRef.current) audioInputRef.current.value = "";
     };
 
-    const fetchGifs = async (query = "") => {
-        const apiKey = process.env.NEXT_PUBLIC_TENOR_API_KEY;
-        if (!apiKey) {
-            setGifError("GIF search is unavailable right now.");
-            return;
-        }
+    const handleGifChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-        setGifLoading(true);
-        setGifError("");
-
-        try {
-            const endpoint = query
-                ? `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${apiKey}&client_key=twitter_clone&limit=12&media_filter=gif`
-                : `https://tenor.googleapis.com/v2/trending?key=${apiKey}&client_key=twitter_clone&limit=12&media_filter=gif`;
-
-            const response = await fetch(endpoint);
-            const data = await response.json();
-            const items = (data.results || [])
-                .map((item: any) => {
-                    const media = item.media?.[0];
-                    const gif = media?.gif || media?.tinygif || media?.nanogif;
-                    return gif?.url
-                        ? {
-                              title: item.content_description || "GIF",
-                              previewUrl: gif.url,
-                              gifUrl: gif.url,
-                          }
-                        : null;
-                })
-                .filter(Boolean) as Array<{ title: string; previewUrl: string; gifUrl: string }>;
-
-            setGifResults(items);
-            if (!items.length) {
-                setGifError("No GIFs found for this search.");
-            }
-        } catch {
-            setGifError("Unable to load GIFs right now.");
-        } finally {
-            setGifLoading(false);
-        }
-    };
-
-    const handleGifSelection = async (gifUrl: string) => {
-        try {
-            const response = await fetch(gifUrl);
-            const blob = await response.blob();
-            const file = new File([blob], `selected-gif-${Date.now()}.gif`, { type: blob.type || "image/gif" });
-
-            setPhotoFile(null);
-            setGifFile(file);
-            setGifPreviewUrl(URL.createObjectURL(file));
-            setShowGifPicker(false);
-            setGifError("");
-        } catch {
-            setGifError("Unable to attach this GIF.");
-        }
+        setPhotoFile(null);
+        setGifFile(file);
     };
 
     const getAudioDuration = (file: File) => {
@@ -421,7 +364,6 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             resetForm();
             setCount(0);
             setShowDropzone(false);
-            setShowGifPicker(false);
             clearAudioSelection();
             if (handleSubmit) handleSubmit();
         },
@@ -483,10 +425,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                             type="button"
                             onClick={(e) => {
                                 e.preventDefault();
-                                setShowGifPicker(true);
-                                if (!gifResults.length && !gifLoading) {
-                                    void fetchGifs();
-                                }
+                                gifInputRef.current?.click();
                             }}
                             className="icon-hoverable"
                             aria-label="Add GIF"
@@ -505,6 +444,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                             <RiMusic2Line />
                         </button>
                         <input ref={audioInputRef} type="file" accept="audio/*" onChange={handleAudioChange} hidden />
+                        <input ref={gifInputRef} type="file" accept="image/gif,.gif" onChange={handleGifChange} hidden />
                         {isRecording ? (
                             <button
                                 type="button"
@@ -627,51 +567,6 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 {audioOtpError && !pendingAudioOtp && <p className="audio-otp-error">{audioOtpError}</p>}
             </form>
             {snackbar.open && <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />}
-            <Dialog
-                className="dialog"
-                open={showGifPicker}
-                onClose={() => setShowGifPicker(false)}
-                fullWidth
-                maxWidth="sm"
-                PaperProps={{ className: "gif-picker-dialog" }}
-            >
-                <DialogTitle className="title">Choose a GIF</DialogTitle>
-                <DialogContent className="gif-picker-content">
-                    <form
-                        className="gif-search-form"
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            void fetchGifs(gifQuery.trim());
-                        }}
-                    >
-                        <input
-                            value={gifQuery}
-                            onChange={(event) => setGifQuery(event.target.value)}
-                            placeholder="Search GIFs"
-                            className="gif-search-input"
-                        />
-                        <button type="submit" className="gif-search-button">
-                            Search
-                        </button>
-                    </form>
-                    {gifLoading && <p className="gif-status">Loading GIFs…</p>}
-                    {gifError && <p className="gif-status error">{gifError}</p>}
-                    {!gifLoading && !gifError && (
-                        <div className="gif-grid">
-                            {gifResults.map((gif) => (
-                                <button
-                                    key={`${gif.title}-${gif.previewUrl}`}
-                                    type="button"
-                                    className="gif-card"
-                                    onClick={() => void handleGifSelection(gif.gifUrl)}
-                                >
-                                    <img src={gif.previewUrl} alt={gif.title} />
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </DialogContent>
-            </Dialog>
             <Dialog
                 className="dialog"
                 open={isTweetLimitDialogOpen}

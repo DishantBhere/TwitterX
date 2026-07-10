@@ -50,7 +50,7 @@ export default function SingleTweet({ tweet, token }: { tweet: TweetProps; token
             });
             await sleepFunction(); // for waiting snackbar to acknowledge delete for better user experience
             queryClient.invalidateQueries(["tweets", tweet.author.username]);
-            router.replace(`/${tweet.author.username}`);
+            router.replace(`/explore`);
         },
         onError: (error) => console.log(error),
     });

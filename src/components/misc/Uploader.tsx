@@ -20,8 +20,9 @@ export default function Uploader({
 
     const { getRootProps, getInputProps } = useDropzone({
         accept: {
-            "image/*": [".gif"],
-            "image/gif": [".gif"],
+            "image/png": [".png"],
+            "image/jpeg": [".jpg", ".jpeg"],
+            "image/webp": [".webp"],
         },
         maxFiles: 1,
         maxSize: 10 * 1024 * 1024,

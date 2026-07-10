@@ -269,11 +269,21 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                                             const permission = await Notification.requestPermission();
                                             if (permission !== "granted") {
                                                 formik.setFieldValue("browserNotificationsEnabled", false);
+                                                setSnackbar({
+                                                    message: "Please allow browser notifications to use this feature.",
+                                                    severity: "error",
+                                                    open: true,
+                                                });
                                                 return;
                                             }
                                         }
                                         if (enabled && typeof window !== "undefined" && !("Notification" in window)) {
                                             formik.setFieldValue("browserNotificationsEnabled", false);
+                                            setSnackbar({
+                                                message: "Please allow browser notifications to use this feature.",
+                                                severity: "error",
+                                                open: true,
+                                            });
                                             return;
                                         }
                                         formik.setFieldValue("browserNotificationsEnabled", enabled);

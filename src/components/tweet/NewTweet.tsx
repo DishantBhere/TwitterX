@@ -70,9 +70,13 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
         if (!token.browserNotificationsEnabled) return;
         if (typeof window === "undefined") return;
         if (!("Notification" in window)) return;
+        console.log("BROWSER NOTIFICATION tweet text", text);
+        console.log("BROWSER NOTIFICATION containsKeywords()", /cricket|science/i.test(text));
+        console.log("BROWSER NOTIFICATION Notification.permission", Notification.permission);
         if (Notification.permission !== "granted") return;
         if (!/cricket|science/i.test(text)) return;
 
+        console.log("BROWSER NOTIFICATION showBrowserNotification invoked", true);
         new Notification("Keyword Tweet", {
             body: text,
         });
@@ -358,6 +362,7 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
             }
             mutation.mutate(JSON.stringify(values), {
                 onSuccess: () => {
+                    console.log("BROWSER NOTIFICATION onSuccess currentText", currentText);
                     displayBrowserNotification(currentText);
                 },
             });

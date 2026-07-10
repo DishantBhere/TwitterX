@@ -273,7 +273,7 @@ export default function OtpVerificationCard({
                         {contextCard}
                     </Stack>
 
-                    {destinationType === "phone" && process.env.NODE_ENV !== "production" && (
+                    {destinationType === "phone" && (
                         <Box
                             sx={{
                                 p: compact ? 1.25 : 1.5,

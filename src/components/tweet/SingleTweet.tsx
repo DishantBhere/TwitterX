@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import Link from "next/link";
 import { RxDotsHorizontal } from "react-icons/rx";
@@ -35,6 +36,7 @@ export default function SingleTweet({ tweet, token }: { tweet: TweetProps; token
 
     const queryClient = useQueryClient();
     const router = useRouter();
+    const { t } = useTranslation();
 
     const mutation = useMutation({
         mutationFn: (jsonId: string) => deleteTweet(tweet.id, tweet.authorId, jsonId),
@@ -182,20 +184,17 @@ export default function SingleTweet({ tweet, token }: { tweet: TweetProps; token
             {isConfirmationOpen && (
                 <div className="html-modal-wrapper">
                     <dialog open className="confirm">
-                        <h1>Delete Tweet?</h1>
-                        <p>
-                            This can’t be undone and it will be removed from your profile, the timeline of any accounts that
-                            follow you, and from Twitter search results.
-                        </p>
+                        <h1>{t("tweet.deleteTweet")}</h1>
+                        <p>{t("tweet.deleteWarning")}</p>
                         {isDeleting ? (
                             <CircularLoading />
                         ) : (
                             <>
                                 <button className="btn btn-danger" onClick={handleDelete}>
-                                    Delete
+                                    {t("actions.delete")}
                                 </button>
                                 <button className="btn btn-white" onClick={() => setIsConfirmationOpen(false)}>
-                                    Cancel
+                                    {t("actions.cancel")}
                                 </button>
                             </>
                         )}
@@ -205,3 +204,4 @@ export default function SingleTweet({ tweet, token }: { tweet: TweetProps; token
         </div>
     );
 }
+

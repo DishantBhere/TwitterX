@@ -1,6 +1,7 @@
 "use client";
 
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 import { getUserTweet } from "@/utilities/fetch";
@@ -18,12 +19,26 @@ export default function SingleTweetPage({
     const queryKey = ["tweets", username, tweetId];
 
     const { token, isPending } = useContext(AuthContext);
+    const router = useRouter();
+    const hasLoadedTweetRef = useRef(false);
     const { isLoading, data, isFetched } = useQuery({
         queryKey: queryKey,
         queryFn: () => getUserTweet(tweetId, username),
     });
 
-    if (!isLoading && !data.tweet) return NotFound();
+    if (data?.tweet) {
+        hasLoadedTweetRef.current = true;
+    }
+
+    useEffect(() => {
+        if (!isLoading && isFetched && hasLoadedTweetRef.current && !data?.tweet) {
+            router.replace(`/${username}`);
+        }
+    }, [data?.tweet, isFetched, isLoading, router, username]);
+
+    if (!isLoading && !data?.tweet) {
+        return hasLoadedTweetRef.current ? null : NotFound();
+    }
 
     let backToProps = {
         title: username,

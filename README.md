@@ -18,6 +18,8 @@ Built with Next.js, React, TypeScript, Prisma, and Supabase — delivering a rea
 
 TwitterX reimagines the classic X (Twitter) experience with a modern web stack. It supports rich media tweets, real-time notifications, secure authentication flows, direct messaging, and a premium subscription tier — all wrapped in a responsive, dark-themed UI.
 
+> 🎓 Built as part of a Full Stack Web Developer internship — each feature below maps to a real task spec (conditional OTP logic, time-gated actions, tiered payments, and multi-language rollout).
+
 ---
 
 ## ✨ Features
@@ -26,36 +28,51 @@ TwitterX reimagines the classic X (Twitter) experience with a modern web stack. 
 - Email & password authentication
 - Google OAuth login
 - JWT-based session management
-- Forgot password with OTP verification
+- **Conditional login security** — Chrome logins require email OTP; Microsoft-browser logins bypass OTP
+- **Mobile login time-lock** — mobile-device logins allowed only between 10:00 AM – 1:00 PM IST
+- **Forgot password** — reset via registered email or phone, limited to 1 request/day, with a random uppercase/lowercase-only password generator (no numbers or symbols)
 
 ### 🐦 Tweets
 - Create, delete, like/unlike, and retweet
 - Reply threads
 - Image, GIF, and audio uploads with media preview
-- Browser notifications for cricket & science tweets
+- **Audio tweets** — email OTP verification before upload, max 5 min / 100 MB, postable only between 2:00 PM – 7:00 PM IST
+- **Smart browser notifications** — tweets containing "cricket" or "science" trigger a native popup (via the browser Notification API) showing full tweet content; toggleable per-user from Settings
 
 ### 👤 User Profile
 - Editable profile, profile picture, and banner
 - Follow / unfollow system
 - Premium verification badge with custom secret code
-
-### ⚙️ Settings
-- Dark theme
-- Multi-language support (English, Spanish, Hindi, Portuguese, Chinese, French) with OTP-gated language switching
-- Login history tracking
-- Browser notification preferences
+- Login history with browser, OS, device type, and IP address
 
 ### 💬 Messaging
 - Send & delete messages
 - Threaded conversation view
 
+### ⚙️ Settings
+- Dark theme
+- **Multi-language support** — English, Spanish, Hindi, Portuguese, Chinese, French; French switch verified via email OTP, all other languages verified via mobile OTP
+- Login history tracking
+- Browser notification preferences (enable/disable per user)
+
 ### 🔔 Notifications
 - Real-time in-app notifications
-- Browser push notifications
+- Native browser popup notifications (Notification API)
 - Read/unread tracking
+- User-controlled opt-in/opt-out
 
 ### 💎 Premium
-- Subscription plans with Razorpay integration
+- Tiered subscription plans via Razorpay, gating daily tweet limits:
+
+  | Plan | Price | Tweet Limit |
+  |---|---|---|
+  | Free | ₹0 | 1 tweet |
+  | Bronze | ₹100/mo | 3 tweets |
+  | Silver | ₹300/mo | 5 tweets |
+  | Gold | ₹1000/mo | Unlimited |
+
+- Auto-emailed invoice + plan details after successful payment
+- Payments accepted only between 10:00 AM – 11:00 AM IST
 - Verified badge unlock
 
 ---
@@ -108,16 +125,16 @@ The app will be available at `http://localhost:3000`.
 
 ## 📸 Screenshots
 
-# 🏠 Home Page
+### 🏠 Home Page
 <img width="800" alt="Home Page" src="https://github.com/user-attachments/assets/87112e44-63b3-4680-aafe-adff0d71daba" />
 
-# 👤 Profile Page
+### 👤 Profile Page
 <img width="800" alt="Profile Page" src="https://github.com/user-attachments/assets/8c7f2803-ce26-44bc-b536-12590e0c1ba5" />
 
-# 💎 Premium Page
+### 💎 Premium Page
 <img width="800" alt="Premium Page" src="https://github.com/user-attachments/assets/ee5185ab-d708-4fd3-97a9-87ec3e288ac0" />
 
-# 🌍 Language Support
+### 🌍 Language Support
 
 <table>
 <tr>
@@ -133,8 +150,6 @@ The app will be available at `http://localhost:3000`.
 </tr>
 </table>
 
-
-
 ---
 
 ## 🗺️ Roadmap
@@ -146,7 +161,6 @@ The app will be available at `http://localhost:3000`.
 - [ ] Enhanced mobile responsiveness
 
 ---
-
 
 ## 🤝 Contributing
 

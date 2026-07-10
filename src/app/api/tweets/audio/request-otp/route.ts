@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
@@ -7,9 +7,9 @@ import { saveAudioOtp } from "@/utilities/audio/otp";
 import { UserProps } from "@/types/UserProps";
 import { sendEmail } from "@/utilities/email/sendEmail";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
     const token = cookies().get("token")?.value;
-    const verifiedToken: UserProps = token && (await verifyJwtToken(token));
+    const verifiedToken: UserProps = token && (await verifyJwtToken(token, request.nextUrl.origin));
 
     if (!verifiedToken) {
         return NextResponse.json({ success: false, message: "You must be logged in to upload audio." });

@@ -11,7 +11,7 @@ export async function POST(request: NextRequest, { params: { username } }: { par
 
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
-    const verifiedToken: UserProps = token && (await verifyJwtToken(token));
+    const verifiedToken: UserProps = token && (await verifyJwtToken(token, request.nextUrl.origin));
 
     if (!verifiedToken)
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });

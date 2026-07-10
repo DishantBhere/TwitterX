@@ -14,7 +14,7 @@ export async function POST(
 
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
-    const verifiedToken: UserProps = token && (await verifyJwtToken(token));
+    const verifiedToken: UserProps = token && (await verifyJwtToken(token, request.nextUrl.origin));
 
     const secret = process.env.CREATION_SECRET_KEY;
 

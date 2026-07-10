@@ -43,6 +43,7 @@ export default function LanguageSelector({
 
         setIsLoading(true);
         const response = await requestLanguageOtp(language);
+        console.log("OTP RESPONSE", response);
         setIsLoading(false);
 
         if (!response.success) {

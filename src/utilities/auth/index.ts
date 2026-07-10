@@ -1,7 +1,5 @@
-const verifyTokenFromServer = async (token: string) => {
-    const HOST_URL = process.env.NEXT_PUBLIC_HOST_URL;
-
-    const response = await fetch(`${HOST_URL}/api/auth/verify`, {
+const verifyTokenFromServer = async (token: string, origin?: string) => {
+    const response = await fetch(origin ? new URL("/api/auth/verify", origin) : "/api/auth/verify", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -17,8 +15,8 @@ export const getJwtSecretKey = () => {
     return new TextEncoder().encode(key);
 };
 
-export const verifyJwtToken = async (token: string) => {
-    const response = await verifyTokenFromServer(token);
+export const verifyJwtToken = async (token: string, origin?: string) => {
+    const response = await verifyTokenFromServer(token, origin);
     if (!response) return null;
     return response;
 };

@@ -1,14 +1,14 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
 import { VerifiedToken } from "@/types/TokenProps";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         const token = cookies().get("token")?.value;
-        const verifiedToken: VerifiedToken = token && (await verifyJwtToken(token));
+        const verifiedToken: VerifiedToken = token && (await verifyJwtToken(token, request.nextUrl.origin));
 
         if (!verifiedToken) {
             return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });

@@ -209,7 +209,7 @@ export const editUser = async (updatedUser: string, username: string) => {
 };
 
 export const requestLanguageOtp = async (language: string) => {
-    const response = await fetch(`${HOST_URL}/api/language/request-otp`, {
+    const response = await fetch("/api/language/request-otp", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

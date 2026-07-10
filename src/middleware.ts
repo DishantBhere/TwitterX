@@ -19,7 +19,7 @@ export const middleware = async (request: NextRequest) => {
     ];
     const staticRoutesPrivate = ["/notifications", "/messages", "/home"];
 
-    const hasVerifiedToken = token && (await verifyJwtToken(token));
+    const hasVerifiedToken = token && (await verifyJwtToken(token, nextUrl.origin));
 
     if (!hasVerifiedToken && protectedRoutes.some((route) => nextUrl.pathname.endsWith(route))) {
         return NextResponse.redirect(new URL("/not-authorized", url));

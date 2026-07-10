@@ -90,6 +90,8 @@ export default function LanguageSelector({
         setSnackbar({ message: t("settings.changed"), severity: "success", open: true });
     };
 
+    console.log("PENDING OTP BEFORE RENDER", pendingOtp);
+
     return (
         <div className="language-selector">
             <FormControl fullWidth>
@@ -107,7 +109,6 @@ export default function LanguageSelector({
                     ))}
                 </Select>
             </FormControl>
-            {console.log("PENDING OTP BEFORE RENDER", pendingOtp)}
             {pendingOtp && (
                 <OtpVerificationCard
                     title={t("settings.otpTitle")}

@@ -44,7 +44,7 @@ export default function SingleTweet({ tweet, token }: { tweet: TweetProps; token
             setIsConfirmationOpen(false);
             setIsDeleting(false);
             setSnackbar({
-                message: "Tweet deleted successfully. Redirecting to the profile page...",
+                message: "Tweet deleted successfully.",
                 severity: "success",
                 open: true,
             });

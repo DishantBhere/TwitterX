@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaArrowLeft, FaRegEnvelope, FaSearch } from "react-icons/fa";
 import { Avatar, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { BiCalendarCheck } from "react-icons/bi";
@@ -21,18 +21,17 @@ import { getFullURL } from "@/utilities/misc/getFullURL";
 import PreviewDialog from "../dialog/PreviewDialog";
 import { SnackbarProps } from "@/types/SnackbarProps";
 import CustomSnackbar from "../misc/CustomSnackbar";
-import NewMessageDialog from "../dialog/NewMessageDialog";
 
 export default function Profile({ profile }: { profile: UserProps }) {
     const [dialogType, setDialogType] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isNewMessageOpen, setIsNewMessageOpen] = useState(false);
     const [preview, setPreview] = useState({ open: false, url: "" });
     const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
     const [isVerifyCardDismissed, setIsVerifyCardDismissed] = useState(false);
 
     const { token } = useContext(AuthContext);
     const pathname = usePathname();
+    const router = useRouter();
 
     const handleDialogOpen = (type: string) => {
         if (!token) {
@@ -80,7 +79,7 @@ export default function Profile({ profile }: { profile: UserProps }) {
                 open: true,
             });
         }
-        setIsNewMessageOpen(true);
+        router.push(`/messages?recipient=${profile.username}`);
     };
 
     const isFollowingTokenOwner = () => {
@@ -260,14 +259,6 @@ export default function Profile({ profile }: { profile: UserProps }) {
                 </Dialog>
             )}
             <PreviewDialog open={preview.open} handlePreviewClose={handlePreviewClose} url={preview.url} />
-            {token && isNewMessageOpen && (
-                <NewMessageDialog
-                    handleNewMessageClose={() => setIsNewMessageOpen(false)}
-                    open={isNewMessageOpen}
-                    token={token}
-                    recipient={profile.username}
-                />
-            )}
             {snackbar.open && (
                 <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />
             )}

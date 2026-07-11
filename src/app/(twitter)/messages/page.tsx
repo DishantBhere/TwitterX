@@ -1,9 +1,10 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { BsEnvelopePlus } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "next/navigation";
 
 import NothingToShow from "@/components/misc/NothingToShow";
 import NewMessageDialog from "@/components/dialog/NewMessageDialog";
@@ -21,9 +22,12 @@ export default function MessagesPage() {
         messages: [] as MessageProps[],
         messagedUsername: "",
     });
+    const autoOpenedRecipientRef = useRef<string>("");
 
     const { token, isPending } = useContext(AuthContext);
     const { t } = useTranslation();
+    const searchParams = useSearchParams();
+    const recipient = searchParams.get("recipient") || "";
 
     const { isLoading, data, isFetched } = useQuery({
         queryKey: ["messages", token && token.username],
@@ -51,6 +55,29 @@ export default function MessagesPage() {
 
         handleConversations(true, [], recipient);
     };
+
+    useEffect(() => {
+        if (!recipient || !data?.formattedConversations) return;
+        if (autoOpenedRecipientRef.current === recipient) return;
+
+        const existingConversation = data.formattedConversations.find((conversation: ConversationResponse) =>
+            conversation.participants.includes(recipient)
+        );
+
+        if (existingConversation) {
+            handleConversations(true, existingConversation.messages, recipient);
+        } else {
+            handleConversations(true, [], recipient);
+        }
+
+        autoOpenedRecipientRef.current = recipient;
+    }, [recipient, data, handleConversations]);
+
+    useEffect(() => {
+        if (!recipient) {
+            autoOpenedRecipientRef.current = "";
+        }
+    }, [recipient]);
 
     if (isPending || !token || isLoading) return <CircularLoading />;
 

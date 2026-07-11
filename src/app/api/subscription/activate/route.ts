@@ -1,7 +1,5 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
@@ -56,56 +54,42 @@ export async function POST(request: NextRequest) {
             paymentId,
             orderId,
         });
-        const invoicesDir = path.join(process.cwd(), "public", "invoices");
-        await mkdir(invoicesDir, { recursive: true });
-        const safePaymentId = paymentId.replace(/[^a-zA-Z0-9_-]/g, "_") || "unknown";
-        const invoiceFileName = `invoice-${safePaymentId}.pdf`;
-        await writeFile(path.join(invoicesDir, invoiceFileName), invoiceBuffer);
+        const invoiceFileName = `invoice-${paymentId.replace(/[^a-zA-Z0-9_-]/g, "_") || "unknown"}.pdf`;
 
         const invoiceEmail = updatedUser.email ?? verifiedToken.email ?? "";
         if (!invoiceEmail) {
-            throw new Error("No registered email was found for this account.");
-        }
+            console.error("SUBSCRIPTION INVOICE EMAIL ERROR:", new Error("No registered email was found for this account."));
+        } else {
+            try {
+                const emailResult = await sendEmail({
+                    to: invoiceEmail,
+                    subject: "TwitterX Subscription Invoice",
+                    html: `
+                        <h2>TwitterX Subscription Invoice</h2>
+                        <p>Your subscription invoice is attached to this email.</p>
+                    `,
+                    attachments: [
+                        {
+                            filename: invoiceFileName,
+                            content: invoiceBuffer,
+                            contentType: "application/pdf",
+                        },
+                    ],
+                });
 
-        try {
-            const emailResult = await sendEmail({
-                to: invoiceEmail,
-                subject: "TwitterX Subscription Invoice",
-                html: `
-                    <h2>TwitterX Subscription Invoice</h2>
-                    <p>Your subscription invoice is attached to this email.</p>
-                `,
-                attachments: [
-                    {
-                        filename: invoiceFileName,
-                        content: invoiceBuffer,
-                        contentType: "application/pdf",
-                    },
-                ],
-            });
-
-            console.log("SUBSCRIPTION INVOICE EMAIL SENT:", {
-                to: invoiceEmail,
-                messageId: emailResult.messageId,
-                response: emailResult.response,
-            });
-        } catch (emailError) {
-            console.error("SUBSCRIPTION INVOICE EMAIL ERROR:", emailError);
-            throw emailError;
+                console.log("SUBSCRIPTION INVOICE EMAIL SENT:", {
+                    to: invoiceEmail,
+                    messageId: emailResult.messageId,
+                    response: emailResult.response,
+                });
+            } catch (emailError) {
+                console.error("SUBSCRIPTION INVOICE EMAIL ERROR:", emailError);
+            }
         }
 
         const newToken = await createUserToken(updatedUser);
         const response = NextResponse.json({
             success: true,
-            subscriptionPlan: updatedUser.subscriptionPlan,
-            subscriptionExpiry: updatedUser.subscriptionExpiry,
-            monthlyTweetCount: updatedUser.monthlyTweetCount,
-            invoice: `/invoices/${invoiceFileName}`,
-            payment: {
-                razorpayPaymentId,
-                razorpayOrderId,
-                razorpaySignature,
-            },
         });
         response.cookies.set({
             name: "token",
@@ -116,13 +100,11 @@ export async function POST(request: NextRequest) {
         return response;
 
     } catch (error) {
-
         console.error("SUBSCRIPTION ACTIVATE ERROR:", error);
 
         return NextResponse.json({
             success: false,
             message: error instanceof Error ? error.message : "Unknown error",
         });
-
     }
 }

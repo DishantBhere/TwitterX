@@ -18,7 +18,7 @@ Built with Next.js, React, TypeScript, Prisma, and Supabase, delivering a realis
 
 TwitterX reimagines the classic X (Twitter) experience with a modern web stack. It supports rich media tweets, real-time notifications, secure authentication flows, direct messaging, and a premium subscription tier, all wrapped in a responsive, dark-themed UI.
 
-> 🎓 Built as part of a software engineering internship. Each feature below maps to a real task spec (conditional OTP logic, time-gated actions, tiered payments, and multi-language rollout).
+> 🎓 Built as part of a Full Stack Web Developer internship. Each feature below maps to a real task spec (conditional OTP logic, time-gated actions, tiered payments, and multi-language rollout).
 
 ---
 

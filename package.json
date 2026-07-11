@@ -1,8 +1,8 @@
 {
-    "name": "twitter",
+    "name": "twitterx",
     "version": "1.0.0",
     "private": true,
-    "description": "Next.js 13 Full-stack Twitter clone",
+    "description": "TwitterX — modern full-stack Twitter/X clone built with Next.js 14, TypeScript, Prisma, Supabase",
     "keywords": [
         "twitter",
         "clone",
@@ -15,7 +15,7 @@
         "prisma",
         "tanstack"
     ],
-    "author": "Fatih Arapoğlu",
+    "author": "Dishant Bhere",
     "license": "MIT",
     "scripts": {
         "dev": "next dev",

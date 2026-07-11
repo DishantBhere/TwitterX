@@ -19,8 +19,19 @@ const makeReceipt = (userId: string, plan: SubscriptionPlan) => {
 };
 
 const isWithinPaymentWindow = () => {
-    // TEMP: Always allow payments for testing.
-    return true;
+    const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    }).formatToParts(new Date());
+
+    const hour = Number(parts.find((part) => part.type === "hour")?.value);
+    const minute = Number(parts.find((part) => part.type === "minute")?.value);
+
+    const minutesSinceMidnight = hour * 60 + minute;
+
+    return minutesSinceMidnight >= 10 * 60 && minutesSinceMidnight < 11 * 60;
 };
 
 export async function POST(request: NextRequest) {

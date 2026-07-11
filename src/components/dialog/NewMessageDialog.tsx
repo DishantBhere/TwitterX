@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, Dialog, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { FaSearch } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 import { NewMessageDialogProps } from "@/types/DialogProps";
 import CircularLoading from "../misc/CircularLoading";
@@ -11,6 +12,7 @@ import { UserProps } from "@/types/UserProps";
 
 export default function NewMessageDialog({ open, handleNewMessageClose, token, onSelectRecipient }: NewMessageDialogProps) {
     const [search, setSearch] = useState("");
+    const { t } = useTranslation();
 
     const { data, isLoading } = useQuery({
         queryKey: ["new-message-following", token.username],
@@ -26,6 +28,8 @@ export default function NewMessageDialog({ open, handleNewMessageClose, token, o
         return following.filter((user) => user.name.toLowerCase().includes(query) || user.username.toLowerCase().includes(query));
     }, [following, search]);
 
+    const showSearchEmptyState = search.trim().length > 0;
+
     const handleSelect = (username: string) => {
         onSelectRecipient?.(username);
         handleNewMessageClose();
@@ -35,8 +39,8 @@ export default function NewMessageDialog({ open, handleNewMessageClose, token, o
         <Dialog className="dialog new-message-starter-dialog" open={open} onClose={handleNewMessageClose} fullWidth maxWidth="sm">
             <DialogTitle className="title">
                 <div className="new-message-starter-title">
-                    <span>New message</span>
-                    <span className="text-muted">Start a conversation with someone you follow</span>
+                    <span>{t("messages.newMessageTitle")}</span>
+                    <span className="text-muted">{t("messages.newMessageSubtitle")}</span>
                 </div>
             </DialogTitle>
             <DialogContent className="new-message-starter-content">
@@ -45,14 +49,17 @@ export default function NewMessageDialog({ open, handleNewMessageClose, token, o
                     <TextField
                         hiddenLabel
                         fullWidth
-                        placeholder="Search following"
+                        placeholder={t("messages.searchPlaceholder")}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
                 <div className="new-message-following-list">
                     {isLoading ? (
-                        <CircularLoading />
+                        <div className="new-message-loading">
+                            <CircularLoading />
+                            <span className="text-muted">{t("messages.loading")}</span>
+                        </div>
                     ) : filteredFollowing.length > 0 ? (
                         filteredFollowing.map((user) => (
                             <button key={user.id} type="button" className="new-message-user-row" onClick={() => handleSelect(user.username)}>
@@ -61,11 +68,13 @@ export default function NewMessageDialog({ open, handleNewMessageClose, token, o
                                     <span className="new-message-user-name">{user.name || user.username}</span>
                                     <span className="new-message-user-handle text-muted">@{user.username}</span>
                                 </div>
-                                <span className="btn btn-dark new-message-user-button">Message</span>
+                                <span className="btn btn-dark new-message-user-button">{t("actions.message")}</span>
                             </button>
                         ))
+                    ) : showSearchEmptyState ? (
+                        <div className="new-message-empty text-muted">{t("messages.noResultsFound")}</div>
                     ) : (
-                        <div className="new-message-empty text-muted">No matching accounts found.</div>
+                        <div className="new-message-empty text-muted">{t("messages.noFollowingUsersFound")}</div>
                     )}
                 </div>
             </DialogContent>

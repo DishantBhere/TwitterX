@@ -34,6 +34,9 @@ export async function POST(request: NextRequest) {
             where: {
                 username: recipient,
             },
+            select: {
+                id: true,
+            },
         });
 
         if (!isRecipient) {
@@ -67,7 +70,7 @@ export async function POST(request: NextRequest) {
                 content: null,
             };
 
-            await createNotification(recipient, "message", secret, notificationContent);
+            await createNotification(isRecipient.id, "message", secret, notificationContent);
         }
 
         return NextResponse.json({ success: true });

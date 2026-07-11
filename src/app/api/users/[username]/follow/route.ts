@@ -29,6 +29,19 @@ export async function POST(request: NextRequest, { params: { username } }: { par
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
 
     try {
+        const recipientUser = await prisma.user.findUnique({
+            where: {
+                username: username,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (!recipientUser) {
+            return NextResponse.json({ success: false, message: "Recipient does not exist." });
+        }
+
         await prisma.user.update({
             where: {
                 username: username,
@@ -51,7 +64,7 @@ export async function POST(request: NextRequest, { params: { username } }: { par
             content: null,
         };
 
-        await createNotification(username, "follow", secret, notificationContent);
+        await createNotification(recipientUser.id, "follow", secret, notificationContent);
 
         return NextResponse.json({ success: true });
     } catch (error: unknown) {

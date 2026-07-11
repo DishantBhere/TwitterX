@@ -2831,24 +2831,22 @@ button.icon-hoverable {
 }
 
 .notifications-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+
     .notification {
-        padding: 1rem;
         overflow: hidden;
-        transition: background-color 0.2s ease-in-out;
-        height: 65px;
-        border-bottom: 1px solid var(--border-color);
         color: var(--twitter-muted);
-        display: grid;
-        grid-template-columns: 50px 1fr;
-        align-items: center;
-        gap: 1rem;
-        line-height: 1.2;
+        line-height: 1.45;
 
         .icon-div {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
+            flex-shrink: 0;
 
             &.welcome {
                 color: var(--twitter-orange);
@@ -2873,6 +2871,7 @@ button.icon-hoverable {
 
         .notification-link {
             color: var(--twitter-blue);
+            font-weight: 700;
 
             &:hover {
                 text-decoration: underline;
@@ -2880,30 +2879,75 @@ button.icon-hoverable {
         }
 
         .notification-sender {
-            .avatar-wrapper {
-                display: inline-block;
+            width: 100%;
+            min-width: 0;
 
-                .avatar-wrapper {
-                    img {
-                        object-fit: cover;
-                    }
-                }
+            .avatar-wrapper {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.75rem;
+                min-width: 0;
             }
 
             .profile-info-main {
                 display: flex;
                 flex-direction: column;
-                gap: 0.33rem;
+                gap: 0.2rem;
+                min-width: 0;
 
                 h1 {
                     color: var(--twitter-black);
-                    font-weight: 500;
+                    font-weight: 700;
+                    font-size: 0.95rem;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
             }
         }
 
         &:hover {
             background-color: var(--hover);
+        }
+    }
+}
+
+.notifications-page {
+    padding-bottom: 1rem;
+
+    .notifications-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 0.25rem;
+    }
+
+    .notifications-subtitle {
+        margin-top: 0.35rem;
+        color: var(--twitter-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .notifications-badge {
+        flex-shrink: 0;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(29, 155, 240, 0.12);
+        color: var(--twitter-blue);
+        border: 1px solid rgba(29, 155, 240, 0.18);
+        font-size: 0.85rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 640px) {
+    .notifications-page {
+        .notifications-header {
+            align-items: flex-start;
+            flex-direction: column;
         }
     }
 }

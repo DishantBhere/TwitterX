@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { AuthContext } from "@/context/AuthContext";
@@ -18,8 +19,9 @@ export default function NotificationsPage() {
     const queryClient = useQueryClient();
 
     const { isLoading, data, isFetched } = useQuery({
-        queryKey: ["notifications"],
+        queryKey: ["notifications", token?.id],
         queryFn: getNotifications,
+        enabled: !!token,
     });
 
     const mutation = useMutation({
@@ -35,7 +37,7 @@ export default function NotificationsPage() {
     };
 
     useEffect(() => {
-        if (isFetched && data.notifications.filter((notification: NotificationProps) => !notification.isRead).length > 0) {
+        if (isFetched && data?.notifications?.filter((notification: NotificationProps) => !notification.isRead).length > 0) {
             const countdownForMarkAsRead = setTimeout(() => {
                 handleNotificationsRead();
             }, 1000);
@@ -46,16 +48,28 @@ export default function NotificationsPage() {
         }
     }, []);
 
+    const notifications = data?.notifications ?? [];
+    const unreadCount = useMemo(
+        () => notifications.filter((notification: NotificationProps) => !notification.isRead).length,
+        [notifications]
+    );
+
     if (isPending || !token || isLoading) return <CircularLoading />;
 
     return (
-        <main>
-            <h1 className="page-name">{t("notifications.title")}</h1>
-            {isFetched && data.notifications.length === 0 ? (
+        <main className="notifications-page">
+            <div className="notifications-header">
+                <div>
+                    <h1 className="page-name">{t("notifications.title")}</h1>
+                    <p className="notifications-subtitle">Stay on top of likes, replies, follows, and retweets in one place.</p>
+                </div>
+                <div className="notifications-badge">{unreadCount} unread</div>
+            </div>
+            {isFetched && notifications.length === 0 ? (
                 <NothingToShow />
             ) : (
                 <div className="notifications-wrapper">
-                    {data.notifications.map((notification: NotificationProps) => (
+                    {notifications.map((notification: NotificationProps) => (
                         <Notification key={notification.id} notification={notification} token={token} />
                     ))}
                 </div>

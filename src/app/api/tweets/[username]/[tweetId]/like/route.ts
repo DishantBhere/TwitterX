@@ -32,6 +32,19 @@ export async function POST(
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
 
     try {
+        const recipientUser = await prisma.user.findUnique({
+            where: {
+                username,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (!recipientUser) {
+            return NextResponse.json({ success: false, message: "Recipient does not exist." });
+        }
+
         await prisma.tweet.update({
             where: {
                 id: tweetId,
@@ -57,7 +70,7 @@ export async function POST(
                 },
             };
 
-            await createNotification(username, "like", secret, notificationContent);
+            await createNotification(recipientUser.id, "like", secret, notificationContent);
         }
 
         return NextResponse.json({ success: true });

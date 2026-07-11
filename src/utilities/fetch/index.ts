@@ -427,7 +427,7 @@ export const createNotification = async (
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ recipient, type, secret, notificationContent }),
+        body: JSON.stringify({ recipientId: recipient, type, secret, notificationContent }),
     });
     const json = await response.json();
     if (!json.success) throw new Error(json.message ? json.message : "Something went wrong.");

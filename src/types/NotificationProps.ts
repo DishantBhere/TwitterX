@@ -9,6 +9,7 @@ export type NotificationProps = {
     content: string;
     notificationContent: NotificationContent;
     isRead: boolean;
+    createdAt: string;
 };
 
 export type NotificationTypes = "welcome" | "follow" | "like" | "reply" | "retweet" | "message";

@@ -39,6 +39,19 @@ export default function MessagesPage() {
         setIsConversationSelected({ selected: isSelected, messages, messagedUsername });
     };
 
+    const handleStartConversation = (recipient: string) => {
+        const existingConversation = data.formattedConversations.find((conversation: ConversationResponse) =>
+            conversation.participants.includes(recipient)
+        );
+
+        if (existingConversation) {
+            handleConversations(true, existingConversation.messages, recipient);
+            return;
+        }
+
+        handleConversations(true, [], recipient);
+    };
+
     if (isPending || !token || isLoading) return <CircularLoading />;
 
     const conversations = data.formattedConversations;
@@ -78,7 +91,12 @@ export default function MessagesPage() {
                     </div>
                 </>
             )}
-            <NewMessageDialog handleNewMessageClose={handleNewMessageClose} open={isNewMessageOpen} token={token} />
+            <NewMessageDialog
+                handleNewMessageClose={handleNewMessageClose}
+                open={isNewMessageOpen}
+                token={token}
+                onSelectRecipient={handleStartConversation}
+            />
         </main>
     );
 }

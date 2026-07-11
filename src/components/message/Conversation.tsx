@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Link from "next/link";
-import { Avatar, Menu, MenuItem, Popover, Tooltip } from "@mui/material";
+import { Avatar, Button, Dialog, DialogActions, DialogContent, DialogTitle, Menu, MenuItem, Popover, Tooltip, useTheme } from "@mui/material";
 import { AiFillTwitterCircle } from "react-icons/ai";
+import { FaTrashAlt } from "react-icons/fa";
 import { RxDotsHorizontal } from "react-icons/rx";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { getFullURL } from "@/utilities/misc/getFullURL";
@@ -11,23 +13,30 @@ import ProfileCard from "../user/ProfileCard";
 import { ConversationProps } from "@/types/MessageProps";
 import CircularLoading from "../misc/CircularLoading";
 import { deleteConversation } from "@/utilities/fetch";
+import CustomSnackbar from "../misc/CustomSnackbar";
+import { SnackbarProps } from "@/types/SnackbarProps";
 
 export default function Conversation({ conversation, token, handleConversations }: ConversationProps) {
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [anchorMenuEl, setAnchorMenuEl] = useState<HTMLElement | null>(null);
+    const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
+    const pendingConfirmationOpenRef = useRef<number | null>(null);
+    const { t } = useTranslation();
+    const theme = useTheme();
 
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
         mutationFn: (tokenOwnerId: string) => deleteConversation(conversation.participants, tokenOwnerId),
-        onSuccess: () => {
-            setIsConfirmationOpen(false);
-            setIsDeleting(false);
-            queryClient.invalidateQueries(["messages", token.username]);
+        onError: () => {
+            setSnackbar({
+                message: t("messages.deleteConversationFailed"),
+                severity: "error",
+                open: true,
+            });
         },
-        onError: (error) => console.log(error),
     });
 
     const messagedUsername = conversation.participants.find((user: string) => user !== token.username);
@@ -50,8 +59,16 @@ export default function Conversation({ conversation, token, handleConversations 
     };
     const handleConfirmationClick = (e: React.MouseEvent) => {
         e.stopPropagation();
+        if (pendingConfirmationOpenRef.current !== null) {
+            window.cancelAnimationFrame(pendingConfirmationOpenRef.current);
+            pendingConfirmationOpenRef.current = null;
+        }
+
         setAnchorMenuEl(null);
-        setIsConfirmationOpen(true);
+        pendingConfirmationOpenRef.current = window.requestAnimationFrame(() => {
+            setIsConfirmationOpen(true);
+            pendingConfirmationOpenRef.current = null;
+        });
     };
     const handleThreeDotsClick = (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation();
@@ -59,11 +76,26 @@ export default function Conversation({ conversation, token, handleConversations 
     };
 
     const handleDelete = async (e: React.MouseEvent) => {
+        e.preventDefault();
         e.stopPropagation();
         handlePopoverClose();
         setIsDeleting(true);
-        const jsonId = JSON.stringify(token.id);
-        mutation.mutate(jsonId);
+        try {
+            const jsonId = JSON.stringify(token.id);
+            await mutation.mutateAsync(jsonId);
+            setIsConfirmationOpen(false);
+            await queryClient.invalidateQueries({ queryKey: ["messages", token.username] });
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const handleConfirmationClose = () => {
+        if (!isDeleting) {
+            setIsConfirmationOpen(false);
+        }
     };
 
     return (
@@ -104,16 +136,16 @@ export default function Conversation({ conversation, token, handleConversations 
                 <div className="last-message text-muted">{lastMessage.text}</div>
             </div>
             <>
-                <button className="three-dots icon-hoverable" onClick={handleThreeDotsClick}>
+                <button type="button" className="three-dots icon-hoverable" onClick={handleThreeDotsClick}>
                     <RxDotsHorizontal />
                 </button>
-                <Menu anchorEl={anchorMenuEl} onClose={() => setAnchorMenuEl(null)} open={Boolean(anchorMenuEl)}>
+                <Menu anchorEl={anchorMenuEl} onClose={() => setAnchorMenuEl(null)} open={Boolean(anchorMenuEl)} transitionDuration={0}>
                     <MenuItem onClick={handleConfirmationClick} className="delete">
-                        Delete
+                        {t("actions.delete")}
                     </MenuItem>
                 </Menu>
             </>
-            <Popover
+                <Popover
                 sx={{
                     pointerEvents: "none",
                 }}
@@ -131,36 +163,156 @@ export default function Conversation({ conversation, token, handleConversations 
                 disableRestoreFocus
             >
                 <ProfileCard username={username} token={token} />
-            </Popover>
-            {isConfirmationOpen && (
-                <div className="html-modal-wrapper">
-                    <dialog open className="confirm">
-                        <h1>Delete Conversation?</h1>
-                        <p>
-                            Are you sure you want to clear this conversation? If you proceed, your messages will be removed,
-                            as well as the messages in the recipient&apos;s message box.
-                        </p>
-                        {isDeleting ? (
-                            <CircularLoading />
-                        ) : (
-                            <>
-                                <button className="btn btn-danger" onClick={handleDelete}>
-                                    Delete
-                                </button>
-                                <button
-                                    className="btn btn-white"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setIsConfirmationOpen(false);
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-                            </>
-                        )}
-                    </dialog>
-                </div>
-            )}
+                </Popover>
+            <Dialog
+                className="dialog delete-conversation-dialog"
+                open={isConfirmationOpen}
+                onClose={handleConfirmationClose}
+                fullWidth
+                maxWidth={false}
+                TransitionProps={{ appear: true }}
+                PaperProps={{
+                    sx: {
+                        width: { xs: "calc(100vw - 32px)", sm: 500 },
+                        maxWidth: { xs: 420, sm: 500 },
+                        borderRadius: "20px",
+                        border: theme.palette.mode === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(15,20,25,0.08)",
+                        backgroundColor: theme.palette.mode === "dark" ? "#16181C" : "#fff",
+                        boxShadow:
+                            theme.palette.mode === "dark"
+                                ? "0 20px 60px rgba(0,0,0,0.45)"
+                                : "0 18px 50px rgba(15,20,25,0.12)",
+                        px: 0,
+                        overflow: "hidden",
+                    },
+                }}
+            >
+                <DialogContent
+                    sx={{
+                        pt: 4,
+                        pb: 2.5,
+                        px: { xs: 3, sm: 4 },
+                        textAlign: "center",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 2,
+                    }}
+                >
+                    <div
+                        style={{
+                            width: 56,
+                            height: 56,
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor:
+                                theme.palette.mode === "dark" ? "rgba(244, 33, 46, 0.14)" : "rgba(244, 33, 46, 0.1)",
+                            color: "#f4212e",
+                            flexShrink: 0,
+                        }}
+                    >
+                        <FaTrashAlt size={24} />
+                    </div>
+                    <DialogTitle
+                        sx={{
+                            p: 0,
+                            fontSize: "28px",
+                            lineHeight: 1.15,
+                            fontWeight: 800,
+                            color: theme.palette.mode === "dark" ? "#E7E9EA" : "#0F1419",
+                        }}
+                    >
+                        {t("messages.deleteConversationTitle")}
+                    </DialogTitle>
+                    <p
+                        style={{
+                            margin: 0,
+                            fontSize: "16px",
+                            lineHeight: 1.6,
+                            color: theme.palette.mode === "dark" ? "#71767B" : "#536471",
+                            maxWidth: 380,
+                        }}
+                    >
+                        {t("messages.deleteConversationDescription")}
+                    </p>
+                    {isDeleting && <CircularLoading />}
+                </DialogContent>
+                <DialogActions
+                    sx={{
+                        px: { xs: 3, sm: 4 },
+                        pb: 4,
+                        gap: 1.5,
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        alignItems: "stretch",
+                        "& > *": {
+                            width: "100%",
+                        },
+                        "@media (min-width:420px)": {
+                            flexDirection: "row",
+                            "& > *": {
+                                width: "50%",
+                            },
+                        },
+                    }}
+                >
+                    <Button
+                        type="button"
+                        variant="contained"
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        fullWidth
+                        sx={{
+                            minHeight: 44,
+                            borderRadius: 999,
+                            backgroundColor: "#f4212e",
+                            color: "#fff",
+                            textTransform: "none",
+                            fontWeight: 700,
+                            boxShadow: "none",
+                            "&:hover": {
+                                backgroundColor: "#e61d2b",
+                                boxShadow: "none",
+                            },
+                            "&.Mui-disabled": {
+                                color: "rgba(255,255,255,0.8)",
+                            },
+                        }}
+                    >
+                        {isDeleting ? t("messages.deleteConversationDeleting") : t("actions.delete")}
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outlined"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (!isDeleting) {
+                                setIsConfirmationOpen(false);
+                            }
+                        }}
+                        disabled={isDeleting}
+                        fullWidth
+                        sx={{
+                            minHeight: 44,
+                            borderRadius: 999,
+                            borderColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.18)" : "rgba(15,20,25,0.18)",
+                            color: theme.palette.mode === "dark" ? "#E7E9EA" : "#0F1419",
+                            textTransform: "none",
+                            fontWeight: 700,
+                            "&:hover": {
+                                borderColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.3)" : "rgba(15,20,25,0.3)",
+                                backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(15,20,25,0.04)",
+                            },
+                        }}
+                    >
+                        {t("actions.cancel")}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            {snackbar.open && <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />}
         </div>
     );
 }

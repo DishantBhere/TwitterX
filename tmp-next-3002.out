@@ -1,0 +1,97 @@
+
+> twitterx@1.0.0 dev
+> next dev --port 3002
+
+  ▲ Next.js 14.2.33
+  - Local:        http://localhost:3002
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 2.5s
+ ✓ Compiled /src/middleware in 429ms (73 modules)
+ ○ Compiling /api/auth/verify ...
+ ✓ Compiled /api/auth/verify in 524ms (148 modules)
+ POST /api/auth/verify 200 in 612ms
+ ✓ Compiled /api/users/random in 84ms (160 modules)
+ POST /api/auth/verify 200 in 13ms
+USER COUNT: 13
+FIRST 3 USERS: [
+  {
+    id: '0b717a53-17eb-4b15-987a-dbc73805cde8',
+    name: 'FOODRUSH',
+    description: '',
+    location: '',
+    website: '',
+    photoUrl: '1783631052368',
+    headerUrl: '1783751575093',
+    username: 'foodrushio',
+    email: 'foodrush.io@gmail.com',
+    phone: '9999999992',
+    password: '$2b$10$W5qBCHjk2Wg1r9PuuuTew.wcGVGGtQkTHdMjYjA0WU7cibWWSjHz6',
+    isPremium: true,
+    browserNotificationsEnabled: true,
+    preferredLanguage: 'fr',
+    subscriptionPlan: 'SILVER',
+    subscriptionExpiry: 2026-08-10T06:28:43.396Z,
+    monthlyTweetCount: 0,
+    lastPasswordResetAt: 2026-07-07T18:16:08.623Z,
+    createdAt: 2026-07-06T18:20:05.387Z,
+    updatedAt: 2026-07-11T19:48:55.964Z
+  },
+  {
+    id: '0c168ab1-da17-4bb9-ac20-26320a8d426a',
+    name: 'Codex Final Email',
+    description: null,
+    location: null,
+    website: null,
+    photoUrl: null,
+    headerUrl: null,
+    username: 'cde455540',
+    email: 'cde455540@example.com',
+    phone: '700455540',
+    password: '$2b$10$EyCaw.WYJu4/m1kp6uKj9ON33jzAIiBpMJLvmD99MeAGc4yfRq7yS',
+    isPremium: false,
+    browserNotificationsEnabled: false,
+    preferredLanguage: 'en',
+    subscriptionPlan: 'FREE',
+    subscriptionExpiry: null,
+    monthlyTweetCount: 0,
+    lastPasswordResetAt: null,
+    createdAt: 2026-06-25T19:52:25.437Z,
+    updatedAt: 2026-06-25T19:52:29.427Z
+  },
+  {
+    id: '0e2fe7d5-da70-4083-88dc-f10011c23ee6',
+    name: 'Codex Email',
+    description: null,
+    location: null,
+    website: null,
+    photoUrl: null,
+    headerUrl: null,
+    username: 'codexemail1720918020',
+    email: 'codexemail1720918020@example.com',
+    phone: '9001720918020',
+    password: '$2b$10$cu2C.0ScN50YKkfkzK/QguHM6i3h0fA8uZyBGZBvIHkzsrj4Gl.0y',
+    isPremium: false,
+    browserNotificationsEnabled: false,
+    preferredLanguage: 'en',
+    subscriptionPlan: 'FREE',
+    subscriptionExpiry: null,
+    monthlyTweetCount: 0,
+    lastPasswordResetAt: null,
+    createdAt: 2026-06-25T19:48:53.154Z,
+    updatedAt: 2026-06-25T19:48:57.865Z
+  }
+]
+DATABASE_URL: postgresql://postgres.omphznbkkldoyfcpisvm:e5LFw4ZDJHdxIJZa@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true
+ GET /api/users/random 200 in 5164ms
+ ✓ Compiled in 146ms (160 modules)
+ ✓ Compiled in 25ms
+ ✓ Compiled /api/auth/verify in 253ms (148 modules)
+ POST /api/auth/verify 200 in 317ms
+ ✓ Compiled /api/users/random in 46ms (160 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1750ms (591 modules)
+ GET /api/users/random 500 in 2851ms
+ POST /api/auth/verify 200 in 29ms
+ GET /api/users/random 500 in 28ms

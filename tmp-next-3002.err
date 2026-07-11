@@ -1,0 +1,258 @@
+ ⨯ Error: Cannot find module './chunks/vendor-chunks/next.js'
+Require stack:
+- C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js
+- C:\Users\DISHANT\Downloads\twitter-main\.next\server\app\api\users\random\route.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\build\utils.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1421:15)
+    at C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1064:22)
+    at Module._load (node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at t.f.require (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:1418)
+    at C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:889
+    at Array.reduce (<anonymous>)
+    at t.e (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:868)
+    at Array.map (<anonymous>)
+    at t.X (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:1189)
+    at C:\Users\DISHANT\Downloads\twitter-main\.next\server\app\api\users\random\route.js:123:47
+    at Object.<anonymous> (C:\Users\DISHANT\Downloads\twitter-main\.next\server\app\api\users\random\route.js:126:3)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js:103:84
+    at async loadComponentsImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\base-server.js:1910:24)
+    at async DevServer.renderToResponseImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\base-server.js:818:17)
+    at async C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\.next\\server\\app\\api\\users\\random\\route.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ],
+  page: '/api/users/random'
+}
+ ⨯ Error: Cannot find module './chunks/vendor-chunks/next.js'
+Require stack:
+- C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js
+- C:\Users\DISHANT\Downloads\twitter-main\.next\server\pages\_document.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\build\utils.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1421:15)
+    at C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1064:22)
+    at Module._load (node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at t.f.require (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:1418)
+    at C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:889
+    at Array.reduce (<anonymous>)
+    at t.e (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:868)
+    at Array.map (<anonymous>)
+    at t.X (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:1189)
+    at C:\Users\DISHANT\Downloads\twitter-main\.next\server\pages\_document.js:63:47
+    at Object.<anonymous> (C:\Users\DISHANT\Downloads\twitter-main\.next\server\pages\_document.js:66:3)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\next-server.js:714:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\.next\\server\\pages\\_document.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ ⨯ Error: Cannot find module './chunks/vendor-chunks/next.js'
+Require stack:
+- C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js
+- C:\Users\DISHANT\Downloads\twitter-main\.next\server\pages\_document.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\build\utils.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1421:15)
+    at C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1064:22)
+    at Module._load (node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at t.f.require (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:1418)
+    at C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:889
+    at Array.reduce (<anonymous>)
+    at t.e (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:868)
+    at Array.map (<anonymous>)
+    at t.X (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:1189)
+    at C:\Users\DISHANT\Downloads\twitter-main\.next\server\app\api\users\random\route.js:123:47
+    at Object.<anonymous> (C:\Users\DISHANT\Downloads\twitter-main\.next\server\app\api\users\random\route.js:126:3)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js:103:84
+    at async loadComponentsImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\base-server.js:1910:24)
+    at async DevServer.renderToResponseImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\base-server.js:818:17)
+    at async C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\.next\\server\\pages\\_document.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ],
+  page: '/api/users/random'
+}
+ ⨯ Error: Cannot find module './chunks/vendor-chunks/next.js'
+Require stack:
+- C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js
+- C:\Users\DISHANT\Downloads\twitter-main\.next\server\pages\_document.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\build\utils.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1421:15)
+    at C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1064:22)
+    at Module._load (node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at t.f.require (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:1418)
+    at C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:889
+    at Array.reduce (<anonymous>)
+    at t.e (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:868)
+    at Array.map (<anonymous>)
+    at t.X (C:\Users\DISHANT\Downloads\twitter-main\.next\server\webpack-runtime.js:1:1189)
+    at C:\Users\DISHANT\Downloads\twitter-main\.next\server\pages\_document.js:63:47
+    at Object.<anonymous> (C:\Users\DISHANT\Downloads\twitter-main\.next\server\pages\_document.js:66:3)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1504:12)
+    at mod.require (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (C:\Users\DISHANT\Downloads\twitter-main\node_modules\next\dist\server\next-server.js:714:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\.next\\server\\pages\\_document.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\DISHANT\\Downloads\\twitter-main\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}

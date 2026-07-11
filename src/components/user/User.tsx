@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@mui/material";
 import Link from "next/link";
-import { AiFillTwitterCircle } from "react-icons/ai";
 
 import { UserProps } from "@/types/UserProps";
 import { AuthContext } from "@/context/AuthContext";
@@ -36,7 +35,7 @@ export default function User({ user }: { user: UserProps }) {
                                 {user.name !== "" ? user.name : user.username}
                                 {user.isPremium && (
                                     <span className="blue-tick" data-blue="Verified Blue">
-                                        <AiFillTwitterCircle />
+                                        <img className="premium-badge" src="/icons/twitter-verified.svg" alt="" aria-hidden="true" />
                                     </span>
                                 )}
                             </span>

@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import Link from "next/link";
 import { Avatar, Button, Dialog, DialogActions, DialogContent, DialogTitle, Menu, MenuItem, Popover, Tooltip, useTheme } from "@mui/material";
-import { AiFillTwitterCircle } from "react-icons/ai";
 import { FaTrashAlt } from "react-icons/fa";
 import { RxDotsHorizontal } from "react-icons/rx";
 import { useTranslation } from "react-i18next";
@@ -120,7 +119,7 @@ export default function Conversation({ conversation, token, handleConversations 
                             {name !== "" ? name : username}
                             {isPremium && (
                                 <span className="blue-tick" data-blue="Verified Blue">
-                                    <AiFillTwitterCircle />
+                                    <img className="premium-badge" src="/icons/twitter-verified.svg" alt="" aria-hidden="true" />
                                 </span>
                             )}
                         </span>

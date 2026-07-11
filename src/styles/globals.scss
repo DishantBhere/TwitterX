@@ -2716,7 +2716,19 @@ button.icon-hoverable {
     color: var(--twitter-blue);
     margin-left: 2px;
     display: inline-flex;
+    align-items: center;
     position: relative;
+
+    img,
+    .premium-badge {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+        vertical-align: middle;
+        margin-left: 6px;
+        flex-shrink: 0;
+        display: inline-block;
+    }
 
     &::after {
         content: attr(data-blue);

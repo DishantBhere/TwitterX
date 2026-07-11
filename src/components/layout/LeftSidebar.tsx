@@ -16,7 +16,6 @@ import {
     RiLogoutBoxRLine,
 } from "react-icons/ri";
 import { FaEllipsisH } from "react-icons/fa";
-import { AiFillTwitterCircle } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
 
 import NewTweetDialog from "../dialog/NewTweetDialog";
@@ -153,7 +152,7 @@ export default function LeftSidebar() {
                                             {token.name !== "" ? token.name : token.username}
                                             {token.isPremium && (
                                                 <span className="blue-tick" data-blue="Verified Blue">
-                                                    <AiFillTwitterCircle />
+                                                    <img className="premium-badge" src="/icons/twitter-verified.svg" alt="" aria-hidden="true" />
                                                 </span>
                                             )}
                                         </div>

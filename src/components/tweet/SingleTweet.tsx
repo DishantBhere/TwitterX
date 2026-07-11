@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { RxDotsHorizontal } from "react-icons/rx";
 import { Avatar, Menu, MenuItem } from "@mui/material";
-import { AiFillTwitterCircle } from "react-icons/ai";
 
 import { TweetProps } from "@/types/TweetProps";
 import { formatDateExtended } from "@/utilities/date";
@@ -108,12 +107,12 @@ export default function SingleTweet({ tweet, token }: { tweet: TweetProps; token
                     <div className="tweet-author-section">
                         <Link className="tweet-author-link" href={`/${tweet.author.username}`}>
                             <span className="tweet-author">
-                                {tweet.author.name !== "" ? tweet.author.name : tweet.author.username}
-                                {tweet.author.isPremium && (
-                                    <span className="blue-tick" data-blue="Verified Blue">
-                                        <AiFillTwitterCircle />
-                                    </span>
-                                )}
+                            {tweet.author.name !== "" ? tweet.author.name : tweet.author.username}
+                            {tweet.author.isPremium && (
+                                <span className="blue-tick" data-blue="Verified Blue">
+                                    <img className="premium-badge" src="/icons/twitter-verified.svg" alt="" aria-hidden="true" />
+                                </span>
+                            )}
                             </span>
                             <span className="text-muted">@{tweet.author.username}</span>
                         </Link>

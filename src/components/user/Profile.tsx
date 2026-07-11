@@ -8,7 +8,7 @@ import { FaArrowLeft, FaRegEnvelope, FaSearch } from "react-icons/fa";
 import { Avatar, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { BiCalendarCheck } from "react-icons/bi";
 import { GoLocation } from "react-icons/go";
-import { AiFillTwitterCircle, AiOutlineLink, AiOutlineClose } from "react-icons/ai";
+import { AiOutlineLink, AiOutlineClose } from "react-icons/ai";
 import { MdVerified } from "react-icons/md";
 
 import { formatDateForProfile } from "@/utilities/date";
@@ -127,7 +127,7 @@ export default function Profile({ profile }: { profile: UserProps }) {
                             {profile.name !== "" ? profile.name : profile.username}
                             {profile.isPremium && (
                                 <span className="blue-tick" data-blue="Verified Blue">
-                                    <AiFillTwitterCircle />
+                                    <img className="premium-badge" src="/icons/twitter-verified.svg" alt="" aria-hidden="true" />
                                 </span>
                             )}
                         </h1>

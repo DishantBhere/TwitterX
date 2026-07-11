@@ -126,13 +126,31 @@ The app will be available at `http://localhost:3000`.
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-<img width="800" alt="Home Page" src="https://github.com/user-attachments/assets/87112e44-63b3-4680-aafe-adff0d71daba" />
+<img width="800" alt="Home Page" src="https://github.com/user-attachments/assets/35471bd3-c4b5-4d16-89eb-3505dab3636c" />
+
 
 ### 👤 Profile Page
 <img width="800" alt="Profile Page" src="https://github.com/user-attachments/assets/8c7f2803-ce26-44bc-b536-12590e0c1ba5" />
 
 ### 💎 Premium Page
 <img width="800" alt="Premium Page" src="https://github.com/user-attachments/assets/ee5185ab-d708-4fd3-97a9-87ec3e288ac0" />
+
+### 💬 Messaging
+<table>
+<tr>
+<td align="center"><img width="500" alt="Messages" src="https://github.com/user-attachments/assets/b483630f-ea6f-407c-afbf-3a06c5c504ac" /></td>
+<td align="center"><img width="500" alt="Chat" src="https://github.com/user-attachments/assets/b06654b0-0f2a-48d7-b1de-d40c1e8c0953" /></td>
+</tr>
+</table>
+
+### 🔔 Notification Center
+<table>
+<tr>
+<td align="center"><img width="500" alt="Notification Center" src="https://github.com/user-attachments/assets/d7353c82-fc97-484a-bd8a-dab1d1999535" /></td>
+<td align="center"><img width="500" alt="Notification Popup" src="https://github.com/user-attachments/assets/a7d4b635-7822-49d6-ab05-4b39f7638299" /></td>
+</tr>
+</table>
+
 
 ### 🌍 Language Support
 

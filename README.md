@@ -4,7 +4,7 @@
 
 **A modern, full-stack Twitter/X-inspired social platform**
 
-Built with Next.js, React, TypeScript, Prisma, and Supabase — delivering a realistic social media experience with authentication, notifications, multimedia tweets, language personalization, and premium features.
+Built with Next.js, React, TypeScript, Prisma, and Supabase, delivering a realistic social media experience with authentication, notifications, multimedia tweets, language personalization, and premium features.
 
 [**Live Demo**](https://twitter-x-rho.vercel.app) · [Report Bug](https://github.com/DishantBhere/TwitterX/issues) · [Request Feature](https://github.com/DishantBhere/TwitterX/issues)
 
@@ -16,9 +16,9 @@ Built with Next.js, React, TypeScript, Prisma, and Supabase — delivering a rea
 
 ## 📖 Overview
 
-TwitterX reimagines the classic X (Twitter) experience with a modern web stack. It supports rich media tweets, real-time notifications, secure authentication flows, direct messaging, and a premium subscription tier — all wrapped in a responsive, dark-themed UI.
+TwitterX reimagines the classic X (Twitter) experience with a modern web stack. It supports rich media tweets, real-time notifications, secure authentication flows, direct messaging, and a premium subscription tier, all wrapped in a responsive, dark-themed UI.
 
-> 🎓 Built as part of a Full Stack Web Developer internship — each feature below maps to a real task spec (conditional OTP logic, time-gated actions, tiered payments, and multi-language rollout).
+> 🎓 Built as part of a software engineering internship. Each feature below maps to a real task spec (conditional OTP logic, time-gated actions, tiered payments, and multi-language rollout).
 
 ---
 
@@ -28,16 +28,16 @@ TwitterX reimagines the classic X (Twitter) experience with a modern web stack. 
 - Email & password authentication
 - Google OAuth login
 - JWT-based session management
-- **Conditional login security** — Chrome logins require email OTP; Microsoft-browser logins bypass OTP
-- **Mobile login time-lock** — mobile-device logins allowed only between 10:00 AM – 1:00 PM IST
-- **Forgot password** — reset via registered email or phone, limited to 1 request/day, with a random uppercase/lowercase-only password generator (no numbers or symbols)
+- **Conditional login security:** Chrome logins require email OTP; Microsoft-browser logins bypass OTP
+- **Mobile login time-lock:** mobile-device logins allowed only between 10:00 AM and 1:00 PM IST
+- **Forgot password:** reset via registered email or phone, limited to 1 request/day, with a random uppercase/lowercase-only password generator (no numbers or symbols)
 
 ### 🐦 Tweets
 - Create, delete, like/unlike, and retweet
 - Reply threads
 - Image, GIF, and audio uploads with media preview
-- **Audio tweets** — email OTP verification before upload, max 5 min / 100 MB, postable only between 2:00 PM – 7:00 PM IST
-- **Smart browser notifications** — tweets containing "cricket" or "science" trigger a native popup (via the browser Notification API) showing full tweet content; toggleable per-user from Settings
+- **Audio tweets:** email OTP verification before upload, max 5 min / 100 MB, postable only between 2:00 PM and 7:00 PM IST
+- **Smart browser notifications:** tweets containing "cricket" or "science" trigger a native popup (via the browser Notification API) showing full tweet content; toggleable per-user from Settings
 
 ### 👤 User Profile
 - Editable profile, profile picture, and banner
@@ -51,7 +51,7 @@ TwitterX reimagines the classic X (Twitter) experience with a modern web stack. 
 
 ### ⚙️ Settings
 - Dark theme
-- **Multi-language support** — English, Spanish, Hindi, Portuguese, Chinese, French; French switch verified via email OTP, all other languages verified via mobile OTP
+- **Multi-language support:** English, Spanish, Hindi, Portuguese, Chinese, French; French switch verified via email OTP, all other languages verified via mobile OTP
 - Login history tracking
 - Browser notification preferences (enable/disable per user)
 
@@ -72,7 +72,7 @@ TwitterX reimagines the classic X (Twitter) experience with a modern web stack. 
   | Gold | ₹1000/mo | Unlimited |
 
 - Auto-emailed invoice + plan details after successful payment
-- Payments accepted only between 10:00 AM – 11:00 AM IST
+- Payments accepted only between 10:00 AM and 11:00 AM IST
 - Verified badge unlock
 
 ---
@@ -126,8 +126,7 @@ The app will be available at `http://localhost:3000`.
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-<img width="800" alt="Home Page" src="https://github.com/user-attachments/assets/35471bd3-c4b5-4d16-89eb-3505dab3636c" />
-
+<img width="800" alt="Home Page" src="https://github.com/user-attachments/assets/1b3bcae5-7225-4738-8e17-ef2d7a78c962" />
 
 ### 👤 Profile Page
 <img width="800" alt="Profile Page" src="https://github.com/user-attachments/assets/8c7f2803-ce26-44bc-b536-12590e0c1ba5" />
@@ -136,6 +135,7 @@ The app will be available at `http://localhost:3000`.
 <img width="800" alt="Premium Page" src="https://github.com/user-attachments/assets/ee5185ab-d708-4fd3-97a9-87ec3e288ac0" />
 
 ### 💬 Messaging
+
 <table>
 <tr>
 <td align="center"><img width="500" alt="Messages" src="https://github.com/user-attachments/assets/b483630f-ea6f-407c-afbf-3a06c5c504ac" /></td>
@@ -144,13 +144,13 @@ The app will be available at `http://localhost:3000`.
 </table>
 
 ### 🔔 Notification Center
+
 <table>
 <tr>
 <td align="center"><img width="500" alt="Notification Center" src="https://github.com/user-attachments/assets/d7353c82-fc97-484a-bd8a-dab1d1999535" /></td>
 <td align="center"><img width="500" alt="Notification Popup" src="https://github.com/user-attachments/assets/a7d4b635-7822-49d6-ab05-4b39f7638299" /></td>
 </tr>
 </table>
-
 
 ### 🌍 Language Support
 

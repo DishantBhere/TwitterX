@@ -19,23 +19,25 @@ export default function Message({ message, messagedUsername }: { message: Messag
 
     return (
         <div className={`message ${message.sender.username === messagedUsername ? "message-left" : "message-right"}`}>
-            <div className="message-text">{message.text}</div>
-            {message.photoUrl && (
-                <>
-                    <div className="message-image">
-                        <Image
-                            onClick={handlePreviewClick}
-                            src={getFullURL(message.photoUrl)}
-                            alt="message image"
-                            placeholder="blur"
-                            blurDataURL={shimmer(250, 250)}
-                            height={250}
-                            width={250}
-                        />
-                    </div>
-                    <PreviewDialog open={isPreviewOpen} handlePreviewClose={handlePreviewClose} url={message.photoUrl} />
-                </>
-            )}
+            <div className="message-stack">
+                {message.text && <div className="message-text">{message.text}</div>}
+                {message.photoUrl && (
+                    <>
+                        <div className="message-image">
+                            <Image
+                                onClick={handlePreviewClick}
+                                src={getFullURL(message.photoUrl)}
+                                alt="message image"
+                                placeholder="blur"
+                                blurDataURL={shimmer(250, 250)}
+                                height={250}
+                                width={250}
+                            />
+                        </div>
+                        <PreviewDialog open={isPreviewOpen} handlePreviewClose={handlePreviewClose} url={message.photoUrl} />
+                    </>
+                )}
+            </div>
             <div className="message-date text-muted">{formatDate(message.createdAt)}</div>
         </div>
     );

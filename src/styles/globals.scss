@@ -2648,6 +2648,8 @@ button.icon-hoverable {
 }
 
 .messages-page {
+    background: var(--background-primary);
+
     .page-name {
         .new-message {
             position: absolute;
@@ -2659,123 +2661,400 @@ button.icon-hoverable {
 
     .messages-container {
         display: grid;
-        grid-template-rows: auto minmax(300px, 1fr) minmax(90px, auto);
+        grid-template-rows: auto minmax(280px, 1fr) auto;
         height: 100vh;
+        background:
+            linear-gradient(180deg, rgba(29, 155, 240, 0.08) 0%, transparent 18rem),
+            var(--background-primary);
+        overflow: hidden;
 
         .new-message-box {
-            padding: 0.75rem;
+            padding: 12px 16px;
             position: relative;
+            bottom: 0;
+            border-top: 1px solid var(--border-color);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, var(--background-primary) 18%);
+            backdrop-filter: blur(14px);
+            min-height: 64px;
+            overflow: visible;
 
             .new-message-form {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: nowrap;
+                width: 100%;
+                padding-top: 0;
+                position: relative;
+                z-index: 2;
+
                 .input {
-                    display: inline;
+                    display: flex;
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                .input .MuiTextField-root {
+                    width: 100%;
+                }
+
+                .input .MuiInputBase-root {
+                    border-radius: 999px;
+                    min-height: 46px;
+                    background-color: var(--background-primary);
+                    padding: 0 18px;
+                    transition: background-color 180ms ease, box-shadow 180ms ease;
+                    align-items: center;
+                    width: 100%;
+
+                    &:hover {
+                        box-shadow: 0 0 0 1px rgba(29, 155, 240, 0.2);
+                    }
+
+                    &.Mui-focused {
+                        box-shadow: 0 0 0 1px rgba(29, 155, 240, 0.35);
+                    }
+                }
+
+                .input textarea {
+                    padding: 0;
+                    min-height: 22px;
+                    line-height: 1.4;
+                    color: var(--twitter-black);
+                }
+
+                .input .MuiOutlinedInput-notchedOutline {
+                    border-color: var(--border-color);
+                }
+
+                .input .MuiInputBase-input::placeholder {
+                    color: var(--twitter-muted);
+                    opacity: 1;
                 }
 
                 .btn {
-                    width: auto;
+                    width: 44px;
+                    height: 44px;
+                    min-width: 44px;
                     border: none;
                     color: var(--twitter-blue);
                     display: inline-flex;
-                    transform: translate(10px, 5px);
+                    align-items: center;
+                    justify-content: center;
+                    transform: none;
+                    flex-shrink: 0;
+                    transition: transform 180ms ease, background-color 180ms ease;
+
+                    &:hover {
+                        transform: scale(1.04);
+                    }
+                }
+
+                .send-button {
+                    padding: 0;
+                    border-radius: 9999px;
+                    background: linear-gradient(180deg, #1d9bf0 0%, #1a8cd8 100%);
+                    color: var(--const-white);
+                    box-shadow: 0 10px 24px rgba(29, 155, 240, 0.25);
+
+                    &:hover {
+                        transform: scale(1.04);
+                        background: linear-gradient(180deg, #1d9bf0 0%, #1a8cd8 100%);
+                    }
+
+                    &:disabled {
+                        opacity: 0.65;
+                    }
                 }
             }
 
             .dropzone {
+                position: absolute;
+                left: 16px;
+                right: 16px;
+                bottom: calc(100% + 12px);
+                z-index: 30;
                 transform: none;
                 margin-right: inherit;
-                max-height: 90px;
-                overflow: auto;
+                max-height: none;
+                overflow: visible;
+                background: var(--background-primary);
+                border: 1px solid var(--border-color);
+                border-radius: 18px;
+                box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
             }
 
             .input-additions {
                 border-top: none;
                 display: inline-flex;
-                flex-direction: row-reverse;
-                position: absolute;
-                top: 0;
-                right: 1rem;
+                flex-direction: row;
+                gap: 0.35rem;
+                flex-shrink: 0;
+                position: relative;
+                z-index: 3;
+
+                button {
+                    width: 40px;
+                    height: 40px;
+                    min-width: 40px;
+                    padding: 0;
+                    font-size: 0.95rem;
+                    transition: transform 180ms ease, background-color 180ms ease;
+                    border-radius: 9999px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    &:hover {
+                        transform: scale(1.04);
+                        background-color: rgba(29, 155, 240, 0.12);
+                    }
+                }
+
+                .gif-button {
+                    font-size: 0.68rem;
+                    font-weight: 800;
+                    letter-spacing: 0.05em;
+                }
             }
 
             .emoji-picker {
                 position: absolute;
-                transform: translate(90%, -110%);
+                right: 16px;
+                bottom: calc(100% + 12px);
+                z-index: 40;
+                transform: none;
             }
         }
 
         .messages-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            padding: 1rem;
+            gap: 0.75rem;
+            padding: 1rem 0.95rem 0.85rem;
             overflow: auto;
             border-bottom: 1px solid var(--border-color);
+            background:
+                radial-gradient(circle at top, rgba(29, 155, 240, 0.06), transparent 28%),
+                var(--background-primary);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(113, 118, 123, 0.75) transparent;
+
+            &::-webkit-scrollbar {
+                width: 10px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: rgba(113, 118, 123, 0.5);
+                border-radius: 9999px;
+                border: 3px solid transparent;
+                background-clip: content-box;
+            }
 
             .message {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+                width: fit-content;
+                max-width: 68%;
+                animation: dm-message-in 180ms ease both;
+                transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+
+                .message-stack {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.3rem;
+                    width: fit-content;
+                    max-width: 100%;
+                }
+
                 .message-text {
                     white-space: pre-line;
                     font-family: var(--font-poppins);
-                    background-color: var(--hover);
-                    border-radius: 1.25rem;
-                    padding: 0.75rem 1rem;
+                    background-color: var(--surface-muted);
+                    border-radius: 22px;
+                    padding: 0.8rem 1rem;
                     width: fit-content;
-                    max-width: 310px;
+                    max-width: 100%;
                     overflow-wrap: anywhere;
-                    font-size: 0.9rem;
+                    font-size: 0.92rem;
+                    line-height: 1.5;
+                    color: var(--twitter-black);
                 }
 
                 .message-image {
                     border: 1px solid var(--border-color);
-                    border-radius: 1.5rem;
+                    border-radius: 18px;
                     overflow: hidden;
-                    margin-top: 0.5rem;
+                    margin-top: 0;
                     width: fit-content;
+                    max-width: 100%;
+                    background: rgba(0, 0, 0, 0.04);
+                    box-shadow: 0 10px 24px rgba(15, 20, 25, 0.08);
+                    transition: transform 180ms ease, box-shadow 180ms ease;
+
+                    &:hover {
+                        transform: scale(1.01);
+                        box-shadow: 0 14px 30px rgba(15, 20, 25, 0.12);
+                    }
 
                     img {
                         object-fit: cover;
                         display: block;
                         cursor: pointer;
+                        width: 100%;
+                        height: auto;
                     }
                 }
 
                 &.message-right {
                     margin-left: auto;
                     text-align: end;
+                    align-items: flex-end;
 
                     .message-text {
-                        border-bottom-right-radius: 0;
-                        background-color: var(--twitter-blue);
+                        border-bottom-right-radius: 6px;
+                        border-top-right-radius: 22px;
+                        border-top-left-radius: 22px;
+                        background: linear-gradient(180deg, #1d9bf0 0%, #1a8cd8 100%);
                         color: var(--const-white);
                         margin-left: auto;
+                    }
+
+                    .message-image {
+                        margin-left: auto;
+                        border-bottom-right-radius: 6px;
                     }
                 }
 
                 &.message-left {
+                    align-items: flex-start;
+
                     .message-text {
-                        border-bottom-left-radius: 0;
+                        border-bottom-left-radius: 6px;
+                    }
+
+                    .message-image {
+                        border-bottom-left-radius: 6px;
                     }
                 }
 
                 .message-date {
-                    padding-top: 0.25rem;
-                    font-size: 0.75rem;
+                    padding-top: 0.05rem;
+                    font-size: 11px;
+                    color: var(--twitter-muted);
+                    line-height: 1.1;
                 }
+
+                &:hover {
+                    transform: translateY(-1px);
+                }
+            }
+        }
+
+        [data-theme="dark"] & {
+            background:
+                linear-gradient(180deg, rgba(29, 155, 240, 0.08) 0%, transparent 18rem),
+                #000000;
+
+            .new-message-box {
+                background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 18%);
+            }
+
+            .messages-wrapper {
+                background:
+                    radial-gradient(circle at top, rgba(29, 155, 240, 0.08), transparent 28%),
+                    #000000;
+
+                .message.message-left .message-text {
+                    background-color: #202327;
+                    color: #e7e9ea;
+                }
+
+                .message.message-right .message-text {
+                    color: #ffffff;
+                }
+            }
+
+            .messages-header {
+                border-bottom-color: rgba(47, 51, 54, 0.9);
+            }
+        }
+
+        [data-theme="light"] & {
+            background:
+                linear-gradient(180deg, rgba(29, 155, 240, 0.06) 0%, transparent 18rem),
+                #ffffff;
+
+            .new-message-box {
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 18%);
+            }
+
+            .messages-wrapper {
+                background:
+                    radial-gradient(circle at top, rgba(29, 155, 240, 0.05), transparent 28%),
+                    #ffffff;
+            }
+        }
+
+        .messages-header {
+            gap: 0.75rem;
+            align-items: center;
+            padding: 0.75rem 0.95rem;
+            background: inherit;
+            backdrop-filter: blur(14px);
+
+            .messages-user {
+                display: flex;
+                align-items: center;
+                gap: 0.7rem;
+                min-width: 0;
+                color: inherit;
+
+                .messages-user-copy {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.1rem;
+                    min-width: 0;
+                }
+
+                .messages-display-name {
+                    font-size: 0.98rem;
+                    font-weight: 800;
+                    color: var(--twitter-black);
+                    line-height: 1.1;
+                }
+
+                .messages-username {
+                    font-size: 0.8rem;
+                    line-height: 1.1;
+                }
+            }
+
+            .messages-header-spacer {
+                flex: 1;
+            }
+
+            .top {
+                display: none;
             }
         }
     }
 
     .conversation {
-        padding: 1rem;
+        padding: 0.85rem 1rem;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.85rem;
         overflow: hidden;
-        transition: background-color 0.2s ease-in-out;
-        height: 65px;
+        transition: background-color 0.18s ease-in-out, transform 0.18s ease-in-out;
+        min-height: 74px;
         cursor: pointer;
         border-bottom: 1px solid var(--border-color);
 
         &:hover {
-            background-color: var(--hover);
+            background-color: rgba(29, 155, 240, 0.05);
+            transform: translateY(-1px);
         }
 
         .icon-hoverable {
@@ -2786,16 +3065,16 @@ button.icon-hoverable {
         .user-wrapper {
             display: flex;
             flex-direction: column;
-            height: 45px;
-            gap: 0.25rem;
+            min-height: 45px;
+            gap: 0.18rem;
 
             .last-message {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 font-family: var(--font-poppins);
-                line-height: 1.5;
-                max-width: 200px;
+                line-height: 1.4;
+                max-width: 220px;
             }
 
             .user-section {
@@ -2833,19 +3112,24 @@ button.icon-hoverable {
 .notifications-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 1rem;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
 
     .notification {
         overflow: hidden;
         color: var(--twitter-muted);
-        line-height: 1.45;
+        line-height: 1.38;
+        border-radius: 20px;
+        background: var(--surface-elevated);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(12px);
 
         .icon-div {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.25rem;
+            font-size: 1.05rem;
             flex-shrink: 0;
 
             &.welcome {
@@ -2872,6 +3156,8 @@ button.icon-hoverable {
         .notification-link {
             color: var(--twitter-blue);
             font-weight: 700;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.14em;
 
             &:hover {
                 text-decoration: underline;
@@ -2892,13 +3178,13 @@ button.icon-hoverable {
             .profile-info-main {
                 display: flex;
                 flex-direction: column;
-                gap: 0.2rem;
+                gap: 0.12rem;
                 min-width: 0;
 
                 h1 {
                     color: var(--twitter-black);
                     font-weight: 700;
-                    font-size: 0.95rem;
+                    font-size: 0.92rem;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
@@ -2907,37 +3193,58 @@ button.icon-hoverable {
         }
 
         &:hover {
-            background-color: var(--hover);
+            background-color: rgba(29, 155, 240, 0.05);
+            transform: translateY(-1px);
+            box-shadow: 0 16px 36px rgba(15, 20, 25, 0.12);
+        }
+
+        .text-muted {
+            font-size: 0.88rem;
+        }
+
+        .bold {
+            color: var(--twitter-black);
         }
     }
 }
 
+@keyframes dm-message-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .notifications-page {
-    padding-bottom: 1rem;
+    padding-bottom: 0.75rem;
 
     .notifications-header {
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
         gap: 1rem;
-        margin-top: 0.25rem;
+        margin: 0.25rem 0 0.25rem;
     }
 
     .notifications-subtitle {
-        margin-top: 0.35rem;
+        margin-top: 0.25rem;
         color: var(--twitter-muted);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         line-height: 1.5;
     }
 
     .notifications-badge {
         flex-shrink: 0;
-        padding: 0.55rem 0.9rem;
+        padding: 0.45rem 0.8rem;
         border-radius: 999px;
         background: rgba(29, 155, 240, 0.12);
         color: var(--twitter-blue);
         border: 1px solid rgba(29, 155, 240, 0.18);
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 800;
         white-space: nowrap;
     }
@@ -3166,6 +3473,42 @@ button.icon-hoverable {
 
     .tweet .tweet-main .tweet-image img {
         max-height: 300px;
+    }
+
+    .messages-page {
+        .messages-container {
+            grid-template-rows: auto minmax(240px, 1fr) auto;
+
+            .new-message-box {
+                padding: 12px 12px;
+
+                .new-message-form {
+                    gap: 10px;
+                }
+
+                .input-additions {
+                    gap: 0.25rem;
+                }
+
+                .dropzone {
+                    left: 12px;
+                    right: 12px;
+                }
+
+                .emoji-picker {
+                    right: 12px;
+                }
+            }
+
+            .messages-wrapper {
+                padding: 0.8rem 0.7rem 0.7rem;
+                gap: 12px;
+
+                .message {
+                    max-width: 82%;
+                }
+            }
+        }
     }
 }
 

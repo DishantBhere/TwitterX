@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import { TextField } from "@mui/material";
@@ -77,16 +77,49 @@ export default function NewMessageBox({ messagedUsername, token, setFreshMessage
         },
     });
 
+    const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            void formik.submitForm();
+        }
+    };
+
     return (
         <div className="new-message-box">
             <form className="new-message-form" onSubmit={formik.handleSubmit}>
+                <div className="input-additions">
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setShowDropzone(true);
+                        }}
+                        className="icon-hoverable"
+                    >
+                        <FaRegImage />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setShowPicker(!showPicker);
+                        }}
+                        className="icon-hoverable"
+                    >
+                        <FaRegSmile />
+                    </button>
+                </div>
                 <div className="input">
                     <TextField
                         placeholder={t("messages.messagePlaceholder")}
                         hiddenLabel
                         variant="outlined"
                         name="text"
-                        sx={{ width: "65%" }}
+                        fullWidth
+                        multiline
+                        minRows={1}
+                        maxRows={5}
+                        inputProps={{
+                            onKeyDown: handleKeyDown,
+                        }}
                         value={formik.values.text}
                         onChange={formik.handleChange}
                         error={formik.touched.text && Boolean(formik.errors.text)}
@@ -97,33 +130,13 @@ export default function NewMessageBox({ messagedUsername, token, setFreshMessage
                 ) : (
                     <button
                         type="submit"
-                        className={`btn btn-white icon-hoverable ${formik.isValid ? "" : "disabled"}`}
+                        className={`btn btn-white icon-hoverable send-button ${formik.isValid ? "" : "disabled"}`}
                         disabled={!formik.isValid}
                     >
                         <FaPaperPlane />
                     </button>
                 )}
             </form>
-            <div className="input-additions">
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setShowDropzone(true);
-                    }}
-                    className="icon-hoverable"
-                >
-                    <FaRegImage />
-                </button>
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setShowPicker(!showPicker);
-                    }}
-                    className="icon-hoverable"
-                >
-                    <FaRegSmile />
-                </button>
-            </div>
             {showPicker && (
                 <div className="emoji-picker">
                     <Picker
